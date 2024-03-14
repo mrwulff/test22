@@ -1,0 +1,93 @@
+<themescreen>
+    #:import Clipboard kivy.core.clipboard.Clipboard
+    name: "theme"
+    FitImage:
+        #source: 'images/rh.jpg'
+        id: pic
+        source: app.get_wall("today")
+        size: self.width,self.height
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Settings"
+        #    height: app.mheight
+            #left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+
+
+            MDTopAppBarLeadingButtonContainer:
+    
+                MDActionTopAppBarButton:
+                    icon: "chevron-left"
+                    on_release: app.today()
+                    pos_hint:{"center_x": 0.5, "center_y": 0.5}
+        ScrollView:
+
+
+            MDList:
+                bg_color:self.theme_cls.primary_palette
+                spacing: 2
+                MDListItem: 
+                    on_release:app.do_wallpaper_screen(0)
+                    id: button
+                    text: "Wallpapepr"
+                    #bg_color:self.theme_cls.primary_light
+                    #on_release:app.do_wallpaper_screen(0)
+
+                    MDListItemLeadingIcon:
+                        id: button2
+                        icon: "panorama-variant"
+
+                        
+
+                          
+                                #app.save_theme_picker()  
+                    MDListItemHeadlineText:
+                        text:"Wallpaper"   
+                        bg_color:self.theme_cls.primary_palette 
+                MDListItem:
+                    text: "DarkMode"
+                    #MDListItemHeadlineText:
+                    #    text:"Dark Mode"
+                    #bg_color:self.theme_cls.primary_light
+                    #active: app.check_att('theme2')
+                    on_press: 
+                        app.check_att('theme2')
+                        app.toggle_any("theme2")
+                        app.save_theme_picker()
+                        
+                    
+
+
+
+                    MDListItemLeadingIcon:
+                        icon: "theme-light-dark"
+                    MDListItemHeadlineText:
+                        text:"Dark Mode"    
+                MDListItem: 
+                    id: button
+                    text: "Colors"
+
+                    bg_color:self.theme_cls.primary_palette
+
+                    MDListItemLeadingIcon:
+                        id: button2
+                        icon: "bullhorn"
+                    
+
+                    MDButton:
+                        id: button4
+                        #padding: [0, 0]
+
+                        #width: 15
+                        #text: self.theme_cls.primary_palette
+                        #pos_hint: {'center_x': .7, 'center_y': .5}
+                        values: app.pcolor
+                        items: app.pcolor
+                        #id: noise
+                        on_release: 
+                            app.open_drop_item_menu(app.pcolor,'pcolor')
+                            app.save_theme_picker()
+                        MDButtonText:
+                            id:button_t
+                    MDListItemHeadlineText:
+                        text:"Accent Color"    

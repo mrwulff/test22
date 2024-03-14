@@ -1,0 +1,116 @@
+<NotificationScreen>
+    name: "notification"
+    #Image:
+    #    source: 'images/rh.jpg'
+    #    size: self.width,self.height
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Settings"
+            height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('settings','left'),'home']]
+        MDBoxLayout:
+            orientation: 'vertical'
+            ScrollView:
+                
+                MDGridLayout:
+                    #id: nots
+                    adaptive_height: True
+                    id: box
+                    cols: 1
+                    adaptive_height: True
+                    padding: '10dp', '15dp'
+                    spacing: '15dp'
+
+                    MDCard:
+                        hard_shadow_cl:app.theme_cls.primary_light
+                        orientation: 'vertical'
+                        size_hint: 1, None
+                        height: app.notheight
+                        MDSlider:
+                            id:slider1
+                            max:180
+                            value:slider1.value
+                            step: 5
+                            #on_active: firstnottext
+                            on_touch_up: app.makenots('1')
+                            
+
+                        MDBoxLayout:
+                            cols:3
+                            adaptive_height: True
+                            padding: '30dp', '5dp'
+                            spacing: '30dp'
+
+                            MDLabel:
+                                id: text1
+                                markup: True
+                                padding: [15, 15]
+                                #text: str(slider1.value)
+                                text: (app.format_minutes('First',int(slider1.value),disable1.active))
+  
+
+                            MDSwitch:
+                                
+                                widget_style: "ios"
+                                width:35
+                                id: disable1
+                                text: "Disable1"
+                                group: "x"
+                    MDCard:
+                        soft_shadow_cl:app.theme_cls.primary_light
+                        orientation: 'vertical'
+                        size_hint: 1, None
+                        #size: 680, None
+                        height: app.notheight
+                        MDSlider:
+                            id:slider2
+                            max: 180
+                            step: 5
+                            value:slider2.value
+                            #on_active: firstnottext
+                            on_touch_up: app.makenots('2')
+                            
+
+                        MDBoxLayout:
+                            cols:3
+                            adaptive_height: True
+                            padding: '30dp', '5dp'
+                            spacing: '30dp'
+
+                            MDLabel:
+                                id: text2
+                                markup: True
+                                padding: [15, 15]
+                                text: (app.format_minutes('Second',int(slider2.value),disable2.active))
+  
+
+                            MDSwitch:
+                                
+                                widget_style: "ios"
+                                width:35
+                                id: disable2
+                                text: "Disable1"
+                                group: "x"
+                    MDListItem: 
+                        id: button
+                        text: "Sound"
+
+                        IconLeftWidget:
+                            id: button2
+                            icon: "bullhorn"
+                        YourContainer:
+                            id: button3
+                            MDButton:
+                                id: button4
+                                padding: [15, 15]
+
+                                width: 5
+                                text: "Default"
+                                pos_hint: {'center_x': .5, 'center_y': .5}
+                                values: app.sound_effects
+                                items: app.sound_effects
+                                #id: noise
+                                on_release: app.choose_drop(app.sound_effects,'sound_effects')
+
+

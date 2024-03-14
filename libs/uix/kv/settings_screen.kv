@@ -1,0 +1,317 @@
+<SettingsScreen>
+    #:import Clipboard kivy.core.clipboard.Clipboard
+    name: "settings"
+    #Image:
+    #    source: 'images/rh.jpg'
+    #    size: self.width,self.height
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Settings"
+        #    height: app.mheight
+            #left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+
+
+            MDTopAppBarLeadingButtonContainer:
+    
+                MDActionTopAppBarButton:
+                    icon: "chevron-left"
+                    on_release: app.change_screen('today','left')
+                    pos_hint:{"center_x": 0.5, "center_y": 0.5}
+        ScrollView:
+
+
+            MDList:
+            
+                MDListItem:
+                    on_release: 
+                        #app.show_theme_picker()
+                        app.do_theme()
+                    MDListItemHeadlineText:
+                        text:"Theme"
+                    
+                        
+                    
+                    YourContainer:
+                        id: container
+                        width:.5
+                        MDIconButton:
+                            icon: "content-save"
+                            text: "Edit"
+                            on_press:app.save_theme_picker()
+
+                    MDListItemLeadingIcon:
+                        icon: "palette"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+                
+                       
+                MDListItem:
+                    on_release: 
+                        app.dlpp()
+                    MDListItemHeadlineText:
+                        text: 'Download New Paystubs'
+
+                    MDListItemLeadingIcon:
+                        icon: "cloud-download"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+                MDListItem:
+                    
+                    
+                    #text: "Sample Schedule"
+                    MDListItemHeadlineText:
+                        text: 'Refresh Schedule on Load'
+
+
+                    MDSwitch:
+                        widget_style: "ios"
+                        icon: "plus"
+                        id: refreshreload
+                        #active: app.lol()
+                        active: app.check_att('refreshreload')
+                        on_active:
+                            #app.on_checkbox_active(*args)
+                            app.updatetext("refreshreload")
+                    MDListItemLeadingIcon:
+                        icon: "refresh"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+            
+                MDListItem:
+                    on_release:
+                        app.show_delete_dialog()
+                    MDListItemHeadlineText:
+                        text: "Clear Data"
+                    
+
+                    MDListItemLeadingIcon:
+                        icon: "cancel"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+                #MDListItem:
+                ##    text: "Backup Data"
+                 #   id: bud
+                 #   on_release:
+                 #       #app.backup()
+                 #       #Clipboard.copy(app.backup())
+                 #       app.backup_new()
+                 #       #app.backup_tofiles()
+                 #       Snackbar(text="Backup Copied to Clipboard!",bg_color=app.theme_cls.primary_color).open()
+                 #       pos_hint: {"center_x": .5, "center_y": .5}
+                 #   YourContainer:
+                 #       id: container
+                 #   MDListItemLeadingIcon:
+                 #       icon: "cloud-upload"
+                    #IconRightWidget:
+                        #id: bud2
+                        #icon: "asdf"
+
+                #MDListItem:
+                #    text: "Restore Data"
+                #    on_release:
+                #        #app.restore()
+                #        self.xxxx=Clipboard.paste()
+                #        app.restorebin(self.xxxx)
+                #        Snackbar(text="Restored from Backup",bg_color=app.theme_cls.primary_light).open()
+                #        pos_hint: {"center_x": .5, "center_y": .5}
+                #    YourContainer:
+                #        id: container
+                #    MDListItemLeadingIcon:
+                #        icon: "cloud-download"
+
+
+                #MDListItem:
+                #    text: "Notifications"
+                #    on_release:app.makenots("1")
+                #    YourContainer:
+                #        id: container
+                #        MDSwitch:
+                #            on_active: app.enable_nots()
+                #            widget_style: "ios"
+                #            id: switchnotify
+
+                #    MDListItemLeadingIcon:
+                #        icon: "bell"
+
+                #MDListItem:
+                #    text: "Update Schedule"
+                #    on_press: app.newstart('',False)
+                #    YourContainer:
+                #        id: container
+                #    MDListItemLeadingIcon:
+                #        icon: "cloud-download"
+
+                MDListItem:
+                    on_press: app.remove_google_token("token2.json")
+                    MDListItemHeadlineText:
+                        text: "Delete Google Data"
+                    
+
+                    MDListItemLeadingIcon:
+                        icon: "delete"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+
+                #MDListItem:
+                #    text: "Test Not"
+                #    on_press: app.test_not()
+                #    YourContainer:
+                #        id: container
+                #    MDListItemLeadingIcon:
+                #        icon: "cloud-download"
+                #MDListItem:
+                #    text: "Update_hi_scores"
+                #    on_press: app.update_hi_score_keys()
+                #    YourContainer:
+                #        id: container
+                #    MDListItemLeadingIcon:
+                #        icon: "cloud-download"
+
+
+                MDListItem:
+                    MDListItemHeadlineText:
+                        text: "Show Canceled Shows"
+                    #on_release:app.makenots("1")
+
+                    MDSwitch:
+                        #on_active: app.enable_nots()
+                        widget_style: "ios"
+                        id:hide_canceled
+                        active: app.check_att('hide_canceled')
+                        on_active:
+                            #app.on_checkbox_active(*args)
+                            app.updatetext("hide_canceled")
+
+                    MDListItemLeadingIcon:
+                        icon: "close-circle-outline"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+
+                #MDListItem:
+                #    text: "Today Screen at Start"
+                #    #on_release:app.makenots("1")
+                #    YourContainer:
+                #        id: container
+                #        MDSwitch:
+                #            #on_active: app.enable_nots()
+                #            widget_style: "ios"
+                #            active: app.check_att('today_start')
+                #            id: today_start
+                #            on_active:
+                #                #app.on_checkbox_active(*args)
+                #                app.updatetext("today_start")
+
+                #    MDListItemLeadingIcon:
+                #        icon: "home-floor-1"
+                MDListItem:
+                    MDListItemHeadlineText:
+                        text: "24 Hour Time"
+                    #on_release:app.makenots("1")
+
+                    MDSwitch:
+                        #on_active: app.enable_nots()
+                        widget_style: "ios"
+                        active: app.check_att('twenty')
+                        id: twenty
+                        on_active:
+                            #app.on_checkbox_active(*args)
+                            app.updatetext("twenty")
+
+                    MDListItemLeadingIcon:
+                        icon: "hours-24"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+
+                MDListItem:
+                    MDListItemHeadlineText:
+                        text: "Hide Personal Data"
+                    #on_release:app.makenots("1")
+
+                    MDSwitch:
+                        #on_active: app.enable_nots()
+                        widget_style: "ios"
+                        active: app.check_att('hidden')
+                        id: hidden
+                        on_active:
+                            #app.on_checkbox_active(*args)
+                            app.updatetext("hidden")
+
+                    MDListItemLeadingIcon:
+                        icon: "ghost"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+                MDListItem:
+                    MDListItemHeadlineText:
+                        text: "Hide Hidden Shows"
+                    #on_release:app.makenots("1")
+
+                    MDSwitch:
+                        #on_active: app.enable_nots()
+                        widget_style: "ios"
+                        active: app.check_att('hide_shows')
+                        id: hide_shows
+                        on_active:
+                            #app.on_checkbox_active(*args)
+                            app.updatetext("hide_shows")
+
+                    MDListItemLeadingIcon:
+                        icon: "file-hidden"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+
+                MDListItem:
+                    MDListItemHeadlineText:
+                        text: "Rhino Branding"
+                    #on_release:app.makenots("1")
+
+                    MDSwitch:
+                        widget_style: "ios"
+                        active: app.check_att('branding')
+                        id: branding
+                        on_active:
+                            app.updatetext("branding")
+
+                    MDListItemLeadingIcon:
+                        icon: "hammer-wrench"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+
+
+
+                MDListItem:
+                    on_press: app.do_onboarding(0)
+                    MDListItemHeadlineText:
+                        text: "Show Welcome Message"
+                    
+
+                    MDListItemLeadingIcon:
+                        icon: "human-greeting"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+
+                MDListItem:
+                    on_press: app.do_backdoor() 
+                    
+                    
+                    #text: "Sample Schedule"
+                    MDListItemHeadlineText:
+                        text: 'Demo Mode'
+
+                    MDSwitch:
+                        widget_style: "ios"
+                        icon: "plus"
+                        id: usecache
+                        #active: app.lol()
+                        active: app.check_att('usecache')
+                        on_active:
+                            #app.on_checkbox_active(*args)
+                            app.updatetext("usecache")
+                    MDListItemLeadingIcon:
+                        icon: "bug"  
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+
+                MDListItem:
+                    on_release:app.delete_demo()
+                    
+                    MDListItemHeadlineText:
+                    #text: "Sample Schedule"
+                        text: 'Delete Demo Shows'
+                    
+
+
+
+                    MDListItemLeadingIcon:
+                        icon: "bug"  
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+                    #
+

@@ -1,0 +1,64 @@
+
+
+<allfieldnotesscreen>
+
+    name: "allfieldnotes"
+    FitImage:
+        #source: 'images/rh.jpg'
+        id: pic
+        source: app.get_wall("today")
+        size: self.width,self.height
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Settings"
+        #    height: app.mheight
+            #left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+
+
+            MDTopAppBarLeadingButtonContainer:
+    
+                MDActionTopAppBarButton:
+                    icon: "chevron-left"
+                    on_release: app.root.pop()
+                    pos_hint:{"center_x": 0.5, "center_y": 0.5}
+        MDTextField:
+            #text: "bla"
+            id:search
+            size_hint: 1,None
+            height: app.icons_height
+            #on_text_validate: app.search_icons()
+            on_text: app.search_fieldnotes()
+            hint_text: "Search"
+            icon_left:
+                "search"
+
+        MDListItem:
+            text: "Only show favorites"
+            size_hint: 1,None
+            height: app.icons_height
+            halign: "center"
+
+            MDSwitch:
+                widget_style: "ios"
+                active: app.check_att('fav_notes')
+                id: fav_notes
+                on_active:
+                    app.updatetext("fav_notes")
+                    app.search_fieldnotes()
+            MDListItemTrailingIcon:
+                icon: "star-box"
+        ScrollView:
+            #id: history_view
+
+
+            MDList:
+                
+
+            
+                
+                spacing: app.cspacing/2
+                padding: app.cpadding/2,app.cpadding/2
+                #bg_color:app.theme_cls.primary_light
+                id: payperiod_list
+                

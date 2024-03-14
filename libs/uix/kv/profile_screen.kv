@@ -1,0 +1,83 @@
+<ProfileScreen>
+    name: "profile"
+    #Image:
+    #    source: 'images/rh.jpg'
+    #    size: self.width,self.height
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            type: app.mtype
+            title: "Login"
+            height: app.mheight
+            right_action_items: [['chevron-left', lambda screen: app.change_screen('today', 'left'),'login']]
+        Screen:
+            MDLabel:
+                #hint_text: "Email"
+                text: "[Name]"
+                #helper_text: "to join the chat (test mode)"
+                #helper_text_mode: "on_focus"
+                #icon_right: "android"
+                #icon_right_color: app.theme_cls.primary_color
+                pos_hint:{'center_x': 0.5, 'center_y': 0.75}
+                size_hint_x:None
+                font_size:dp(20)
+                width:dp(300)
+                id:name    
+            MDTextField:
+                hint_text: "NickName"
+                helper_text: "if you want"
+                #helper_text_mode: "on_focus"
+                #icon_right: "android"
+                #icon_right_color: app.theme_cls.primary_color
+                pos_hint:{'center_x': 0.5, 'center_y': 0.65}
+                size_hint_x:None
+                font_size:dp(20)
+                width:dp(300)
+                id:nick
+            MDTextField:
+                hint_text: "Phone"
+                helper_text: "if you want"
+                #helper_text_mode: "on_focus"
+                #icon_right: "android"
+                #icon_right_color: app.theme_cls.primary_color
+                pos_hint:{'center_x': 0.5, 'center_y': 0.55}
+                size_hint_x:None
+                font_size:dp(20)
+                width:dp(300)
+                id:phone
+            MDTextField:
+                multiline: True
+                hint_text: "Bio"
+                helper_text: "Whater you want"
+                helper_text_mode: "on_focus"
+                #icon_right: "lock"
+                icon_right_color: app.theme_cls.primary_color
+                pos_hint:{'center_x': 0.5, 'center_y': 0.45}
+                size_hint_x:None
+                font_size:sp(20)
+                width:sp(300)
+                #password:True
+                #password_mask: "*"
+                #required: True
+                id:bio
+
+            MDButton:
+                id: button4
+                #padding: [15, 15]
+
+                #width: 5
+                text: "Profile Picture"
+                pos_hint: {'center_x': .5, 'center_y': .35}
+                values: app.sound_effects
+                items: app.sound_effects
+                id: button4
+                on_release: app.choose_drop(app.pictures,'profile picture')
+
+            MDButton:
+                text: "Update Profile!"
+                theme_text_color: "Primary"
+                pos_hint: {"center_x": .5, "center_y": .2}
+                on_release:
+                    app.update_profile()
+                    #app.save_login()
+                    #app.newstart('',False)

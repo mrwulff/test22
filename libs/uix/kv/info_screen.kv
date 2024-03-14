@@ -1,0 +1,164 @@
+<InfoScreen>
+    #:import Clipboard kivy.core.clipboard.Clipboard
+    name: 'info'
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Info"
+            height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('home','left'),'home']]
+        ScrollView:
+
+
+            MDList:
+                MDCard:
+                    size_hint: 1, None
+                    #height: sp(200)
+                    #padding: 10,10
+                    MDBoxLayout:
+                        id: box_top
+                        #spacing: "50dp"
+                        adaptive_height: True
+                        FitImage:
+                            id: image
+                            size_hint_y: 1
+                            #height: sp(200)
+                            #source: app.find_image()
+                            #source: 'images/tma.png'
+                            #size_hint: .9, None
+                            #height: 500
+
+                    
+
+
+                MDListItem: 
+                    id: date
+                    #on_release:
+                    on_press: app.animate_money()
+                        #on_release: app.show_time_picker1()
+                    IconLeftWidget:
+                        icon: "calendar-clock-outline"
+
+                TwoLineAvatarIconListItem: 
+                    id: newhours
+                    text: 'Set Worked Hours'
+                    secondary_text: 'Set Lunches'
+                    on_release:
+                        app.show_time_picker1()
+                    YourContainer:
+                        id: container2
+                        Spinner:
+                            values:app.lunch
+                            id: lunches
+                            text: "1"
+                    
+                        
+                    #on_long_press:
+                    #    app.save_show()
+                    IconLeftWidget:
+                        icon: "clipboard-outline"
+                MDListItem: 
+                    id: savehours
+                    text: 'Save Time'
+                    on_release:
+                        on_release: app.show_time_picker2()
+                    IconLeftWidget:
+                        icon: "clipboard-outline"
+                MDListItem: 
+                    id: wrench
+                    on_press:
+                        app.set_rate()
+                    IconLeftWidget:
+                        id: pos
+                        icon: "wrench"
+                    YourContainer:
+                        id: container2
+                        MDTextField:
+                            
+                            values:app.get_rate()
+                            id: rate
+
+                MDListItem: 
+                    id: jobid
+                    on_release:
+                        Clipboard.copy('Data')
+                    IconLeftWidget:
+                        icon: "clipboard-outline"
+
+
+
+                MDListItem: 
+                    id: show
+                    IconLeftWidget:
+                        icon: "account-group"
+                MDListItem: 
+                    on_press:
+                        app.maps()
+                    id: venue
+                    IconLeftWidget:
+                        icon: "stadium"
+                MDListItem: 
+                    id: location
+                    IconLeftWidget:
+                        icon: "map-marker"
+                MDListItem: 
+                    id: client
+                    IconLeftWidget:
+                        icon: "account-tie"
+                MDListItem: 
+                    id: type
+                    IconLeftWidget:
+                        icon: "bowling"
+
+                MDListItem: 
+                    id: status
+                    on_press:
+                        app.confirm(self.text)
+                    IconLeftWidget:
+                        icon: "check-decagram"
+                MDListItem: 
+                    id: notes
+                    on_press: 
+                        #Clipboard.copy(self.text)
+                        app.poppy("notes")
+                    IconLeftWidget:
+                        icon: "note-search-outline"
+                        
+                MDListItem: 
+                    id: d10
+                    IconLeftWidget:
+                        icon: "calendar-clock-outline"
+
+
+                MDListItem: 
+                    id: d13
+                    text: 'Animate Money!'
+                    on_press: app.animate_money()
+                    IconLeftWidget:
+                        icon: "cash-100"
+
+                MDListItem: 
+                    id: d13
+                MDListItem: 
+                    id: d12
+                    #IconLeftWidget:
+                        #icon: "calendar-clock-outline"
+                TwoLineAvatarIconListItem: 
+                    id: newhours
+                    text: 'Set Overtime '
+                    #secondary_text: 'Set OT'
+                    #on_release:
+                    #    app.show_time_picker1()
+                    YourContainer:
+                        id: container2
+                        Spinner:
+                            values:app.ot
+                            id: ot_spin
+                            text: '8'
+                    
+                        
+                    #on_long_press:
+                    #    app.save_show()
+                    IconLeftWidget:
+
+                        icon: "clipboard-outline"

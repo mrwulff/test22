@@ -1,0 +1,146 @@
+
+
+
+<SwipeToDeleteItem>
+    id: std
+
+
+    canvas.before:
+        Color:
+            rgba: app.theme_cls.accent_color
+
+
+
+
+
+
+    size_hint_y: None
+    height:dp(150)
+
+    
+    type_swipe: "auto"
+    #on_swipe_complete: app.on_swipe_complete(root)
+    #focus_behavior: True
+
+
+
+    MDCardSwipeLayerBox:
+
+        MDIconButton:
+            icon: "trash-can"
+            pos_hint: {"center_y": .5}
+            #on_release: app.on_swipe_complete(root)
+            focus_behavior: True
+
+    MDCardSwipeFrontBox:
+        #border_radius: 5
+        #radius: 10
+        #elevation: 15
+        #focus_behavior: True
+
+        #OneLineListItem:
+        id: mdswipefrontbox
+        MDCard:
+        #MDExpansionPanelThreeLine:
+            #padding: 10
+            on_release:
+                app.change_screen('info','up')  if (root.text[0])!='C' else app.ccc()
+                root.click(self) if (root.text[0])!='C' else ''
+            MDFloatLayout:
+                padding: 60
+        #SmartTileWithLabel:
+                
+                border_radius: app.bradius
+                radius: app.radius
+                ripple_behavior: True
+                md_bg_color: app.theme_cls.primary_light if int(root.text[-1:])%2==0 else app.theme_cls.primary_dark
+                #md_bg_color: app.theme_cls.primary_dark_hue(700) if int(root.text[-1:])%2==0 else app.theme_cls.primary_dark
+                #primary_dark_hue
+                
+
+                theme_text_color: "Primary"
+                id: idmdcard
+                
+                MDLabel:
+                    padding: 20,20
+                    id: idmdlabel
+                    #font_name: app.mfont
+                    markup: True
+                    theme_text_color: "Primary"
+                    text: root.text
+                #FitImage:
+                    #source: 'images/black-rhino.png'
+                    #source: 'images/white-rhino.png'
+                    #size_hint: .2,.2
+                    #pos: 30,30
+                    #pos_hint: {'right':1, 'bottom':1}
+                MDLabel:
+                    #center: self.parent.center
+                    size: self.texture_size
+                    canvas.before:
+                        PushMatrix
+                        Rotate:
+                            #angle: app.angle
+                            angle: 90
+                            origin: self.center
+                    canvas.after:
+                        PopMatrix
+                    markup: True
+                    text: str('[size=20sp]Today!') if root.text[6]=='0' else str('')
+                    id:istoday
+                    #text_size: 30
+                    
+                    size_hint: .4,1
+                    size: self.texture_size
+                    pos: 0,0
+                    pos_hint: {'right':1, 'top':1}
+                    
+<HomeScreen>
+    #import ScrollEffect kivy.effects.scroll.ScrollEffect
+    ##:import ScrollEffect  kivy.effects.scroll.ScrollEffect
+    #:import OpacityScrollEffect kivy.effects.opacityscroll.OpacityScrollEffect
+    #:import DampedScrollEffect kivy.effects.opacityscroll.DampedScrollEffect
+    name: "home"
+    Image:
+        source: 'images/rh.jpg'
+        size: self.width,self.height
+    
+    BoxLayout:
+        orientation: "vertical"
+        id: sv3
+        MDTopbar:
+            set_notch: True
+            title: "Schedulee"
+            title: ""
+            height: app.mheight
+            type: app.mtype
+            left_action_items: [["magnify", lambda screen: app.search_menu(),'search'],["home-circle", lambda screen: app.mainmenuf(),'mm'],]
+            right_action_items: [["calendar-blank-multiple", lambda x: app.do_history(),'calendar'],["menu", lambda screen: app.do_settings(),'settings'],["menu", lambda screen: app.make_stats('all',0,0),'makestats']]
+        
+        ScrollView:
+            id: sv
+            #effect_cls: Effect
+            #effect_cls: OpacityScrollEffect
+            #effect_cls: DampedScrollEffect
+            min_overscroll:500
+            edge_damping: 1
+            spring_constant: 10
+            update_velocity: 10
+            #on_overscroll: app.check_pull_refresh(self.height,users_lst.height)
+            on_scroll_stop: app.check_pull_refresh(self,users_lst)
+            
+            
+            MDList:
+                
+                #id: sv2
+                focus_behavior: True
+                spacing: app.cspacing
+                padding: app.cpadding,app.cpadding
+
+                size_hint_y: None
+                height: self.minimum_height
+                default_size: 0, 36
+                default_size_hint: 1, None
+
+               # theme_text_color: "Primary"
+                id: users_lst

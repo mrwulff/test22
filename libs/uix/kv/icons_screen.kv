@@ -1,0 +1,75 @@
+<iconsScreen>
+    name: "icon"
+    #FitImage:
+        #source: 'images/rh.jpg'
+    #    id: pic
+    #    source: app.get_wall("today")
+    #    size: self.width,self.height
+    
+
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Pay"
+            height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+            right_action_items: [['reload-alert', lambda screen: app.build_full_pp(),'home']]
+        MDTextField:
+            #text: "bla"
+            id:search
+            size_hint: 1,None
+            height: app.icons_height
+            on_text_validate: app.search_icons()
+            on_text: app.search_icons()
+            hint_text: "Search"
+            icon_left:
+                "search"
+        MDListItem:
+            text: "Show Rates"
+            size_hint: 1,None
+            height: app.icons_height
+            halign: "center"
+            YourContainer:
+                id: container
+                MDSwitch:
+                    widget_style: "ios"
+                    active: 
+                        app.check_att('pp_hidden')
+                        
+                    id: pp_hidden
+                    on_active:
+                        app.updatetext("pp_hidden")
+                        app.search_icons()
+                    
+            IconLeftWidget:
+                icon: "currency-usd"
+        MDListItem:
+            text: "Show All"
+            size_hint: 1,None
+            height: app.icons_height
+            halign: "center"
+            YourContainer:
+                id: container
+                MDSwitch:
+                    widget_style: "ios"
+                    active: app.check_att('pp_all')
+                    id: pp_all
+                    on_active:
+                        app.updatetext("pp_all")
+                        app.search_icons()
+            IconLeftWidget:
+                icon: "all-inclusive"
+        ScrollView:
+            #id: history_view
+
+
+            MDList:
+                
+
+            
+                
+                spacing: app.cspacing/2
+                padding: app.cpadding/2,app.cpadding/2
+                bg_color:app.theme_cls.primary_light
+                id: payperiod_list
+                

@@ -1,0 +1,127 @@
+<theme_pickerscreen>
+
+
+
+    MDBoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Settings"
+            type: "top"
+            height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.do_theme(),'home']]
+        
+
+        MDBoxLayout:
+            #MDGridLayout:
+            MDBoxLayout:
+                spacing: dp(20)
+                padding: dp(20)
+                size_hint: (None, None)
+                size: root.width, root.height/2  # -dp(120)
+                pos_hint: {'center_x': .5, 'center_y': .5}
+                orientation: 'vertical'
+                BoxLayout:
+                    size_hint: (None, None)
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    size: dp(330), dp(60)
+                    pos: self.pos
+                    halign: 'center'
+                    orientation: 'horizontal'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Red'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Pink'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Purple'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'DeepPurple'
+                BoxLayout:
+                    size_hint: (None, None)
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    size: dp(330), dp(40)
+                    pos: self.pos
+                    halign: 'center'
+                    orientation: 'horizontal'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Indigo'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Blue'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'LightBlue'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Cyan'
+                BoxLayout:
+                    size_hint: (None, None)
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    size: dp(330), dp(40)
+                    pos: self.pos
+                    halign: 'center'
+                    orientation: 'horizontal'
+                    padding: 0, 0, 0, dp(1)
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Teal'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Green'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'LightGreen'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Lime'
+                BoxLayout:
+                    size_hint: (None, None)
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    size: dp(330), dp(40)
+                    pos: self.pos
+                    orientation: 'horizontal'
+                    halign: 'center'
+                    padding: 0, 0, 0, dp(1)
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Yellow'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Amber'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Orange'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'DeepOrange'
+                BoxLayout:
+                    size_hint: (None, None)
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    size: dp(330), dp(40)
+                    #pos: self.pos
+                    orientation: 'horizontal'
+                    padding: 0, 0, 0, dp(1)
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Brown'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'Gray'
+                    BoxLayout:
+                        PrimaryColorSelector:
+                            color_name: 'BlueGray'
+                    BoxLayout:
+                        MDFlatButton:
+                            size: dp(40), dp(40)
+                            size_hint: (None, None)
+                            canvas:
+                                Color:
+                                    rgba: app.theme_cls.bg_normal
+                                Ellipse:
+                                    size: self.size
+                                    pos: self.pos
+                            disabled: True

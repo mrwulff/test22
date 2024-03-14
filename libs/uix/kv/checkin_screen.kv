@@ -1,0 +1,33 @@
+<TwoLineAvatarListItem>
+    IconLeftWidget:
+#        icon: root.icon
+
+
+
+
+
+<CheckinScreen>
+    name: "checkin"
+
+    Image:
+        source: 'images/rh.jpg'
+        size: self.width,self.height
+
+    
+
+
+
+    MDBoxLayout:
+        id: graphs2
+        orientation: "vertical"
+        
+        MDTopAppBar:
+            #title: "Settings"
+            height: app.mheight
+        #    type: "bottom"
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+            right_action_items: [["message-outline", lambda x: app.do_chat(0),'chat']]
+        BoxLayout:
+            id: check_id
+            orientation: "vertical"
+        

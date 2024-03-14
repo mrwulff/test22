@@ -1,0 +1,287 @@
+{
+    "version": 1,
+    "positions": [
+        {
+            "abv": "IN",
+            "icon": "alpha-i",
+            "description": "Load In",
+            "all": "in load in"
+        },
+        {
+            "abv": "SHOW",
+            "icon": "alpha-s",
+            "description": "Show Call",
+            "all": "show show call"
+        },
+        {
+            "abv": "OUT",
+            "icon": "alpha-o",
+            "description": "Load Out",
+            "all": "out load out"
+        },
+        {
+            "abv": "HR",
+            "icon": "engine-outline",
+            "description": "High Rigger",
+            "all": "hr high rigger"
+        },
+        {
+            "abv": "HDR",
+            "icon": "engine-outline",
+            "description": "Head Rigger",
+            "all": "hdr head rigger"
+        },
+        {
+            "abv": "DR",
+            "icon": "engine",
+            "description": "Down Rigger",
+            "all": "dr down rigger"
+        },
+        {
+            "abv": "ME",
+            "icon": "power-plug",
+            "description": "Master Electrician ",
+            "all": "me master electrician "
+        },
+        {
+            "abv": "ADV",
+            "icon": "video-4k-box",
+            "description": "Advanced AV",
+            "all": "adv advanced av"
+        },
+        {
+            "abv": "TK",
+            "icon": "note-edit-outline",
+            "description": "Time Keeper",
+            "all": "tk time keeper"
+        },
+        {
+            "abv": "L3",
+            "icon": "lightbulb",
+            "description": "Lighting Tech",
+            "all": "l3 lighting tech"
+        },
+        {
+            "abv": "L2",
+            "icon": "lightbulb",
+            "description": "Lighting Assist",
+            "all": "l2 lighting assist"
+        },
+        {
+            "abv": "L1",
+            "icon": "lightbulb",
+            "description": "Lighting Engineer",
+            "all": "l1 lighting engineer"
+        },
+        {
+            "abv": "LL",
+            "icon": "lightbulb",
+            "description": "Lighting Lead",
+            "all": "ll lighting lead"
+        },
+        {
+            "abv": "L",
+            "icon": "dolly",
+            "description": "Loader",
+            "all": "l loader"
+        },
+        {
+            "abv": "SL",
+            "icon": "spotlight-beam",
+            "description": "SpotLight",
+            "all": "sl spotlight"
+        },
+        {
+            "abv": "SUP",
+            "icon": "account-supervisor",
+            "description": "Supervisor",
+            "all": "sup supervisor"
+        },
+        {
+            "abv": "HL",
+            "icon": "lightbulb-multiple-outline",
+            "description": "House Lights",
+            "all": "hl house lights"
+        },
+        {
+            "abv": "F",
+            "icon": "forklift",
+            "description": "ForkLift",
+            "all": "f forklift"
+        },
+        {
+            "abv": "RF",
+            "icon": "forklift",
+            "description": "Reach ForkLift",
+            "all": "rf reach forklift"
+        },
+        {
+            "abv": "SH",
+            "icon": "hand-back-left",
+            "description": "StageHand",
+            "all": "sh stagehand"
+        },
+        {
+            "abv": "P",
+            "icon": "human-dolly",
+            "description": "Pusher",
+            "all": "p pusher"
+        },
+        {
+            "abv": "V3",
+            "icon": "video-account",
+            "description": "Video Hand",
+            "all": "v3 video hand"
+        },
+        {
+            "abv": "V2",
+            "icon": "video-account",
+            "description": "Video Assist",
+            "all": "v2 video assist"
+        },
+        {
+            "abv": "V1",
+            "icon": "video-account",
+            "description": "Video Engineer",
+            "all": "v1 video engineer"
+        },
+        {
+            "abv": "A3",
+            "icon": "volume-high",
+            "description": "Audio Tech,",
+            "all": "a3 audio tech,"
+        },
+        {
+            "abv": "A2",
+            "icon": "volume-high",
+            "description": "Audio Assist",
+            "all": "a2 audio assist"
+        },
+        {
+            "abv": "A1",
+            "icon": "volume-high",
+            "description": "Audio Engineer",
+            "all": "a1 audio engineer"
+        },
+        {
+            "abv": "C",
+            "icon": "hammer",
+            "description": "Carpenter",
+            "all": "c carpenter"
+        },
+        {
+            "abv": "BOOM",
+            "icon": "weight-lifter",
+            "description": "Boomlift Operator",
+            "all": "boom boomlift operator"
+        },
+        {
+            "abv": "BRS",
+            "icon": "microphone-message",
+            "description": "Breakout Room Set/Strike Tech",
+            "all": "brs breakout room set/strike tech"
+        },
+        {
+            "abv": "BRO",
+            "icon": "projector-screen-outline",
+            "description": "Breakout Room Operator",
+            "all": "bro breakout room operator"
+        },
+        {
+            "abv": "BRR",
+            "icon": "projector-screen-outline",
+            "description": "Breakout Room Roamer",
+            "all": "brr breakout room roamer"
+        },
+        {
+            "abv": "CO",
+            "icon": "camera-enhance",
+            "description": "Camera Operator",
+            "all": "co camera operator"
+        },
+        {
+            "abv": "FO",
+            "icon": "jump-rope",
+            "description": "Flyrail Operator",
+            "all": "fo flyrail operator"
+        },
+        {
+            "abv": "HC",
+            "icon": "account-hard-hat",
+            "description": "Head Carp",
+            "all": "hc head carp"
+        },
+        {
+            "abv": "HHC",
+            "icon": "camera-outline",
+            "description": "Handheld Camera Operator",
+            "all": "hhc handheld camera operator"
+        },
+        {
+            "abv": "LAV",
+            "icon": "audio-input-xlr",
+            "description": "Lead AV",
+            "all": "lav lead av"
+        },
+        {
+            "abv": "LL",
+            "icon": "string-lights",
+            "description": "Lighting Lead",
+            "all": "ll lighting lead"
+        },
+        {
+            "abv": "LLC",
+            "icon": "camera-gopro",
+            "description": "Long Lens Camera Operator",
+            "all": "llc long lens camera operator"
+        },
+        {
+            "abv": "PRJ",
+            "icon": "monitor-screenshot",
+            "description": "Projectionist",
+            "all": "prj projectionist"
+        },
+        {
+            "abv": "PRO",
+            "icon": "propane-tank",
+            "description": "Prop Tech",
+            "all": "pro prop tech"
+        },
+        {
+            "abv": "SLO",
+            "icon": "content-cut",
+            "description": "Scissorlift Operator",
+            "all": "slo scissorlift operator"
+        },
+        {
+            "abv": "TL",
+            "icon": "bridge",
+            "description": "Trusslight Operator",
+            "all": "tl trusslight operator"
+        },
+        {
+            "abv": "TO",
+            "icon": "vhs",
+            "description": "Tape Operator",
+            "all": "to tape operator"
+        },
+        {
+            "abv": "W",
+            "icon": "wardrobe",
+            "description": "Wardrobe",
+            "all": "w wardrobe"
+        },
+        {
+            "abv": "W2",
+            "icon": "wardrobe",
+            "description": "Wardrobe 2",
+            "all": "w2 wardrobe 2"
+        },
+        {
+            "abv": "TRN",
+            "icon": "train",
+            "description": "Training",
+            "all": "trn training"
+        }
+    ]
+}

@@ -1,0 +1,214 @@
+<MyTile@SmartTileWithLabel>
+    size_hint_y: None
+    height: "200dp"
+    size: self.width,self.height
+    md_bg_color: app.maketransp()
+
+    
+
+<MainMenuScreen>
+    name: "mainmenu"
+    FitImage:
+        source: 'images/largerhino.jpg'
+
+    ScrollView:
+
+        MDGridLayout:
+            cols: 2
+            adaptive_height: True
+            padding: dp(10), dp(10)
+            spacing: dp(10)
+            border_radius: 15
+            radius: 10
+            #Rotate: 90
+            #elevation: 15
+
+                    
+
+            MyTile:
+                
+                tile_text_color: app.theme_cls.accent_color
+                text: "[size=26]Schedule[/size][size=14][/size]"
+                
+                on_release:
+                    app.do_login('',False)
+                
+                AnchorLayout:
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    canvas.before:
+                        PushMatrix
+                        Rotate:
+                            angle: app.menurotate
+                            origin: self.center
+                    canvas.after:
+                        PopMatrix
+
+                    FitImage:
+                        source: "images/calendar-month.png"
+                        size_hint: app.menuscale
+                
+
+            MyTile:
+                
+                tile_text_color: app.theme_cls.accent_color
+                on_release: app.do_history()
+                text: "[size=26]History[/size][size=14][/size]"
+                AnchorLayout:
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    canvas.before:
+                        PushMatrix
+                        Rotate:
+                            angle: app.menurotate
+                            origin: self.center
+                    canvas.after:
+                        PopMatrix
+
+                    FitImage:
+                        source: "images/history.png"
+                        size_hint: app.menuscale
+            
+
+            MyTile:
+                #source: "cat-3.jpg"
+                text: "[size=26]PayStubs[/size]"
+                tile_text_color: app.theme_cls.accent_color
+                on_release:
+                    app.do_payperiod('paydate',app.rreverse)
+                AnchorLayout:
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    canvas.before:
+                        PushMatrix
+                        Rotate:
+                            angle: app.menurotate
+                            origin: self.center
+                    canvas.after:
+                        PopMatrix
+
+                    FitImage:
+                        source: "images/cash.png"
+                        size_hint: app.menuscale
+            MyTile:
+                #source: "cat-3.jpg"
+                text: "[size=26]Settings"
+                tile_text_color: app.theme_cls.accent_color
+                on_release:app.change_screen('settings', 'right')
+                AnchorLayout:
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    canvas.before:
+                        PushMatrix
+                        Rotate:
+                            angle: app.menurotate
+                            origin: self.center
+                    canvas.after:
+                        PopMatrix
+
+                    FitImage:
+                        source: "images/cog.png"
+                        size_hint: app.menuscale
+            MyTile:
+                text: "[size=26]Stats[/color]"
+                tile_text_color: app.theme_cls.accent_color
+                on_release:
+                    #app.change_screen('stats','left')
+                    app.make_stats('ytd',0,0)
+                AnchorLayout:
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    canvas.before:
+                        PushMatrix
+                        Rotate:
+                            angle: app.menurotate
+                            origin: self.center
+                    canvas.after:
+                        PopMatrix
+
+                    FitImage:
+                        source: "images/chart-line.png"
+                        size_hint: app.menuscale
+            MyTile:
+                text: "[size=26]Achievements[/color]"
+                tile_text_color: app.theme_cls.accent_color
+                on_release:
+                    #app.change_screen('trophy','left')
+                    app.trophys('all')
+                AnchorLayout:
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    canvas.before:
+                        PushMatrix
+                        Rotate:
+                            angle: app.menurotate
+                            origin: self.center
+                    canvas.after:
+                        PopMatrix
+
+                    FitImage:
+                        source: "images/trophy.png"
+                        size_hint: app.menuscale
+
+
+
+            MyTile:
+                text: "[size=26]New Schedule[/color]"
+                tile_text_color: app.theme_cls.accent_color
+                on_release:
+                    app.newstart('',False)
+                    #app.about()
+                    #app.poppy("NEW LAYOUT TEST")
+                AnchorLayout:
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    canvas.before:
+                        PushMatrix
+                        Rotate:
+                            angle: app.menurotate
+                            origin: self.center
+                    canvas.after:
+                        PopMatrix
+
+                    FitImage:
+                        source: "images/calendar-month.png"
+                        size_hint: app.menuscale
+
+            MyTile:
+                text: "[size=26]Today [/color]"
+                tile_text_color: app.theme_cls.accent_color
+                on_release:
+                    app.today()
+                    #app.about()
+                    #app.poppy("NEW LAYOUT TEST")
+                AnchorLayout:
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    canvas.before:
+                        PushMatrix
+                        Rotate:
+                            angle: app.menurotate
+                            origin: self.center
+                    canvas.after:
+                        PopMatrix
+
+                    FitImage:
+                        source: "images/calendar-month.png"
+                        size_hint: app.menuscale
+
+
+
+            MyTile:
+                text: "[size=26]Info[/color]"
+                tile_text_color: app.theme_cls.accent_color
+                on_release:
+                    #app.change_screen('about','left')
+                    #app.about()
+                    app.poppy("about")
+                AnchorLayout:
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    canvas.before:
+                        PushMatrix
+                        Rotate:
+                            angle: app.menurotate
+                            origin: self.center
+                    canvas.after:
+                        PopMatrix
+
+                    FitImage:
+                        source: "images/info.png"
+                        size_hint: app.menuscale
+
+

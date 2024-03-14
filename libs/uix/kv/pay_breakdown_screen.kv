@@ -1,0 +1,25 @@
+<pay_breakdownscreen>
+    #:import Clipboard kivy.core.clipboard.Clipboard
+    #:import Snackbar kivymd.uix.snackbar.Snackbar
+    name: "pay_breakdown"
+    Image:
+        source: 'images/rh.jpg'
+        size: self.width,self.height
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Settings"
+            height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('pay','left'),'home']]
+
+        ScrollView:
+            #id: history_view
+
+            
+            MDList:
+            
+                
+                spacing: app.cspacing/2
+                padding: app.cpadding/2,app.cpadding/2
+                bg_color:app.theme_cls.primary_light
+                id: pay_gigs

@@ -1,0 +1,52 @@
+<TwoLineAvatarListItem>
+    IconLeftWidget:
+        icon: root.icon
+
+
+<SmoothLabel>:
+    #size_hint: None, None
+    size: self.texture_size
+    background_color: app.theme_cls.bg_normal
+    background_normal: ""
+    back_color: 1,0,1,1
+    border_radius: [6]
+    size_hint_y: None
+    #text_size: self.width, None
+    height: self.texture_size[1]
+    font_name: "Roboto-Regular"
+    canvas.before:
+        Color:
+            rgba: app.theme_cls.opposite_text_color
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [5]
+
+
+<AchScoreScreen>
+    name: "achscore"
+    #Image:
+    #    source: 'images/rh.jpg'
+    #    size: self.width,self.height
+    BoxLayout:
+        id: graphs2
+        orientation: "vertical"
+        
+        MDTopAppBar:
+            #title: "Settings"
+            height: app.mheight
+            size_hint_y: None
+            size_hint_x: 1
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('mainmenu','left'),'home']]
+            right_action_items: [["refresh", lambda x: app.update_hi_score_data(0),'download player data']]
+        BoxLayout:
+            id: graphs3
+            orientation: "vertical"
+
+        #ScrollView:
+
+
+        #    MDList:
+        #        id: ach_score_id
+             #   adaptive_height: True
+                #adaptive_size: True

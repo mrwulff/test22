@@ -1,0 +1,54 @@
+<devscreen>
+    #:import Clipboard kivy.core.clipboard.Clipboard
+    #:import Snackbar kivymd.uix.snackbar.Snackbar
+    name: "dev"
+
+    #FitImage:
+    #    #source: 'images/rh.jpg'
+    #    id: pic
+    #    source: app.get_wall("today")
+    #    size: self.width,self.height
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Settings"
+        #    height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+        ScrollView:
+            MDGridLayout:
+                cols: 1
+                adaptive_height: True
+                padding: dp(10), dp(10)
+                spacing: dp(4)
+                border_radius: 15
+                radius: app.cradius
+                #text_color:app.theme_cls.primary_color
+
+
+                MDCard:
+                    size_hint: 1, None
+                    orientation: "vertical"
+                    #height: zero.height 
+                    #focus_behavior: True
+                    #ripple_behavior: True
+                    #pos_hint: {"center_x": .5, "center_y": .5}
+                    #on_release: app.check_confirm()
+                    #md_bg_color:"elevated"
+                    shadow_softness:0 
+                    shadow_offset:(0, 1)
+                    line_color:(0.2, 0.2, 0.2, 0.8)
+                    radius: app.cradius
+                    size_hint_y: None
+                    height: self.minimum_height
+                    OneLineListItem:
+                        id:zero
+                        text:"DIVIDE BY ZERO"
+                        on_release: app.dev('zero')
+                    OneLineListItem:
+                        id:webv
+                        text:"Webview"
+                        on_release: app.dev('webview')
+                    OneLineListItem:
+                        id:webv
+                        text:"view icons"
+                        on_release: app.view_icons("")

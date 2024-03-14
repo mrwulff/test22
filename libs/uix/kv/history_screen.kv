@@ -1,0 +1,143 @@
+<HistoryItem>
+    canvas.before:
+        Color:
+            rgba: app.theme_cls.accent_color
+    size_hint_y: None
+    height:dp(150)
+
+    MDCardSwipeLayerBox:
+
+        MDIconButton:
+            icon: "trash-can"
+            pos_hint: {"center_y": .5}
+            #on_release: app.on_swipe_complete(root)
+            focus_behavior: True
+
+    MDCardSwipeFrontBox:
+        #border_radius: 5
+        #radius: 10
+        #elevation: 15
+        #focus_behavior: True
+
+        #OneLineListItem:
+        id: mdswipefrontbox
+        
+        MDCard:
+        #SmartTileWithLabel:
+            source: 'images/rh.jpg'
+            border_radius: app.bradius
+            radius: app.radius
+            #focus_behavior: True
+            ripple_behavior: True
+            #md_bg_color: app.theme_cls.accent_color
+            md_bg_color: app.theme_cls.primary_light if int((root.text[-1:]))%2==1 else app.theme_cls.primary_dark
+            
+            on_release: 
+                #app.change_screen('info','up')
+                #root.click(self)
+
+                
+            #on_release: app.click(self)
+            #on_release: root.click(self)
+            theme_text_color: "Primary"
+            id: idmdcard
+            #border_radius:[0,5,0,5]
+            #radius:[0,5,0,5]
+            #elevation: 15
+            padding: 5
+            #text:'lol'
+            
+
+
+            MDLabel:
+                id: idmdlabel
+                
+                
+                #font_name: app.mfont
+                markup: True
+                theme_text_color: "Primary"
+                text: root.text
+                #text: (root.text[-1:])
+            #_no_ripple_effect: True
+
+
+<HistoryScreen>
+    name: 'history'
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "History"
+            height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.mainmenuf(),'mm']]
+            #right_action_items: [["currency-usd", lambda x: app.do_payperiod('paydate',app.rreverse),'pay periods']]
+        
+        MDBoxLayout:
+            #orientation: 'horizontal'
+            size_hint: 1,None
+            height: app.mheight
+            MDButton:
+                text: 'Current'
+                id: scurrent
+                #size_hint: .3,None
+                #height: app.mheight
+                #md_bg_color: app.theme_cls.primary_light
+                #padding:10
+                on_press:(app.set_pp('current'))
+            MDButton:
+                text: 'Last '
+                #size_hint: .3,None
+                #height: app.mheight
+                #md_bg_color: app.theme_cls.primary_light
+                #padding:10
+                #spacing:10,10
+                id: slast
+                on_press:(app.set_pp('last'))
+            MDButton:
+                text: 'Custom'
+                #size_hint: .3,None
+                #height: app.mheight
+                #md_bg_color: app.theme_cls.primary_dark
+                #padding:10
+                #spacing:10,10
+                id: scustom
+                on_press:
+                    (app.show_date_picker())
+                    (app.set_pp('custom'))
+            MDButton:
+                text: 'All'
+                id: sall
+                on_press:(app.set_pp('all'))
+        
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1,None
+            height: app.mheight
+            MDButton:
+                text: 'All'
+                id: dstart
+                #size_hint: .5,None
+                #height: app.mheight
+
+                #md_bg_color: app.theme_cls.primary_light
+                #padding:10
+                #on_press:(app.show_date_picker())
+            MDButton:
+                text: 'All'
+                #size_hint: .5,None
+                #height: app.mheight
+                #md_bg_color: app.theme_cls.primary_light
+                #padding:10
+                #spacing:10,10
+                id: dend
+                #on_press:(app.show_date_picker())
+            
+        ScrollView:
+
+
+            
+            MDList:
+                
+                spacing: app.cspacing
+                padding: app.cpadding,app.cpadding
+                id: history_list
+                

@@ -1,0 +1,80 @@
+<StatsScreen>
+    name: "stats"
+    #Image:
+    #    source: 'images/rh.jpg'
+    #    size: self.width,self.height
+    
+    
+    BoxLayout:
+        id: graphs2
+        orientation: "vertical"
+        MDTopAppBar:
+            height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('mainmenu','left'),'home']]
+        MDBoxLayout:
+            #orientation: 'horizontal'
+            size_hint: 1,None
+            height: app.mheight
+            MDButton:
+                text: 'YTD'
+                id: sytd
+
+                on_press:(app.make_stats('ytd',0,0))
+            MDButton:
+                text: 'Year'
+                id: syear
+
+                on_press:(app.make_stats('year',0,0))
+            MDButton:
+                text: 'All'
+                id: sall
+
+                on_press:(app.make_stats('all',0,0))
+            MDButton:
+                text: 'Custom'
+                id: scustom
+
+                on_press:
+                    (app.show_date_picker())
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1,None
+            height: app.mheight
+            MDButton:
+                text: 'All'
+                id: dstart
+                #size_hint: .5,None
+                #height: app.mheight
+
+                #md_bg_color: app.theme_cls.primary_light
+                #padding:10
+                #on_press:(app.show_date_picker())
+            MDButton:
+                text: 'All'
+                #size_hint: .5,None
+                #height: app.mheight
+                #md_bg_color: app.theme_cls.primary_light
+                #padding:10
+                #spacing:10,10
+                id: dend
+                #on_press:(app.show_date_picker())
+
+
+        ScrollView:
+
+
+            MDList:
+                id: graphs
+                MDListItem:
+                #    icon: 'palette'
+                    text: "stats"
+                #    on_press: app.change_screen('login', 'left')
+                    
+                #    YourContainer:
+                #        id: container   
+                #    IconLeftWidget:
+                #        icon: "account"             
+                #MDListItem:
+                #    text: "stats2"
+                #    on_press: 
+                #        app.show_theme_picker()

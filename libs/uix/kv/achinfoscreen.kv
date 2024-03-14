@@ -1,0 +1,54 @@
+<TwoLineAvatarListItem>
+    IconLeftWidget:
+        icon: root.icon
+        #icon_color: app.theme_cls.accent_color
+        #text_color: app.theme_cls.accent_color
+
+
+<SmoothLabel>:
+    #size_hint: None, None
+    size: self.texture_size
+    background_color: app.theme_cls.bg_normal
+    background_normal: ""
+    back_color: 1,0,1,1
+    border_radius: [6]
+    size_hint_y: None
+    #text_size: self.width, None
+    height: self.texture_size[1]
+    font_name: "Roboto-Regular"
+    canvas.before:
+        Color:
+            rgba: app.theme_cls.opposite_text_color
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [5]
+
+
+
+<AchInfoScreen>
+    name: "achinfo"
+    #Image:
+    #    source: 'images/rh.jpg'
+    #    size: self.width,self.height
+    BoxLayout:
+        id: graphs2
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Settings"
+            height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('ach','left'),'home']]
+
+
+                
+
+
+
+        ScrollView:
+
+
+            MDList:
+                id: ach_info_id
+                #text_color: app.theme_cls.primary_color
+
+                

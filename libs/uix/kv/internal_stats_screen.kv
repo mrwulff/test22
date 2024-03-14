@@ -1,0 +1,104 @@
+<internal_statsscreen>
+    name: "internal_stats"
+    #FitImage:
+        #source: 'images/rh.jpg'
+    #    id: pic
+    #    source: app.get_wall("today")
+    #    size: self.width,self.height
+    
+
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Settings"
+        #    height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+        ScrollView:
+
+
+            MDList:
+                MDListItem:
+                    text: "Share Stats"
+                    #on_release:app.makenots("1")
+                    YourContainer:
+                        id: container
+                        MDSwitch:
+                            #on_active: app.enable_nots()
+                            widget_style: "ios"
+                            id:share_stats
+                            active: app.check_att('share_stats')
+                            on_active:
+                                #app.on_checkbox_active(*args)
+                                app.updatetext("share_stats")
+                    IconLeftWidget:
+                        icon: "share" 
+                        on_release: app.update_global()
+                MDListItem:
+                    icon: 'account'
+                    text:'Individual Stats:'
+                    IconLeftWidget:
+                        icon: "account" 
+                ThreeLineListItem:
+                    id:update
+                    text:"Successfully Updated Schedule:"
+                ThreeLineListItem:
+                    id:lstreak
+                    text:"Longest Updated Schedule Streak (Days)"
+                ThreeLineListItem:
+                    id:streak
+                    text:"Current Updated Schedule Streak (Days)"
+                ThreeLineListItem:
+                    id:max
+                    text:"Maximum Number of Current Schedule"
+                ThreeLineListItem:
+                    id:min
+                    text:"Minimum Number of Current Schedule"
+                ThreeLineListItem:
+                    id:poses
+                    text:"Total Positions Worked"
+
+
+                ThreeLineListItem:
+                    id:opened
+                    text:"Times App Opened"
+                    divider: "Full"
+                
+                ThreeLineListItem:
+                    id:confirm
+                    text:"Shows Confirmed"
+                ThreeLineListItem:
+                MDListItem:
+                    text:'Global Stats:'
+                    IconLeftWidget:
+                        on_release: app.update_global()
+                        icon: "earth" 
+                    IconRightWidget:
+                        on_release: app.update_global()
+                        icon: "download" 
+                ThreeLineListItem:
+                    id:gupdate
+                    text:"Successfully Updated Schedule:"
+                #ThreeLineListItem:
+                    #id:gstreak
+                    #text:"Highest Schedule Streak (Days)"
+                ThreeLineListItem:
+                    id:gmax
+                    text:"Largest Schedule"
+
+                
+                ThreeLineListItem:
+                    id:gconfirm
+                    text:"Shows Confirmed"
+
+                ThreeLineListItem:
+                    id:gopened
+                    text:"App Opened"
+                
+                ThreeLineListItem:
+                    id:users
+                    text:"Users"
+                ThreeLineListItem:
+                MDListItem:
+                    text:'Local Stats:  (coming soon!)'
+                    IconLeftWidget:
+                        icon: "map-marker-outline" 

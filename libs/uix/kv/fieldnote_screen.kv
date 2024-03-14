@@ -1,0 +1,44 @@
+
+
+<fieldnotescreen>
+
+    name: "fieldnote"
+    #FitImage:
+    #    #source: 'images/rh.jpg'
+     #   id: pic
+     #   source: app.get_wall("today")
+     #   size: self.width,self.height
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Settings"
+        #    height: app.mheight
+            #left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+
+
+            MDTopAppBarLeadingButtonContainer:
+    
+                MDActionTopAppBarButton:
+                    icon: "chevron-left"
+                    on_release: app.root.pop()
+                    pos_hint:{"center_x": 0.5, "center_y": 0.5}
+        ScrollView:
+            #MDTextField:
+            id:boxs
+            MDLabel:
+                padding:dp(10)
+                size_hint: None, None
+                text_size: root.width, root.height
+                size: self.texture_size
+                text: "text"
+                font_size: dp(50)
+                #font_c
+#                md_bg_color:app.theme_cls.bg_darkest
+                #color:app.theme_cls.opposite_bg_darkest
+                id:box
+                markup:True
+                #max_height: "200dp"
+                mode: "fill"
+                multiline: True
+    #MDLabel:
+    #        id:fake

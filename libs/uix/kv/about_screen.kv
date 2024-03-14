@@ -1,0 +1,32 @@
+<AboutScreen>
+    name: "about"
+    Image:
+       source: 'images/rh.jpg'
+       size: self.width,self.height
+    BoxLayout:
+        id: graphs2
+        orientation: "vertical"
+        MDTopAppBar:
+            height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('mainmenu','left'),'home']]
+
+
+
+        ScrollView:
+
+
+            Label:
+                id: about_id
+                MDListItem:
+                #    icon: 'palette'
+                    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                #    on_press: app.change_screen('login', 'left')
+                    
+                #    YourContainer:
+                #        id: container   
+                #    IconLeftWidget:
+                #        icon: "account"             
+                MDListItem:
+                    text: "stats2"
+                #    on_press: 
+                #        app.show_theme_picker()

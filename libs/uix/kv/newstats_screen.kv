@@ -1,0 +1,373 @@
+<MyAKBarChart@AKBarChart>
+    size_hint_y: None
+    height: dp(200)
+    width:1000
+    x_values: [1, 500, 800, 150]
+    y_values: [1000, 1500, 600, 800]
+    label_size: dp(12)
+
+<NewStatsScreen>
+    name: "newstats"
+    Image:
+        source: 'images/rh.jpg'
+        size: self.width,self.height
+    BoxLayout:
+        id: graphs2
+        orientation: "vertical"
+        width:900
+        padding:0
+        MDTopAppBar:
+            id:togglehidden
+            #title: "Settings"
+            height: app.mheight
+            left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+            right_action_items: [['ghost-outline', lambda x: app.toggle_hidden()]]
+        #MDBoxLayout:
+            #orientation: 'horizontal'
+            #size_hint: 1,None
+            #height: app.mheight+10
+            #width: dp(100)
+            #height:dp(42)
+            
+
+            #MDButton:
+                #text: 'YTD'
+                #id: YTD
+
+                #on_press:(app.do_new_stats_format('YTD'))
+            #MDButton:
+                #text: 'Year'
+                #id: Year
+
+                #on_press:(app.do_new_stats_format('Year'))
+            #MDButton:
+                #text: 'All'
+                #id: All
+
+                #on_press:(app.do_new_stats_format('All'))
+            #MDButton:
+                #text: 'Custom'
+                #id: Custom
+
+                #on_press:
+                   # (app.make_stats('custom','custom'))
+                   # (app.show_date_picker())
+        MDBoxLayout:
+            #orientation: 'horizontal'
+            size_hint: 1,None
+            #height: app.mheight+10
+            #width: 1000
+            height:dp(42)
+            
+            MDSegmentedButton:
+                pos_hint: {"center_x": .5, "center_y": .5}
+                md_bg_color: app.theme_cls.primary_light
+                size_hint_x: .3
+                #radius:0,0,0,0
+                MDSegmentedButtonItem:
+                    text: "YTD"
+                    id: YTD
+
+                    on_press:(app.do_new_stats_format('YTD'))
+                    
+                MDSegmentedButtonItem:
+                    text: "Year"
+                    id: Year
+
+                    on_press:(app.do_new_stats_format('Year'))
+                MDSegmentedButtonItem:
+                    text: "Preset"
+                    id: button4
+                    values: app.custom_range
+
+
+                    on_release: 
+                        app.choose_drop(app.custom_range,'range')
+                        app.send_dates(button4.text)
+                MDSegmentedButtonItem:
+                    text: "All"
+                    id: All
+
+                    on_press:(app.do_new_stats_format('All'))
+                MDSegmentedButtonItem:
+                    text: "Range"
+                    id: Custom
+
+                    on_press:
+                        (app.show_date_picker())
+
+        MDBoxLayout:
+            id: graph5
+            orientation: 'horizontal'
+            size_hint: 1.1,None
+            height: app.mheight
+            height: dp(42)
+            MDButton:
+                text: 'All'
+                id: dstart
+                #size_hint: .5,None
+                #height: app.mheight
+
+                #md_bg_color: app.theme_cls.primary_light
+                #padding:10
+                #on_press:(app.show_date_picker())
+            MDButton:
+                text: 'All'
+                #size_hint: .5,None
+                #height: app.mheight
+                #md_bg_color: app.theme_cls.primary_light
+                #padding:10
+                #spacing:10,10
+                id: dend
+                #on_press:(app.show_date_picker())
+
+
+        ScrollView:
+            size_hint_min: None,None
+            do_scroll_x:True
+            do_scroll_y:True
+            size_hint: None,2
+            width: graphs2.width
+            adaptive_height: True
+            id:svh
+            height:full_stats.height+dp(10000)
+            #height:graph5.height/2
+            
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: dp(15)
+                padding: dp(5)
+                adaptive_height: True
+                size_hint: 1.1,None
+                width: dp(975)
+                
+                id:full_stats
+                #height:c1c.height+c2c.height+c3c.height+c4c.height
+                #width:c3c.width
+                #MDCard:
+                #    ThreeLineListItem:
+                #    text: "Paychecks Hidden"
+                #    id:extra
+                #    bg_color: app.theme_cls.primary_light
+                #    height:app.mheight/2
+                MDCard:
+                    orientation: "vertical"
+                    bg_color: app.theme_cls.primary_light
+                    id:c9c
+                    size_hint: 1,None
+                    height:c8.height+c9d.height
+                    MyAKBarChart:
+                                
+                        id: c9
+                        labels: True
+                        size_hint: 1,None
+                        height:app.mheight
+                        width: dp(350)
+                        
+                
+                    ThreeLineListItem:
+                        text: "Hours"
+                        #secondary_text:'wow'
+                        id:c9d
+                        bg_color: app.theme_cls.primary_light
+                        height:app.mheight/2
+
+                MDCard:
+                    orientation: "vertical"
+                    bg_color: app.theme_cls.primary_light
+                    id:c10c
+                    size_hint: 1,None
+                    height:c10.height+c10d.height
+                    MyAKBarChart:
+                                
+                        id: c10
+                        labels: True
+                        size_hint: 1,None
+                        height:app.mheight
+                        width: dp(350)
+                        
+                
+                    ThreeLineListItem:
+                        text: "Hours"
+                        #secondary_text:'wow'
+                        id:c10d
+                        bg_color: app.theme_cls.primary_light
+                        height:app.mheight/2
+
+
+
+
+                MDCard:
+                    orientation: "vertical"
+                    bg_color: app.theme_cls.primary_light
+                    id:c1c
+                    size_hint: 1,None
+                    height:c1.height+c1d.height
+                    MyAKBarChart:
+                                
+                        id: c1
+                        labels: True
+                        size_hint: 1,None
+                        height:app.mheight
+                        width: dp(350)
+                        
+                
+                    OneLineListItem:
+                        text: "Type"
+                        id:c1d
+                        height:app.mheight/4
+                        bg_color: app.theme_cls.primary_light
+
+                MDCard:
+                    orientation: "vertical"
+                    bg_color: app.theme_cls.primary_light
+                    id:c2c
+                    size_hint: 1,None
+                    height:c2.height+c2d.height
+                    MyAKBarChart:
+                                
+                        id: c2
+                        labels: True
+                        size_hint: 1,None
+                        height:app.mheight
+                        width: dp(350)
+                        
+                
+                    OneLineListItem:
+                        text: "Type"
+                        id:c2d
+                        bg_color: app.theme_cls.primary_light
+                        height:app.mheight/4
+                MDCard:
+                    orientation: "vertical"
+                    bg_color: app.theme_cls.primary_light
+                    id:c3c
+                    size_hint: 1.4,None
+                    height:c3.height+ex3.height+ex3.height
+                    width:c3.width
+                    MyAKBarChart:
+                                
+                        id: c3
+                        labels: True
+                        size_hint: 1,None
+                        height:app.mheight
+                        width: dp(50)
+                        
+                
+                    ThreeLineListItem:
+                        text: "Paychecks Hidden"
+                        id:c3d
+                        bg_color: app.theme_cls.primary_light
+                        height:app.mheight/2
+                    ThreeLineListItem:
+                        text: "THIRDLY"
+                        id:ex3
+                        bg_color: app.theme_cls.primary_light
+                        height:app.mheight/2
+
+                MDCard:
+                    orientation: "vertical"
+                    bg_color: app.theme_cls.primary_light
+                    id:c4c
+                    size_hint: 1.5,None
+                    height:c4.height+c4d.height
+                    width: c4.width
+                    MyAKBarChart:
+                                
+                        id: c4
+                        labels: True
+                        size_hint: 1,None
+                        height:app.mheight
+                        width: dp(50)
+                        
+                
+                    OneLineListItem:
+                        text: "Type"
+                        id:c4d
+                        bg_color: app.theme_cls.primary_light
+                        height:app.mheight/4
+                MDCard:
+                    orientation: "vertical"
+                    bg_color: app.theme_cls.primary_light
+                    id:c5c
+                    size_hint: 1,None
+                    height:c5.height+c4d.height
+                    MyAKBarChart:
+                                
+                        id: c5
+                        labels: True
+                        size_hint: 1,None
+                        height:app.mheight
+                        width: dp(350)
+                        
+                
+                    OneLineListItem:
+                        text: "Type"
+                        id:c5d
+                        bg_color: app.theme_cls.primary_light
+                        height:app.mheight/4
+                MDCard:
+                    orientation: "vertical"
+                    bg_color: app.theme_cls.primary_light
+                    id:c6c
+                    size_hint: 1,None
+                    height:c6.height+c4d.height
+                    MyAKBarChart:
+                                
+                        id: c6
+                        labels: True
+                        size_hint: 1,None
+                        height:app.mheight
+                        width: dp(350)
+                        
+                
+                    OneLineListItem:
+                        text: "Type"
+                        id:c6d
+                        bg_color: app.theme_cls.primary_light
+                        height:app.mheight/4
+                MDCard:
+                    orientation: "vertical"
+                    bg_color: app.theme_cls.primary_light
+                    id:c7c
+                    size_hint: 1,None
+                    height:c7.height+c4d.height
+                    MyAKBarChart:
+                                
+                        id: c7
+                        labels: True
+                        size_hint: 1,None
+                        height:app.mheight
+                        width: dp(350)
+                        
+                
+                    OneLineListItem:
+                        text: "Type"
+                        id:c7d
+                        bg_color: app.theme_cls.primary_light
+                        height:app.mheight/4
+
+                MDCard:
+                    orientation: "vertical"
+                    bg_color: app.theme_cls.primary_light
+                    id:c8c
+                    size_hint: 1,None
+                    height:c8.height+c4d.height
+                    MyAKBarChart:
+                                
+                        id: c8
+                        labels: True
+                        size_hint: 1,None
+                        height:app.mheight
+                        width: dp(350)
+                        
+                
+                    OneLineListItem:
+                        text: "Type"
+                        id:c8d
+                        bg_color: app.theme_cls.primary_light
+                        height:app.mheight/4
+
+
+
+
