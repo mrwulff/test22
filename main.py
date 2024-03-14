@@ -5616,10 +5616,10 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         for i in range(len(confable)):
             logging.info(confable[i], len(confable))
         logging.info(len(confable), "confable")
-        self.snackbar = MDSnackbar(
-            text="Success!" + str(len(confable)), bg_color=self.theme_cls.primary_color
-        )
-        self.snackbar.open()
+        #self.snackbar = MDSnackbar(
+        #    text="Success!" + str(len(confable)), bg_color=self.theme_cls.primary_color
+        #)
+        #self.snackbar.open()
 
     def dialog_close(self, *args):
         for z in range(len(self.dialog2)):
@@ -5889,26 +5889,15 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                             x, l = str.split(x, ")")
                             # logging.info(x)
             except:
-                self.snackbar = MDSnackbar(
-                    text="Not Logged In", bg_color=self.theme_cls.primary_color
-                )
-                self.snackbar.open()
+                self.snackbarx('fail')
                 # if not self.snackbar:
         if old == True:
-            self.snackbar = MDSnackbar(text=x, bg_color=self.theme_cls.primary_color)
+            self.snackbarx('old')
             self.snackbar.open()
         if fail == "fail":
-            self.snackbar = MDSnackbar(
-                text="Already confirmed you dum dum",
-                bg_color=self.theme_cls.primary_color,
-            )
-            self.snackbar.open()
+            self.snackbarx('already confirmed')
         if old == False and fail != "fail":
-            self.snackbar = MDSnackbar(
-                text="Success!", bg_color=self.theme_cls.primary_color
-            )
-            self.snackbar.open()
-
+            self.snackbarx('success')
     def confirm_real(self, what):
         global browser
         import ssl
@@ -6663,7 +6652,9 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             # show['earnings']=self.format_money(show['earnings'])
             App.get_running_app().root.current_screen.ids[
                 "earningsl"
-            ].text = self.format_money(show["earnings"])
+            ].text = str(self.format_money(show["earnings"]))
+            logging.info(str(ot) + "boo ya, test")
+
 
             # logging.info (timeout,lunches,ota,rate,notes,show,'THISISTHEINFO')
 
@@ -6718,11 +6709,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             return f
 
         except:
-            self.snackbar = MDSnackbar(
-                text="Make some show files first", bg_color=self.theme_cls.primary_color
-            )
-            self.snackbar.open()
-            return ""
+            self.snackbarx('no show files')
 
     def restorebin(self, x):
         import shutil
@@ -6741,10 +6728,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 f.write(x)
             shutil.unpack_archive(nf2, ad + "/shows")
         except:
-            self.snackbar = MDSnackbar(
-                text="Not Valid Backup Data", bg_color=self.theme_cls.primary_color
-            )
-            self.snackbar.open()
+            self.snackbarx('not valid backup')
 
     def search_menu(self):
         # scale=2
@@ -7796,11 +7780,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         if v == "notes":
             ttt = mjds[idex][v]
             if len(ttt) < 2:
-                self.snackbar = MDSnackbar(
-                    text="[empty]",
-                    bg_color=self.theme_cls.primary_color,
-                )
-                self.snackbar.open()
+                self.snackbarx('empty')
 
             if not self.dialog:
                 self.dialog = MDDialog(

@@ -19,7 +19,7 @@ toolchain update schedulara
 python3 toolchain.py create schedulara schedulara
 ##hints for when i forget
 
-toolchain pip install appdirs kivymd pillow humanize mechanize bs4 emoji webcolors pyperclip kivy-garden kivy-garden.graph faker pyparsing kivymd_extensions.akivymd ndicts google-auth-oauthlib google-api-python-client plyer tzlocal ndicts firebase_admin,reportlab
+toolchain pip install appdirs kivymd pillow=8.2.0 humanize mechanize bs4 emoji webcolors pyperclip kivy-garden kivy-garden.graph faker pyparsing kivymd_extensions.akivymd ndicts google-auth-oauthlib google-api-python-client plyer tzlocal ndicts firebase_admin,reportlab
 
 python3 toolchain.py pip install appdirs kivymd pillow humanize mechanize bs4 emoji webcolors pyperclip kivy-garden kivy-garden.graph faker pyparsing watchdog kivymd_extensions.akivymd ndicts google-auth-oauthlib google-api-python-client plyer tzlocal ndicts sentry_sdk git+https://github.com/kivymd-extensions/sweetalert.git firebase_admin
 
