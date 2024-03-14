@@ -7364,16 +7364,20 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         ot = 0
         pay = 0
         reg = 0
+        checks=0
         # print(listofdicks[0])
         for bb in range(len(listofdicks)):
             reg = reg + float((listofdicks[bb]["reghours"]))
             ot = ot + float((listofdicks[bb]["othours"]))
             hours = hours + float((listofdicks[bb]["totalhours"]))
             pay = pay + float(listofdicks[bb]["moneytotal"])
-        per = ot / reg
+        if len(listofdicks)>0:
+            per = ot / reg
 
-        per = per * 100
-        per = round(per, 2)
+            per = per * 100
+            per = round(per, 2)
+        else:
+            per=0
         # print(per, "percc")
 
         self.root.get_screen("pay").ids.payperiod_list.add_widget(
@@ -7389,7 +7393,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                     pos_hint={"center_x": 0.5, "center_y": 0.5},
                 ),
                 # MDListItemHeadlineText(text=listofdicks[z]["show"]),
-                MDListItemHeadlineText(text="Total Shows: " + str(len(listofdicks))),
+                MDListItemHeadlineText(text="Total Checks: " + str(len(listofdicks))),
                 MDListItemSupportingText(
                     text="Hours: "
                     + str(hours)
@@ -7475,6 +7479,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         print(str(b["paydate"].date()), "WHAT")
 
         m = str(b["paydate"].month)
+
         if len(m) == 1:
             m = "0" + m
         d = str(b["paydate"].day)
@@ -7493,6 +7498,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             + str(b["paydate"].year)
             + ".html",
         )
+        #print (z,'what is this thing')
         # logging.info(z, "gigigig")
         # for line in o.readlines():
         #    logging.info(line)
@@ -7501,8 +7507,98 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         # logging.info(os.getcwd(), "CWDDDDD")
         os.chdir(cwd)
         # logging.info(os.getcwd(), "CWDDDDD")
-        self.root.push("pay_breakdown")
+        #print (z,'this is the paycheck')
 
+        
+        self.root.push("pay_breakdown")
+        self.root.current_screen.ids["pay_gigs"].clear_widgets()
+        self.root.get_screen("pay_breakdown").ids.pay_gigs.add_widget(
+            MDListItem(
+                MDListItemLeadingIcon(
+                    # icon=self.find_type(i, "type"),
+                    pos_hint={"center_x": 0.5, "center_y": 0.5},
+                    icon_color=self.theme_cls.primaryColor,
+                ),
+                MDListItemTrailingIcon(
+                    # icon=self.find_type(i, "pos"),
+                    icon_color=self.theme_cls.errorColor,
+                    pos_hint={"center_x": 0.5, "center_y": 0.5},
+                ),
+                # MDListItemHeadlineText(text=listofdicks[z]["show"]),
+                MDListItemHeadlineText(text="Date: " + str(z['paydate'])),
+                MDListItemSupportingText(
+                    text="Hours: "
+                    + str(float(z['reghours'])+float(z['othours']))
+                    + " Regular: "
+                    + str(z['reghours'])
+                    + " OT:"
+                    + str(z['othours'])
+                ),
+                #MDListItemSupportingText(text="$" + str(pay) + " OT %" + str(per)),
+                #MDListItemSupportingText(text="$" + "text6"),
+            ),)
+        for i in range(len(z["gigs"])):
+            d = z["gigs"][i]
+            print (d)
+            din, tin = str.split(d["timeIn"], " ")
+            junk, monthi, datei = str.split(din, "-")
+            h_i, min_i, junk = str.split(tin, ":")
+
+            dout, tout = str.split(d["timeOut"], " ")
+            h_o, min_o, junk = str.split(tout, ":")
+            junk, montho, dateo = str.split(din, "-")
+
+            hours_nice = "Hours:" + str(d["tot_hours"])
+            if float((d["otH"])) > 0:
+                hours_nice = hours_nice + " Overtime: " + str(d["otH"])
+            time = (
+                    monthi
+                    + "-"
+                    + datei
+                    + " "
+                    + h_i
+                    + ":"
+                    + min_i
+                    + " -- "
+                    + h_o
+                    + ":"
+                    + min_o
+                )
+        
+            self.root.get_screen("pay_breakdown").ids.pay_gigs.add_widget(
+                    MDListItem(
+                        MDListItemLeadingIcon(
+                            # icon=self.find_type(i, "type"),
+                            pos_hint={"center_x": 0.5, "center_y": 0.5},
+                            icon_color=self.theme_cls.primaryColor,
+                        ),
+                        MDListItemTrailingIcon(
+                            # icon=self.find_type(i, "pos"),
+                            icon_color=self.theme_cls.errorColor,
+                            pos_hint={"center_x": 0.5, "center_y": 0.5},
+                        ),
+                        # MDListItemHeadlineText(text=listofdicks[z]["show"]),
+                        MDListItemHeadlineText(
+                            text=str(d["show"])
+                        ),
+                        MDListItemSupportingText(
+                            text=time
+
+                        ),
+                        MDListItemSupportingText(
+                            text=str(hours_nice)
+                            #+ " OT %"
+                            #+ str(perc)
+                        ),
+                        # MDListItemHeadlineText(listofdicks[z]['show']),
+                        # MDListItemHeadlineText(text=str(len(listofdicks))+' Shows Total'),
+                        # MDListItemSupportingText(text=color + show_date + " " + ntime),))
+                        # on_release=self.edit_show_details()))
+                        #on_release=lambda x, y=(listofdicks[z]): self.do_pay_ind(y),
+
+                    ))
+
+        """
         panel = MDListItem(
             text="Paydate: " + str(z["paydate"]),
             secondary_text="Shows: "
@@ -7513,7 +7609,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             + str(z["othours"]),
             tertiary_text="$" + str(self.hide(z["grandtotal"])),
             # fourth_text="test",
-            bg_color=self.theme_cls.bg_darkest,
+            #bg_color=self.theme_cls.bg_darkest,
             radius=[self.c_radius, self.c_radius, self.c_radius, self.c_radius],
             # on_release=self.do_pay_ind,
         )
@@ -7529,19 +7625,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             dout, tout = str.split(d["timeOut"], " ")
             h_o, min_o, junk = str.split(tout, ":")
             junk, montho, dateo = str.split(din, "-")
-            time = (
-                monthi
-                + "-"
-                + datei
-                + " "
-                + h_i
-                + ":"
-                + min_i
-                + " -- "
-                + h_o
-                + ":"
-                + min_o
-            )
+
             hours_nice = "Hours:" + str(d["tot_hours"])
             if float((d["otH"])) > 0:
                 hours_nice = hours_nice + " Overtime: " + str(d["otH"])
@@ -7549,12 +7633,12 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 secondary_text=time,
                 text=d["show"],
                 tertiary_text=hours_nice,
-                bg_color=self.theme_cls.bg_dark,
+                #bg_color=self.theme_cls.bg_dark,
                 radius=[self.c_radius, self.c_radius, self.c_radius, self.c_radius],
                 # on_release=self.do_pay_ind,
             )
-
-            self.root.get_screen("pay_breakdown").ids.pay_gigs.add_widget(panel)
+        """
+        #self.root.get_screen("pay_breakdown").ids.pay_gigs.add_widget(panel)
 
     def do_payperiod2(self, ssort, rreverse):
         self.root.push("pay")

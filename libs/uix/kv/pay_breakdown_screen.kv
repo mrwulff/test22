@@ -1,17 +1,29 @@
+
 <pay_breakdownscreen>
-    #:import Clipboard kivy.core.clipboard.Clipboard
-    #:import Snackbar kivymd.uix.snackbar.Snackbar
-    name: "pay_breakdown"
-    Image:
-        source: 'images/rh.jpg'
+    name: "ay_breakdown"
+    FitImage:
+        #source: 'images/rh.jpg'
+        id: pic
+        source: app.get_wall("today")
         size: self.width,self.height
+    
+
     BoxLayout:
+        #id:lolz
         orientation: "vertical"
         MDTopAppBar:
-            #title: "Settings"
-            height: app.mheight
-            left_action_items: [['chevron-left', lambda screen: app.change_screen('pay','left'),'home']]
+#            type: app.mtype
+#           title: "Login"
+            #height: app.mheight
+#            left_action_items: [['chevron-left', lambda screen: app.change_screen('settings', 'left'),'login']]
+            MDTopAppBarLeadingButtonContainer:
+    
+                MDActionTopAppBarButton:
+                    icon: "chevron-left"
+                    on_release: app.root.pop()
 
+
+            
         ScrollView:
             #id: history_view
 
@@ -21,5 +33,5 @@
                 
                 spacing: app.cspacing/2
                 padding: app.cpadding/2,app.cpadding/2
-                bg_color:app.theme_cls.primary_light
+                #bg_color:app.theme_cls.primary_light
                 id: pay_gigs
