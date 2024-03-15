@@ -3005,8 +3005,9 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             status_old, info_old = self.check_working(z, dd.month, dd.year, listofdicks)
             # logging.info(status, info_old, z)
             di.update(info)
-            di.update(info_old)
-        libs.lib_pdf.alt(x["name"], ad, di, dd.month, dd.year)
+        name=libs.lib_pdf.alt(x["name"], ad, di, dd.month, dd.year)
+        data= ad + "/blog_calendar.pdf"
+        self.do_share_ios(data,name)
 
     def make_calendar_today(self, month, year, mmonth):
         ###do calendar!!
@@ -6676,19 +6677,54 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             self.do_share_ios(out_file, "Some title")
         if platform != "ios":
             filechooser.open_file(on_selection=self.handle_selection)
+    def share_android(self,title):
+        #https://stackoverflow.com/questions/38983649/kivy-android-share-image
+        if platform == 'android':
+            from android.storage import primary_external_storage_path
+            from jnius import autoclass
+            from jnius import cast
+            import os
+            
+            StrictMode = autoclass('android.os.StrictMode')
+            StrictMode.disableDeathOnFileUriExposure()
+            
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
+            
+            Intent = autoclass('android.content.Intent')
+            String = autoclass('java.lang.String')
+            Uri = autoclass('android.net.Uri')
+            File = autoclass('java.io.File')
+
+            shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.setType('"application/pdf"')
+
+            path = os.path.join(primary_external_storage_path(),title)
+
+            imageFile = File(path)
+            uri = Uri.fromFile(imageFile)
+            parcelable = cast('android.os.Parcelable', uri)
+            shareIntent.putExtra(Intent.EXTRA_STREAM, parcelable)
+
+            currentActivity = cast('android.app.Activity', PythonActivity.mActivity)
+            currentActivity.startActivity(shareIntent)
 
     def do_share_ios(self, data, title):
-        URL = NSURL.fileURLWithPath_(data)
-        UIActivityViewController = autoclass("UIActivityViewController")
-        UIcontroller = sharedApplication.keyWindow.rootViewController()
-        UIActivityViewController_instance = UIActivityViewController.alloc().init()
-        # logging.info(dir(UIActivityViewController_instance))
-        activityViewController = UIActivityViewController_instance.initWithActivityItems_applicationActivities_(
-            [URL], None
-        )
-        UIcontroller.presentViewController_animated_completion_(
-            activityViewController, True, None
-        )
+        if platform=='ios':
+            data='wow'
+            data=title
+            URL = NSURL.fileURLWithPath_(data)
+            UIActivityViewController = autoclass("UIActivityViewController")
+            UIcontroller = sharedApplication.keyWindow.rootViewController()
+            UIActivityViewController_instance = UIActivityViewController.alloc().init()
+            # logging.info(dir(UIActivityViewController_instance))
+            activityViewController = UIActivityViewController_instance.initWithActivityItems_applicationActivities_(
+                [URL], None
+            )
+            UIcontroller.presentViewController_animated_completion_(
+                activityViewController, True, None
+            )
+        if platform=='android':
+            self.share_android(title)
 
     def backup(self):
         import os
