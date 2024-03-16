@@ -355,7 +355,45 @@ def get_json_schedule_1(x, ad):
             pass
     data = get_json_schedule_2(x, ad, show)
     return data
+def make_menu(self):
+    #change_screen('settings', 'left')
 
+    login={"name":'Login',"func": (lambda x: self.change_screen('login', 'left')),'icon':'account-circle','order':2,'disabled':False}
+    settings={"name":'Settings',"func": (lambda x: self.do_settings()),'icon':'cog','order':1,'disabled':False}
+    field={"name":'Notes',"func": (lambda x: self.view_fieldnotes('')),'icon':'note','order':9,'disabled':False}
+    payperiod={"name":'PayChecks',"func": (lambda x: self.do_payperiod_f("YTD")),'icon':'cash-100','order':4,'disabled':True}
+    graphs={"name":'Insights',"func": (lambda x: self.prep_stats()),'icon':'chart-areaspline','order':5,'disabled':True}
+    search={"name":'Search',"func": (lambda x: self.new_search()),'icon':'magnify','order':100,'disabled':True}
+    cloud={"name":'Cloud',"func": (lambda x: self.change_screen('settings', 'left')),'icon':'cloud','order':101,'disabled':True}
+    stats={"name":'Stats',"func": (lambda x: self.do_internal_stats()),'icon':'gauge','order':105,'disabled':False}
+    exit={"name":'Close',"func": (lambda x: self.close_menu()),'icon':'close-square','order':999,'disabled':False}
+    restart={"name":'Restart',"func": (lambda x: self.restart("today")),'icon':'restart','order':101,'disabled':False}
+    pos_list={"name":'Position List',"func": (lambda x: self.view_icons("")),'icon':'format-list-bulleted-square','format-list-bulleted-square':101,'disabled':False}
+    cloud={"name":'Cloud',"func": (lambda x: self.change_screen('settings', 'left')),'icon':'cloud','order':101,'disabled':True}
+
+
+
+        #change_screen('login', 'left')
+    menu_items=[]
+    menu_items.append(login)
+    menu_items.append(settings)
+    menu_items.append(field)
+    menu_items.append(payperiod)
+    menu_items.append(graphs)
+    menu_items.append(search)
+    menu_items.append(cloud)
+    menu_items.append(stats)
+    menu_items.append(cloud)
+    menu_items.append(pos_list)
+    menu_items.append(exit)
+    #menu_items.append(restart)
+    
+
+
+
+
+
+    return menu_items
 
 def get_json_schedule_2(x, ad, show):
     import json, os

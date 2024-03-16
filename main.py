@@ -4,6 +4,12 @@
 ###
 debug = False
 debug_online = False
+from kivy.clock import Clock
+import humanize
+from datetime import timedelta
+from functools import partial
+
+
 
 import logging
 # from kivy.logger import Logger
@@ -53,7 +59,20 @@ from kivymd.uix.button import (
     MDFabButton,
     MDExtendedFabButton,
     MDExtendedFabButtonText,
+
+
     MDExtendedFabButtonIcon,
+)
+from kivymd.uix.navigationdrawer import (
+    MDNavigationLayout,
+    MDNavigationDrawer,
+    MDNavigationDrawerMenu,
+    MDNavigationDrawerLabel,
+    MDNavigationDrawerItem,
+    MDNavigationDrawerItemLeadingIcon,
+    MDNavigationDrawerItemText,
+    MDNavigationDrawerItemTrailingText,
+    MDNavigationDrawerDivider,
 )
 
 import libs.lib_positions
@@ -1837,7 +1856,7 @@ class Demo3App(MDApp):
         # THIS ONE WORKS!!! OMG
         from kivymd.uix.button import MDIconButton
 
-        toast("Search Page")
+        self.snackbarx("Search Page")
         if not self.dialog:
             self.dialog = MDDialog(
                 title="Search Shows:",
@@ -2800,8 +2819,8 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         return x, y
 
     def today(self):
-        import humanize
-        from datetime import datetime, timedelta
+        
+        
         import libs.lib_new
         import libs.lib_think
 
@@ -2817,6 +2836,11 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         # self.update_internal("opened", 1)
 
+        
+        try:
+            self.root.current_screen.ids["drawer"].clear_widgets()
+        except:
+            print ('cant reset')
         self.root.push("today")
         self.root.get_screen("today").ids["pic"].source = self.get_wall("theme")
 
@@ -2833,10 +2857,8 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         #    toast("login failed5")
         #    return "fail"
-        try:
-            shows = js["shows"]
-        except:
-            shows = {}
+        
+        shows = js["shows"]
         li = ["first", "second", "third"]
         li_r = ["1r", "2r", "3r"]
         li_l = ["1l", "2l", "3l"]
@@ -2845,7 +2867,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         if len(shows) < 3:
             ns = len(shows)
         for i in range(ns):
-            show_date = datetime.strptime(shows[i]["date"], "%m/%d/%Y")
+            show_date = datetime.datetime.strptime(shows[i]["date"], "%m/%d/%Y")
             show_date = show_date.strftime("%A, %m/%d")
             z = shows[i]["time"]
             ntime = self.ampm(z)
@@ -2901,25 +2923,29 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         numconf = js["num_shows"]
         confirmable = numshows - numconf
         # if 1==1:
-        try:
-            update = js["updated"]
+        print (len(shows),type(shows),'jsshows')
+        update = js["updated"]
 
-            old_update = datetime.strptime(update, "%Y-%m-%d %H:%M:%S.%f")
-            now = datetime.now()
-            diff2 = humanize.naturaltime(now - old_update)
-            next_show = shows[0]["date"] + " " + shows[0]["time"]
-            next_show = datetime.strptime(next_show, "%m/%d/%Y %H:%M")
-            bb = 0
+        old_update = datetime.datetime.strptime(update, "%Y-%m-%d %H:%M:%S.%f")
+        now = datetime.datetime.now()
+        diff2 = humanize.naturaltime(now - old_update)
+        next_show = shows[0]["date"] + " " + shows[0]["time"]
+        next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
+        bb = 0
+        nns = now - next_show
+        # logging.info('asdfasdf',nns,type(nns),shows)
+
+        while (nns) >= timedelta(0):
+            next_show = shows[bb]["date"] + " " + shows[bb]["time"]
+            next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
             nns = now - next_show
-            # logging.info('asdfasdf',nns,type(nns),shows)
 
-            while (nns) >= timedelta(0):
-                next_show = shows[bb]["date"] + " " + shows[bb]["time"]
-                next_show = datetime.strptime(next_show, "%m/%d/%Y %H:%M")
-                nns = now - next_show
+            bb = bb + 1
+        diff3 = humanize.naturaltime(now - next_show)
+        if 1==1:
+            #diff3,diff2=self.check_update(shows,js)
 
-                bb = bb + 1
-            diff3 = humanize.naturaltime(now - next_show)
+            
 
             # except:
             #    diff2 = ""
@@ -2947,7 +2973,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             paylist = self.root.get_screen("today").ids["pay1"]
             paylist.text = "Payday:  " + paydate
 
-        except:
+        if 1==2:
             self.snackbarx("failed to get times")
             logging.info("failed to get times")
             self.root.get_screen("today").ids["stats"].text = "Invalid Show Data. "
@@ -2974,8 +3000,92 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             libs.lib_updateuserdata.updateuser(x, ad)
         ###make calendar
         self.reset_cal()
+        
+        #Clock.schedule_interval(self.update_label, 0.20)
+        Clock.schedule_interval(partial(self.update_label,js), 3)
+        #stats={"name":'Stats',"func":self.prep_stats(),'icon':'chart-areaspline','order':3}
 
+        #stats={"name":'Login',"func": ( lamda x:self.change_screen('login', 'left')),'icon':'account-circle','order':2}
+
+        menu_items=libs.lib_new.make_menu(self)
+        for m in range(len(menu_items)):
+            y='yolo'
+            if menu_items[m]['disabled']==True:
+                bla=lambda x:self.snackbarx('not yet')
+                #bla=''
+            if menu_items[m]['disabled']==False:
+                bla=menu_items[m]['func']
+            self.root.get_screen("today").ids["drawer"].add_widget(
+            
+                MDNavigationDrawerItem(
+
+                    MDNavigationDrawerItemLeadingIcon(
+                        icon=menu_items[m]['icon'],
+                    ),
+                    MDNavigationDrawerItemText(
+                        text=str((menu_items[m]['name'])),
+                    
+                    ),
+
+                    #on_release=lambda x: self.close_menu(),
+                    on_release=bla
+                    
+                    
+                    
+                ))
+
+    def check_update(self,js):
+        shows=js['shows']
+
+        update = js["updated"]
+
+        old_update = datetime.datetime.strptime(update, "%Y-%m-%d %H:%M:%S.%f")
+        now = datetime.datetime.now()
+        diff2 = humanize.naturaltime(now - old_update)
+        next_show = shows[0]["date"] + " " + shows[0]["time"]
+        next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
+        bb = 0
+        nns = now - next_show
+        # logging.info('asdfasdf',nns,type(nns),shows)
+
+        while (nns) >= timedelta(0):
+            next_show = shows[bb]["date"] + " " + shows[bb]["time"]
+            next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
+            nns = now - next_show
+
+            bb = bb + 1
+        diff3 = humanize.naturaltime(now - next_show)
+        diff2="Updated "+diff2
+        diff3="Next Show: "+diff3
+        if now.second%2==0:
+            diff2=diff2+str("...")
+    
+
+        
+        return diff2,diff3
+
+    
+    def update_label(self,dt,u):
+        
+        diff3,diff2=self.check_update(dt)
+        #print (diff2,diff3)
+        try:
+            self.root.get_screen("today").ids["s3"].text=str(diff3)
+            self.root.get_screen("today").ids["s2"].text=str(diff2)
+        except:
+            print ('today does not exist')
+        #callist = self.root.get_screen("today").ids["cal_month_text"]
+        
+        
+
+        #label.text = temp_text[index:index+15]
+        #index += 1
+        
+        #if index >= text_length:
+        #    index = 0
     def reset_cal(self):
+        print ('lol')
+        self.close_menu()
         from datetime import date
 
         now = date.today()
@@ -4738,6 +4848,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         global x
         # logging.info(x)
         os.chdir(cwd)
+        self.close_menu()
         # logging.info(os.getcwd(), "logging.info OMGOMG")
         self.root.push("settings")
         # sm.set_current("settings")
@@ -4764,6 +4875,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         import libs.lib_updateuserdata
 
         libs.lib_updateuserdata.updateuser(x, ad)
+        print ('wtf man')
 
     """
     class Demo3App2(MDApp):
@@ -4801,7 +4913,8 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         angle = NumericProperty(0)
         startCount = NumericProperty(20)
         Count = NumericProperty()
-"""
+        """
+        
     notheight = 200 * scale
     ot = ["8", "10", "0", "1", "2", "3", "4", "5", "6", "7", "9"]
     lunch = ["0", "1", "2"]
@@ -4818,6 +4931,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
     archive_trim = "Current"
     menurotate = 10
     menuscale = 0.5, 0.5
+    
 
     def update_hi_score_keys(self):
         logging.info("updating scores")

@@ -1,1 +1,13 @@
 libs/uix/baseclass/__pycache__/login_screen.cpython-310.pyc
+libs/__pycache__/charts.cpython-310.pyc
+libs/__pycache__/lib_ach.cpython-310.pyc
+libs/__pycache__/lib_fieldnotes.cpython-310.pyc
+libs/__pycache__/lib_new.cpython-310.pyc
+libs/uix/baseclass/__pycache__/newstats_screen.cpython-310.pyc
+libs/uix/baseclass/__pycache__/internal_stats_screen.cpython-310.pyc
+libs/uix/baseclass/__pycache__/allfieldnotes_screen.cpython-310.pyc
+libs/__pycache__/lib_new.cpython-310.pyc
+.DS_Store
+libs/.DS_Store
+libs/__pycache__/lib_new.cpython-310.pyc
+libs/__pycache__/*.*

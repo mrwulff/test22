@@ -511,6 +511,8 @@
 
         ContentNavigationDrawer:
             MDNavigationDrawerMenu:
+                id:drawer
+                
 
                 MDNavigationDrawerHeader:
                     title: " Menu"
@@ -531,101 +533,104 @@
                 #        app.loading_screen("today")
 
          
-                MDNavigationDrawerItem:
-                    on_release:
-                        app.close_menu()
-                        app.change_screen('login', 'left')
+                #MDNavigationDrawerItem:
+                #    on_release:
+                #        app.close_menu()
+                #        app.change_screen('login', 'left')#
+                #
 
-                    MDNavigationDrawerItemLeadingIcon:
-                        icon: "account-circle"
-
-                    MDNavigationDrawerItemText:
-                        text: "Login"
-                MDNavigationDrawerItem:
-                    on_release:
-                        app.close_menu()
-                        app.change_screen('settings', 'left')
-
-                    MDNavigationDrawerItemLeadingIcon:
-                        icon: "cog"
-
-                    MDNavigationDrawerItemText:
-                        text: "Settings"
+                #    MDNavigationDrawerItemLeadingIcon:
+                #        icon: "account-circle"#
 
 
-                MDNavigationDrawerItem:
-                    on_release:
-                        app.close_menu()
-                        app.view_fieldnotes('')
+                #    MDNavigationDrawerItemText:
+                #        text: "Login"
+                #MDNavigationDrawerItem:
+                ##
+                #    on_release:
+                #        app.close_menu()
+                #        app.change_screen('settings', 'left')
 
-                    MDNavigationDrawerItemLeadingIcon:
-                        icon: "note"
+                 #   MDNavigationDrawerItemLeadingIcon:
+                 #       icon: "cog"
 
-                    MDNavigationDrawerItemText:
-                        text: "Fieldnotes"
-                MDNavigationDrawerItem:
-                    on_release:
-                        app.close_menu()
-                        app.do_payperiod_f("YTD")
+                 #   MDNavigationDrawerItemText:
+                 #       text: "Settings"
 
-                    MDNavigationDrawerItemLeadingIcon:
-                        icon: "cash-100"
 
-                    MDNavigationDrawerItemText:
-                        text: "Paystubs"
+                #MDNavigationDrawerItem:
+                #    on_release:
+                #        app.close_menu()
+                #        app.view_fieldnotes('')
+
+                #    MDNavigationDrawerItemLeadingIcon:
+                #        icon: "note"
+
+                #    MDNavigationDrawerItemText:
+                #        text: "Fieldnotes"
+                #MDNavigationDrawerItem:
+                #    on_release:
+                #        app.close_menu()
+                #        app.do_payperiod_f("YTD")
+
+                #    MDNavigationDrawerItemLeadingIcon:
+                #        icon: "cash-100"
+
+                #    MDNavigationDrawerItemText:
+                #        text: "Paystubs"
 
 
                 #app.do_payperiod_f("YTD")
-                DrawerClickableItem:
-                    icon: "chart-areaspline"
-                    text: "Insights"
-                    on_press:
-                        app.close_menu()
-                        app.prep_stats()
-                    
+                #DrawerClickableItem:
+                #    icon: "chart-areaspline"
+                #    text: "Insights"
+                #    on_press:
+                #        app.close_menu()
+                #        app.prep_stats()
+                #    
                         
-                DrawerClickableItem:
-                    icon: "cash-100"
-                    text: "Paystubs"
-                    on_press:
-                        app.close_menu()
-                        app.do_payperiod_f("YTD")
-                DrawerClickableItem:
-                    icon: "magnify"
-                    text: "Search"
-                    on_press:
-                        app.close_menu()
-                        app.new_search()
-                DrawerClickableItem:
-                    icon: "calendar-export"
-                    text: "Calendar Export"
-                    on_press:
-                        app.close_menu()
-                        app.do_google_cal()
-                DrawerClickableItem:
-                    text: "Delete All Calendar"
-                    icon:'bug'
-                    on_press:
-                        app.close_menu()
-                        app.find_events("today")
-                DrawerClickableItem:
-                    icon: "backup-restore"
-                    text: "Backup and Restore"
-                    on_press:
-                        app.close_menu()
-                        app.do_gbackup()
-                DrawerClickableItem:
-                    icon: "gauge"
-                    text: "App Stats"
-                    on_press:
-                        app.close_menu()
-                        app.do_internal_stats()
-                DrawerClickableItem:
-                    icon: "format-list-bulleted-square"
-                    text: "Positions List"
-                    on_press:
-                        app.close_menu()
-                        app.view_icons("")
+                #DrawerClickableItem:
+                #    icon: "cash-100"
+                #    text: "Paystubs"
+                #    on_press:
+                #        app.close_menu()
+                #        app.do_payperiod_f("YTD")
+                #DrawerClickableItem:
+                #    icon: "magnify"
+                #    text: "Search"
+                #    on_press:
+                #3        app.close_menu()
+                #3        app.new_search()
+                #DrawerClickableItem:
+                #    icon: "calendar-export"
+                #    text: "Calendar Export"
+                #    on_press:
+                #        app.close_menu()
+                #        app.do_google_cal()
+                #DrawerClickableItem:
+                #3    text: "Delete All Calendar"
+                #3    icon:'bug'
+                #3    on_press:
+                #        app.close_menu()
+                #        app.find_events("today")
+                #DrawerClickableItem:
+                #    icon: "backup-restore"
+                #    text: "Backup and Restore"
+                #    on_press:
+                #        app.close_menu()
+                #        app.do_gbackup()
+                #DrawerClickableItem:
+                #    icon: "gauge"
+                #    text: "App Stats"
+                #    on_press:
+                #        app.close_menu()
+                #        app.do_internal_stats()
+                #DrawerClickableItem:
+                #    icon: "format-list-bulleted-square"
+                #    text: "Positions List"
+                #    on_press:
+                #        app.close_menu()
+                #        app.view_icons("")
                 #DrawerClickableItem:
                 #    text: "SaveScreen"
                 #    icon: "close"
@@ -635,30 +640,35 @@
                         
 
 
-                MDNavigationDrawerDivider:
-                DrawerClickableItem:
-                    icon: "cog"
-                    text: "Settings"
-                    on_press:
-                        app.close_menu()
-                        app.do_settings()
-                DrawerClickableItem:
-                    icon: "close"
-                    text: "Close"
-                    on_press:
-                        app.close_menu()
-                        #app.prep_stats()
+                #MDNavigationDrawerDivider:
+                #DrawerClickableItem:
+                #    icon: "cog"
+                #    text: "Settings"
+                #    on_press:
+                #        app.close_menu()
+                #        app.do_settings()
+                #DrawerClickableItem:
+                #    icon: "close"
+                #    text: "Close"
+                #    on_press:
+                #        app.close_menu()
+                #        #app.prep_stats()
                 #DrawerClickableItem:
                 #    icon: "bug"
                 #    text: "dev"
                 #    on_press:
                 #        app.close_menu()
                 #        app.do_dev()
-                DrawerClickableItem:
-                    text: "Restart App"
-                    on_press:
-                        app.close_menu()
-                        app.restart("today")
+                #DrawerClickableItem:
+                #    text: "Restart App"
+                #    on_press:
+                #        app.close_menu()
+                #        app.restart("today")#
+
+
+
+
+
 
                         
                         
