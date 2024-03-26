@@ -1,5 +1,7 @@
 import logging
 
+print("lib_newwww")
+
 
 def make_json_schedule(x, ad):
     logging.info("make_json_schedule")
@@ -355,45 +357,148 @@ def get_json_schedule_1(x, ad):
             pass
     data = get_json_schedule_2(x, ad, show)
     return data
-def make_menu(self):
-    #change_screen('settings', 'left')
-
-    login={"name":'Login',"func": (lambda x: self.change_screen('login', 'left')),'icon':'account-circle','order':2,'disabled':False}
-    settings={"name":'Settings',"func": (lambda x: self.do_settings()),'icon':'cog','order':1,'disabled':False}
-    field={"name":'Notes',"func": (lambda x: self.view_fieldnotes('')),'icon':'note','order':9,'disabled':False}
-    payperiod={"name":'PayChecks',"func": (lambda x: self.do_payperiod_f("YTD")),'icon':'cash-100','order':4,'disabled':True}
-    graphs={"name":'Insights',"func": (lambda x: self.prep_stats()),'icon':'chart-areaspline','order':5,'disabled':True}
-    search={"name":'Search',"func": (lambda x: self.new_search()),'icon':'magnify','order':100,'disabled':True}
-    cloud={"name":'Cloud',"func": (lambda x: self.change_screen('settings', 'left')),'icon':'cloud','order':101,'disabled':True}
-    stats={"name":'Stats',"func": (lambda x: self.do_internal_stats()),'icon':'gauge','order':105,'disabled':False}
-    exit={"name":'Close',"func": (lambda x: self.close_menu()),'icon':'close-square','order':999,'disabled':False}
-    restart={"name":'Restart',"func": (lambda x: self.restart("today")),'icon':'restart','order':101,'disabled':False}
-    pos_list={"name":'Position List',"func": (lambda x: self.view_icons("")),'icon':'format-list-bulleted-square','format-list-bulleted-square':101,'disabled':False}
-    cloud={"name":'Cloud',"func": (lambda x: self.change_screen('settings', 'left')),'icon':'cloud','order':101,'disabled':True}
 
 
+def make_menu(self, x):
+    # change_screen('settings', 'left')
+    print("make_menu_items")
 
-        #change_screen('login', 'left')
-    menu_items=[]
-    menu_items.append(login)
-    menu_items.append(settings)
-    menu_items.append(field)
-    menu_items.append(payperiod)
-    menu_items.append(graphs)
-    menu_items.append(search)
-    menu_items.append(cloud)
-    menu_items.append(stats)
-    menu_items.append(cloud)
-    menu_items.append(pos_list)
-    menu_items.append(exit)
-    #menu_items.append(restart)
-    
+    login = {
+        "name": "Login",
+        "func": (lambda x: self.change_screen("login", "left")),
+        "icon": "account-circle",
+        "order": 2,
+        "disabled": False,
+        "force": False,
+    }
+    settings = {
+        "name": "Settings",
+        "func": (lambda x: self.do_settings()),
+        "icon": "cog",
+        "order": 3,
+        "disabled": False,
+        "force": True,
+    }
+    sheets = {
+        "name": "TimeSheets",
+        "func": (lambda x: self.do_timesheets()),
+        "icon": "chart-timeline",
+        "order": 1,
+        "disabled": False,
+        "force": False,
+    }
+    field = {
+        "name": "Notes",
+        "func": (lambda x: self.view_fieldnotes("")),
+        "icon": "note",
+        "order": 9,
+        "disabled": False,
+        "force": False,
+    }
+    payperiod = {
+        "name": "PayChecks",
+        "func": (lambda x: self.do_payperiod_f("YTD")),
+        "icon": "cash-100",
+        "order": 4,
+        "disabled": False,
+        "force": False,
+    }
+    graphs = {
+        "name": "Insights",
+        "func": (lambda x: self.prep_stats()),
+        "icon": "chart-areaspline",
+        "order": 5,
+        "disabled": True,
+        "force": False,
+    }
+    search = {
+        "name": "Search",
+        "func": (lambda x: self.new_search()),
+        "icon": "magnify",
+        "order": 100,
+        "disabled": True,
+        "force": False,
+    }
+    cloud = {
+        "name": "Cloud",
+        "func": (lambda x: self.change_screen("settings", "left")),
+        "icon": "cloud",
+        "order": 101,
+        "disabled": True,
+        "force": False,
+    }
+    stats = {
+        "name": "Stats",
+        "func": (lambda x: self.do_internal_stats()),
+        "icon": "gauge",
+        "order": 105,
+        "disabled": False,
+        "force": False,
+    }
+    exit = {
+        "name": "Close",
+        "func": (lambda x: self.close_menu()),
+        "icon": "close-box",
+        "order": 999,
+        "disabled": False,
+        "force": True,
+    }
+    restart = {
+        "name": "Restart",
+        "func": (lambda x: self.restart("today")),
+        "icon": "restart",
+        "order": 101,
+        "disabled": False,
+        "force": False,
+    }
+    pos_list = {
+        "name": "Position List",
+        "func": (lambda x: self.view_icons("")),
+        "icon": "format-list-bulleted-square",
+        "format-list-bulleted-square": 101,
+        "disabled": False,
+        "force": False,
+    }
+    cloud = {
+        "name": "Cloud",
+        "func": (lambda x: self.change_screen("settings", "left")),
+        "icon": "cloud",
+        "order": 101,
+        "disabled": True,
+        "force": False,
+    }
 
+    # change_screen('login', 'left')
+    menu_items_list = []
+    menu_items_list.append(login)
+    menu_items_list.append(sheets)
+    menu_items_list.append(settings)
+    menu_items_list.append(field)
+    menu_items_list.append(payperiod)
+    menu_items_list.append(graphs)
+    menu_items_list.append(search)
+    menu_items_list.append(stats)
+    menu_items_list.append(cloud)
+    menu_items_list.append(pos_list)
+    menu_items_list.append(exit)
+    # menu_items.append(restart)
+    #print(menu_items_list, "menu11")
+    update_x = False
+    for p in range(len(menu_items_list)):
+        #print(menu_items_list[p]["name"], "itemsasdf")
+        try:
+            (x[menu_items_list[p]["name"]])
+        except:
+            try:
+                x[menu_items_list[p]["name"]] = True
 
+                update_x = True
+            except:
+                logging.debug = "failed to update x"
+        # print (menu_items_list[p]["name"])
 
+    return menu_items_list, x, update_x
 
-
-    return menu_items
 
 def get_json_schedule_2(x, ad, show):
     import json, os

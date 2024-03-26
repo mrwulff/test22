@@ -191,12 +191,15 @@ def alt(name, ad, a, m, y):
     # create a December, 2005 PDF
     s = 5
     # logging.info(m, "month", y, "year")
-    c = createCalendar(name, a, m, y, filename= ad + "/"+str(m)+'-'+str(y)+".pdf")
-    print (a,m,y,'amy')
+    c = createCalendar(
+        name, a, m, y, filename=ad + "/" + str(m) + "-" + str(y) + ".pdf"
+    )
+    logging.debug(a, m, y, "amy")
     # now add January, 2006 to the end
     # createCalendar(1, 2006, canvas=c)
     c.save()
-    return ad + "/"+str(m)+'-'+str(y)+".pdf"
+    return ad + "/" + str(m) + "-" + str(y) + ".pdf"
+
 
 if __name__ == "__main__":
     ad = "C:/Users/twat/AppData/Roaming/demo3"

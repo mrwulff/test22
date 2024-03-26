@@ -1,3 +1,4 @@
+import logging
 def download_ach(ad):
     import urllib.request, urllib.error, urllib.parse, json
 
@@ -222,7 +223,6 @@ def longestrun(myList):
 
 
 def check_scroll(self, ad, x):
-    import libs.lib_new
     import json
     import datetime
 

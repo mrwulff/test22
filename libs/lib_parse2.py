@@ -364,7 +364,6 @@ def parsepayperiod(file):
 
         # logging.info(len(ax))
         real_show = False
-        #print (len(ax),'lenax;',ax)
         if len(ax) == 14:
             try:
                 # logging.info(ax[5].get_text())

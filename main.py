@@ -1,4 +1,4 @@
-###cp \schedulara\.buildozer\android\platform\build-arm64-v8a_armeabi-v7a\dists\kw.schedulara\build\outputs\apk\debug\kw.schedullogara-0.1-arm64-v8a_armeabi-v7a-debug.apk /mnt/c/Users/kw/Desktop/app.apk
+    ###cp \schedulara\.buildozer\android\platform\build-arm64-v8a_armeabi-v7a\dists\kw.schedulara\build\outputs\apk\debug\kw.schedullogara-0.1-arm64-v8a_armeabi-v7a-debug.apk /mnt/c/Users/kw/Desktop/app.apk
 ###
 ### RELEASE 10.2.2023
 ###
@@ -8,7 +8,6 @@ from kivy.clock import Clock
 import humanize
 from datetime import timedelta
 from functools import partial
-
 
 
 import logging
@@ -30,9 +29,6 @@ Config.set("kivy", "log_name", "my_file.log")
 Config.set("kivy", "log_level", "info")
 
 Config.write()
-
-
-print("what")
 
 
 # import logging
@@ -59,8 +55,6 @@ from kivymd.uix.button import (
     MDFabButton,
     MDExtendedFabButton,
     MDExtendedFabButtonText,
-
-
     MDExtendedFabButtonIcon,
 )
 from kivymd.uix.navigationdrawer import (
@@ -77,6 +71,8 @@ from kivymd.uix.navigationdrawer import (
 
 import libs.lib_positions
 import libs.lib_readuserdata
+import libs.lib_updateuserdata
+import libs.lib_ppdownloader as lib_ppdownloader
 
 # from kivymd.uix.list import (
 # ThreeLineAvatarIconListItem,
@@ -220,7 +216,7 @@ from kivymd.uix.pickers import MDTimePickerDialVertical, MDModalDatePicker
 from kivymd.uix.pickers.datepicker import MDDockedDatePicker
 
 # from kivymd.uix.pickers import MDTimePicker
-#from kivymd_extensions.sweetalert import SweetAlert
+# from kivymd_extensions.sweetalert import SweetAlert
 
 from kivy.uix.popup import Popup
 from kivymd.uix.menu import MDDropdownMenu
@@ -243,6 +239,7 @@ from kivymd.uix.list import (
     MDListItemLeadingAvatar,
     MDListItemSupportingText,
     MDListItemTrailingCheckbox,
+    # MDListItemTrailingSwitch,
     MDListItemTrailingSupportingText,
 )
 
@@ -258,6 +255,7 @@ from kivy.uix.label import Label
 # from kivymd.uix.datatables import MDDataTable
 # from kivymd.uix.button import MDFlatButton
 from kivymd.uix.segmentedbutton import MDSegmentedButton, MDSegmentedButtonItem
+from kivymd.uix.selectioncontrol import MDSwitch
 
 import datetime
 import libs.lib_think as lib_think
@@ -354,7 +352,7 @@ if platform == "android5":
 toc1 = time.perf_counter()
 logging.info(str(tic - toc1) + "firsttimer")
 from kivy.utils import platform
-print (platform,'PLATFORM')
+
 import urllib.request
 
 # import storagepath
@@ -369,9 +367,6 @@ if platform == "ios":
     NSURL = autoclass("NSURL")
     UIApplication = autoclass("UIApplication")
     sharedApplication = UIApplication.sharedApplication()
-import libs.lib_new
-
-
 
 
 class AboutScreen(Screen):
@@ -740,6 +735,7 @@ class Demo3App(MDApp):
     # oth = ["8", "10"]
     mheight = dp(170)
     note_index = ""
+    draw_menu=True
     pictures = [
         "light",
         "hammer",
@@ -912,7 +908,6 @@ class Demo3App(MDApp):
         os.chdir(cwd)
         self.root.push("backupgoogle")
 
-        import libs.lib_new
         import datetime
 
         import humanize
@@ -1034,8 +1029,6 @@ class Demo3App(MDApp):
         return z
 
     def do_test_open(self):
-        import libs.lib_new
-
         if x.get("drive_id") == None:
             x["drive_id"] = lib_google.search_files(ad, "Schedulara_Backups")
 
@@ -1054,6 +1047,62 @@ class Demo3App(MDApp):
             pos_hint={"center_x": 0.5},
             size_hint_x=0.5,
         ).open()
+
+    def menu_items(self):
+        logging.info("entering edit menu items screen")
+        self.root.push("menuitems")
+        self.root.current_screen.ids["box"].clear_widgets()
+        items,x,update = libs.lib_new.make_menu(self,"x")
+        if update:
+            libs.lib_updateuserdata.updateuser(x, ad)
+
+        print(items, "list of menu items")
+        for l in range(len(items)):
+            if not items[l]["force"]:
+                # if 1 == 1:
+                # print(items[l])
+                # print(self.check_att(items[l]["name"]))
+                self.root.current_screen.ids["box"].add_widget(
+                    MDListItem(
+                        MDListItemHeadlineText(
+                            text=items[l]["name"],
+                        ),
+                        MDListItemLeadingIcon(
+                            icon=items[l]["icon"],
+                            pos_hint={"center_x": 0.5, "center_y": 0.5},
+                        ),
+                        MDListItemTrailingCheckbox(
+                            id=items[l]["name"],
+                            active=True if self.check_att(items[l]["name"]) else False,
+                            on_active=self.new_check(items[l]["name"]),
+                        ),
+                        pos_hint={"center_x": 0.5, "center_y": 0.5},
+                        size_hint_x=0.8,
+                        id=items[l]["name"] + "full",
+                        on_active=self.new_check(items[l]["name"]),
+                    )
+                )
+        z = self.root.current_screen.ids["box"]
+        # for child in z.children:
+        #    print(child.text, child.id)
+        z1 = z.get_ids()
+        # print (len(z1),)
+        for key in z1:
+            # print(key, "wow", z1[key].on_active(z1[key], False))
+
+            # debugbox = App.get_running_app().root.current_screen.ids[z1[key].id].active
+            # print(debugbox)
+            z1[key].bind(active=self.new_check(items[l]["name"]))
+
+    def new_check(self, name):
+        # print(name, "newcheck")
+        return self.test
+
+    def test(self, a, b):
+        # print("test_wow", a.id, b)
+        x[a.id] = b
+        # print(x[a.id], b)
+        libs.lib_updateuserdata.updateuser(x, ad)
 
     def add_google_calendar(self, y):
         import libs.lib_google2 as lib_google
@@ -1077,7 +1126,6 @@ class Demo3App(MDApp):
             self.snackbarx("failed to remove")
 
     def delete_future_shows(self):
-        import libs.lib_new
         import datetime
         import json
 
@@ -1114,7 +1162,6 @@ class Demo3App(MDApp):
 
         x = libs.lib_readuserdata.readuserdata(App, ad, ios)
         import libs.lib_google2 as lib_google
-        import libs.lib_new
 
         # lib_google.create(ad)
         if x.get("cal_id") == None:
@@ -1486,8 +1533,6 @@ class Demo3App(MDApp):
     def add_message_to_chat(self, message):
         import libs.lib_firefriend
 
-        import libs.lib_new
-
         js = libs.lib_new.get_json_schedule_1(x, ad)
         gg = js["shows"][today_index]
         import libs.lib_firefriend
@@ -1505,7 +1550,6 @@ class Demo3App(MDApp):
         self.root.current_screen.ids["history_list"].clear_widgets()
         # test_message = "hello w2orld with a super long random string and stuff attached to it to make it seem longer"
 
-        import libs.lib_new
         from kivymd.uix.dialog import MDDialog as md33
 
         js = libs.lib_new.get_json_schedule_1(x, ad)
@@ -1590,7 +1634,7 @@ class Demo3App(MDApp):
         # x[b] = False
         app = App.get_running_app()
         ad = app.user_data_dir
-        import libs.lib_updateuserdata
+        # print(x[b], b, "check_att")
 
         try:
             # logging.info("already set")
@@ -1663,8 +1707,7 @@ class Demo3App(MDApp):
 
                 x = libs.lib_readuserdata.readuserdata(App, ad, ios)
 
-                
-                #toast('backdoor=unknown')
+                # toast('backdoor=unknown')
                 # self.snackbar = Snackbar(text="bla", bg_color=self.theme_cls.primary_color)
                 # self.snackbar.open()
         logging.info(str(zz) + " BACKDOOR true or false")
@@ -1735,7 +1778,7 @@ class Demo3App(MDApp):
 
         # fdate, ldate = self.get_dates("YTD")
         #            self.do_new_stats(fdate, ldate, "YTD")
-        self.today()
+        self.today(True)
 
     def keyboard(self, window, key, *args):
         if key == 27:
@@ -1828,8 +1871,6 @@ class Demo3App(MDApp):
         lib_updateuserdata.updateuser(x, ad)
 
     def update_rates(self, btn):
-        import libs.lib_new
-
         xx9 = libs.lib_new.just_get_json_schedule(x, ad)
 
         show = xx9["shows"][idex]
@@ -2024,8 +2065,6 @@ class Demo3App(MDApp):
         z = App.get_running_app().root.current_screen.ids["rat"].text
         logging.info("DELETE SHOW", z)
 
-        import libs.lib_new
-
         try:
             show, f = libs.lib_new.load_archive_json(ad, z)
             self.snackbarx("Delete Show")
@@ -2113,6 +2152,7 @@ class Demo3App(MDApp):
                 # self.md2()
         # except:
         #    self.today()
+        return x
 
     def md2(self):
         self.root.push("md2")
@@ -2541,7 +2581,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         global today_index
         today_index = d
 
-        import libs.lib_new
         import libs.lib_makeuserdata
 
         from kivymd.uix.dialog import MDDialog as md33
@@ -2670,7 +2709,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         global today_index
         today_index = d
 
-        import libs.lib_new
         import libs.lib_makeuserdata
 
         from kivymd.uix.dialog import MDDialog as md33
@@ -2789,8 +2827,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         logging.info(tot, "tot gigs")
 
     def find_type(self, a, b):
-        import libs.lib_new
-
         # z=self.root.get_screen("today").ids["first"].text
         js = libs.lib_new.get_json_schedule(x, ad)
         try:
@@ -2817,14 +2853,17 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         y = pkg_resources.get_distribution("kivy").version
         # logging.info(y, "listofkivy")
         return x, y
+    def do_timesheets(self):
+        #self.snackbarx('Almost!')
+        paystubs, new = lib_ppdownloader.thinkpp(x, ad,'sheets')
 
-    def today(self):
-        
-        
-        import libs.lib_new
+        logging.info("Downloaded  " + str(new) + " out of  " + str(paystubs))
+        self.snackbarx("Downloaded  " + str(new) + " out of  " + str(paystubs))
+    def today(self,start):
         import libs.lib_think
+        global draw_menu
 
-        self.on_start2()
+        x=self.on_start2()
 
         # toast("today")
         p = self.piplist()
@@ -2836,11 +2875,10 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         # self.update_internal("opened", 1)
 
-        
-        try:
-            self.root.current_screen.ids["drawer"].clear_widgets()
-        except:
-            print ('cant reset')
+        #try:
+        #    self.root.current_screen.ids["drawer"].clear_widgets()
+        #except:
+        #    logging.debug("cant reset")
         self.root.push("today")
         self.root.get_screen("today").ids["pic"].source = self.get_wall("theme")
 
@@ -2857,8 +2895,10 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         #    toast("login failed5")
         #    return "fail"
-        
-        shows = js["shows"]
+        try:
+            shows = js["shows"]
+        except:
+            return
         li = ["first", "second", "third"]
         li_r = ["1r", "2r", "3r"]
         li_l = ["1l", "2l", "3l"]
@@ -2923,7 +2963,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         numconf = js["num_shows"]
         confirmable = numshows - numconf
         # if 1==1:
-        print (len(shows),type(shows),'jsshows')
         update = js["updated"]
 
         old_update = datetime.datetime.strptime(update, "%Y-%m-%d %H:%M:%S.%f")
@@ -2942,10 +2981,8 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
             bb = bb + 1
         diff3 = humanize.naturaltime(now - next_show)
-        if 1==1:
-            #diff3,diff2=self.check_update(shows,js)
-
-            
+        if 1 == 1:
+            # diff3,diff2=self.check_update(shows,js)
 
             # except:
             #    diff2 = ""
@@ -2973,7 +3010,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             paylist = self.root.get_screen("today").ids["pay1"]
             paylist.text = "Payday:  " + paydate
 
-        if 1==2:
+        if 1 == 2:
             self.snackbarx("failed to get times")
             logging.info("failed to get times")
             self.root.get_screen("today").ids["stats"].text = "Invalid Show Data. "
@@ -3000,42 +3037,42 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             libs.lib_updateuserdata.updateuser(x, ad)
         ###make calendar
         self.reset_cal()
-        
-        #Clock.schedule_interval(self.update_label, 0.20)
-        Clock.schedule_interval(partial(self.update_label,js), 3)
-        #stats={"name":'Stats',"func":self.prep_stats(),'icon':'chart-areaspline','order':3}
 
-        #stats={"name":'Login',"func": ( lamda x:self.change_screen('login', 'left')),'icon':'account-circle','order':2}
+        # Clock.schedule_interval(self.update_label, 0.20)
+        Clock.schedule_interval(partial(self.update_label, js), 3)
+        # stats={"name":'Stats',"func":self.prep_stats(),'icon':'chart-areaspline','order':3}
 
-        menu_items=libs.lib_new.make_menu(self)
-        for m in range(len(menu_items)):
-            y='yolo'
-            if menu_items[m]['disabled']==True:
-                bla=lambda x:self.snackbarx('not yet')
-                #bla=''
-            if menu_items[m]['disabled']==False:
-                bla=menu_items[m]['func']
-            self.root.get_screen("today").ids["drawer"].add_widget(
+        # stats={"name":'Login',"func": ( lamda x:self.change_screen('login', 'left')),'icon':'account-circle','order':2}
+
+        menu_items_list,x,update = libs.lib_new.make_menu(self,x)
+        for m in range(len(menu_items_list)):
+            y = "yolo"
+            if menu_items_list[m]["disabled"] == True:
+                bla = lambda x: self.snackbarx("not yet")
+                # bla=''
+            if menu_items_list[m]["disabled"] == False:
+                bla = menu_items_list[m]["func"]
+            #if 1==1:
             
-                MDNavigationDrawerItem(
+            if x[menu_items_list[m]['name']] and start:
+                ii=self.root.get_screen("today").ids["drawer"].get_ids()
+                print (ii,'drawerids')
 
-                    MDNavigationDrawerItemLeadingIcon(
-                        icon=menu_items[m]['icon'],
-                    ),
-                    MDNavigationDrawerItemText(
-                        text=str((menu_items[m]['name'])),
-                    
-                    ),
+                self.root.get_screen("today").ids["drawer"].add_widget(
+                    MDNavigationDrawerItem(
+                        MDNavigationDrawerItemLeadingIcon(
+                            icon=menu_items_list[m]["icon"],
+                        ),
+                        MDNavigationDrawerItemText(
+                            text=str((menu_items_list[m]["name"])),
+                        ),
+                        # on_release=lambda x: self.close_menu(),
+                        on_release=bla,
+                    )
+                )
 
-                    #on_release=lambda x: self.close_menu(),
-                    on_release=bla
-                    
-                    
-                    
-                ))
-
-    def check_update(self,js):
-        shows=js['shows']
+    def check_update(self, js):
+        shows = js["shows"]
 
         update = js["updated"]
 
@@ -3055,36 +3092,30 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
             bb = bb + 1
         diff3 = humanize.naturaltime(now - next_show)
-        diff2="Updated "+diff2
-        diff3="Next Show: "+diff3
-        if now.second%2==0:
-            diff2=diff2+str("...")
-    
+        diff2 = "Updated " + diff2
+        diff3 = "Next Show: " + diff3
+        if now.second % 2 == 0:
+            diff2 = diff2 + str("...")
 
-        
-        return diff2,diff3
+        return diff2, diff3
 
-    
-    def update_label(self,dt,u):
-        
-        diff3,diff2=self.check_update(dt)
-        #print (diff2,diff3)
+    def update_label(self, dt, u):
+        diff3, diff2 = self.check_update(dt)
         try:
-            self.root.get_screen("today").ids["s3"].text=str(diff3)
-            self.root.get_screen("today").ids["s2"].text=str(diff2)
+            self.root.get_screen("today").ids["s3"].text = str(diff3)
+            self.root.get_screen("today").ids["s2"].text = str(diff2)
         except:
-            print ('today does not exist')
-        #callist = self.root.get_screen("today").ids["cal_month_text"]
-        
-        
+            logging.debug("today does not exist")
+        # callist = self.root.get_screen("today").ids["cal_month_text"]
 
-        #label.text = temp_text[index:index+15]
-        #index += 1
-        
-        #if index >= text_length:
+        # label.text = temp_text[index:index+15]
+        # index += 1
+
+        # if index >= text_length:
         #    index = 0
+
     def reset_cal(self):
-        print ('lol')
+        print("lol")
         self.close_menu()
         from datetime import date
 
@@ -3115,9 +3146,9 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             status_old, info_old = self.check_working(z, dd.month, dd.year, listofdicks)
             # logging.info(status, info_old, z)
             di.update(info)
-        name=libs.lib_pdf.alt(x["name"], ad, di, dd.month, dd.year)
-        data= ad + "/blog_calendar.pdf"
-        self.do_share_ios(data,name)
+        name = libs.lib_pdf.alt(x["name"], ad, di, dd.month, dd.year)
+        data = ad + "/blog_calendar.pdf"
+        self.do_share_ios(data, name)
 
     def make_calendar_today(self, month, year, mmonth):
         ###do calendar!!
@@ -3206,13 +3237,13 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                         dd.day, dd.month, dd.year, js["shows"]
                     )
                 except:
-                    status=False
+                    status = False
                 try:
                     status_old, info_old = self.check_working(
                         dd.day, dd.month, dd.year, listofdicks
                     )
                 except:
-                    status_old=False
+                    status_old = False
 
                 # rint(status, "STATUSSSSS")
                 t_color = "gray"
@@ -3294,7 +3325,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         listofdicks = libs.lib_archive.load("/future_shows", ad, f1, f2)
 
         dd = cur_month
-        import libs.lib_new
 
         import libs.lib_readuserdata
 
@@ -3340,7 +3370,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
     def cal_next(self, instance):
         # logging.info("cal next")
-        import libs.lib_new
 
         # info = instance.text
         # junk, info = str.split(info, "###")
@@ -3929,8 +3958,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         return a, l2 + " - " + l
 
     def check_confirm(self):
-        import libs.lib_new
-
         app = App.get_running_app()
         ad = app.user_data_dir
         # logging.info(x, "BLABLABLA", ad)
@@ -3941,7 +3968,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             logging.info(x, "thisisx")
             logging.info(xx9["num_shows"])
             self.new_confirm("all")
-            toast("Success")
+            #toast("Success")
             self.update_internal("confirm", "1")
             self.update()
         if x["usecache"] == True:
@@ -3949,7 +3976,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
     def update_global_all(self, ex):
         import libs.lib_firefriend
-
+        print ('update global all')
         logging.info("update_global ALLL")
         # libs.lib_updateuserdata.updateuser_extra(ex, ad)
         z = libs.lib_firefriend.dl_stats(self, ex, x, "global")
@@ -3980,7 +4007,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             for key2, value2 in value.items():
                 # logging.info(value2, "VALUE2")
                 ex["users"] = ex["users"] + 1
-                logging.info(value2["max_shows"], "maxxxxxx")
+                #logging.info(value2["max_shows"], "maxxxxxx")
                 if (value2["max_shows"]) > ex["gmax_g"]:
                     ex["gmax_g"] = value2["max_shows"]
 
@@ -4077,11 +4104,11 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             ex["streak"] = 1
             ex["lstreak"] = 1
             # previous = zzs
-            logging.info("exxx", ex)
+            #logging.info("exxx", ex)
             return ex
         else:
             previous = datetime.strptime(ex["previous_update"], "%Y-%m-%d").date()
-            logging.info("found previous date", previous)
+            #logging.info("found previous date", previous)
         diff = now - previous
         # logging.info(diff.days, "NOW", dir(diff))
         if diff.days == 1:
@@ -4108,9 +4135,9 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             ex[internal_stat] = 0
         if internal_stat == "hats":
             s, junk = libs.lib_ach.check_hats(self, ad)
-            logging.info(s, "slober")
+            #logging.info(s, "slober")
             # ex["positions"] = s
-            logging.info(s, "numberofpositions")
+            #logging.info(str(s)+ "numberofpositions")
             if ex.get("positions") == None:
                 ex["positions"] = s
             if ex.get(internal_stat) == None:
@@ -4127,11 +4154,13 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         return ex
 
     def do_internal_stats(self):
+        self.update_global()
         import libs.lib_updateuserdata
         import libs.lib_readuserdata
         import libs.lib_ach
 
         # if 1 == 1:
+        1
         try:
             ex = libs.lib_readuserdata.readuserdata_extra(App, ad, ios)
         except:
@@ -4143,12 +4172,10 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             ex = libs.lib_readuserdata.readuserdata_extra(App, ad, ios)
 
         ###
-
+        #print (ex,'exxxx')
         self.root.push("internal_stats")
         logging.info("internal stats")
         # self.update_internal("update", "1")
-
-        import libs.lib_new
 
         js = libs.lib_new.get_json_schedule(x, ad)
         if useold == False:
@@ -4181,54 +4208,69 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         libs.lib_updateuserdata.updateuser_extra(ex, ad)
         # logging.info(ex, "exwtf22")
-        self.root.get_screen("internal_stats").ids["update"].secondary_text = str(
+        self.root.get_screen("internal_stats").ids["update"].text = str(
             ex["update"]
         )
-        self.root.get_screen("internal_stats").ids["streak"].secondary_text = str(
+        self.root.get_screen("internal_stats").ids["streak"].text = str(
             ex["streak"]
         )
 
-        self.root.get_screen("internal_stats").ids["confirm"].secondary_text = str(
+        self.root.get_screen("internal_stats").ids["confirm"].text = str(
             ex["confirm"]
         )
-        self.root.get_screen("internal_stats").ids["max"].secondary_text = str(
+        self.root.get_screen("internal_stats").ids["max"].text = str(
             ex["max_shows"]
         )
 
-        self.root.get_screen("internal_stats").ids["min"].secondary_text = str(
+        self.root.get_screen("internal_stats").ids["min"].text = str(
             ex["min_shows"]
         )
-        self.root.get_screen("internal_stats").ids["lstreak"].secondary_text = str(
+        self.root.get_screen("internal_stats").ids["lstreak"].text = str(
             ex["lstreak"]
         )
-        self.root.get_screen("internal_stats").ids["poses"].secondary_text = str(
+        self.root.get_screen("internal_stats").ids["poses"].text = str(
             ex["hats"]
         )
 
-        self.root.get_screen("internal_stats").ids["gopened"].secondary_text = str(
+        self.root.get_screen("internal_stats").ids["gopened"].text = str(
             ex["opened"]
         )
 
-        self.root.get_screen("internal_stats").ids["gconfirm"].secondary_text = str(
-            ex["tot_confirm"]
+        self.root.get_screen("internal_stats").ids["opened"].text = str(
+            ex["opened"]
         )
 
-        self.root.get_screen("internal_stats").ids["gupdate"].secondary_text = str(
-            ex["tot_update"]
-        )
 
-        self.root.get_screen("internal_stats").ids["users"].secondary_text = str(
-            ex["users"]
-        )
+        try:
+            self.root.get_screen("internal_stats").ids["gconfirm"].text = str(
+                ex["tot_confirm"]
+            )
+        except:
+            print('failed to get tot_confirm')
+            self.root.get_screen("internal_stats").ids["gconfirm"].text="*"
+        try:
+            self.root.get_screen("internal_stats").ids["gupdate"].text = str(
+                ex["tot_update"]
+            )
+        except:
+            print ('failed to get _tot_update')
+        try:
+            self.root.get_screen("internal_stats").ids["users9"].text = str(
+                ex["users"]
+            )
+        except:
+            print ('failed to get users')
+            self.root.get_screen("internal_stats").ids["users9"].text="*"
         # self.root.get_screen("internal_stats").ids["gstreak"].secondary_text = str(
         #    ex["tot_lstreak"]
         # )
         try:
-            self.root.get_screen("internal_stats").ids["gmax"].secondary_text = str(
+            self.root.get_screen("internal_stats").ids["gmax"].text = str(
                 ex["gmax_g"]
             )
         except:
             logging.info("failg")
+            self.root.get_screen("internal_stats").ids["gmax"].text="*"
 
     def update_internal(self, kind, value):
         import libs.lib_updateuserdata
@@ -4265,7 +4307,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
     def update(self):
         logging.info("only updating schedule")
-        import libs.lib_new
 
         # try:
         if 1 == 1:
@@ -4277,7 +4318,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         # except:
         ##    logging.info("login failed")
         #   toast("login failed")
-        self.today()
+        self.today(False)
 
     def open_panel2(self, xx, i, l, junk, z):
         logging.info("adf", xx, i, l)
@@ -4372,8 +4413,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         self.root.push("newhome")
         self.root.current_screen.ids["rlist"].clear_widgets()
-
-        import libs.lib_new
 
         js = libs.lib_new.get_json_schedule(x, ad)
         if useold == False:
@@ -4592,8 +4631,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         self.dialog2[d].open()
 
     def new_confirm(self, asdf):
-        import libs.lib_new
-
         xx9 = libs.lib_new.get_json_schedule(x, ad)
         # logging.info("save_time", xx9, x)
 
@@ -4875,7 +4912,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         import libs.lib_updateuserdata
 
         libs.lib_updateuserdata.updateuser(x, ad)
-        print ('wtf man')
 
     """
     class Demo3App2(MDApp):
@@ -4914,7 +4950,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         startCount = NumericProperty(20)
         Count = NumericProperty()
         """
-        
+
     notheight = 200 * scale
     ot = ["8", "10", "0", "1", "2", "3", "4", "5", "6", "7", "9"]
     lunch = ["0", "1", "2"]
@@ -4931,7 +4967,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
     archive_trim = "Current"
     menurotate = 10
     menuscale = 0.5, 0.5
-    
 
     def update_hi_score_keys(self):
         logging.info("updating scores")
@@ -5705,13 +5740,14 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         self.root.push("mainmenu")
         # self.root.current_screen.ids["payperiod_list"].clear_widgets()
 
+
     def dlpp(self):
-        import libs.lib_ppdownloader as lib_ppdownloader
+        
 
         if x["name"] == "Test McDemo":
             self.snackbarx(str("No Paychecks found for ") + x["name"])
         else:
-            paystubs, new = lib_ppdownloader.thinkpp(x, ad)
+            paystubs, new = lib_ppdownloader.thinkpp(x, ad,'pp')
 
             logging.info("Downloaded  " + str(new) + " out of  " + str(paystubs))
             self.snackbarx("Downloaded  " + str(new) + " out of  " + str(paystubs))
@@ -5731,10 +5767,10 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         for i in range(len(confable)):
             logging.info(confable[i], len(confable))
         logging.info(len(confable), "confable")
-        #self.snackbar = MDSnackbar(
+        # self.snackbar = MDSnackbar(
         #    text="Success!" + str(len(confable)), bg_color=self.theme_cls.primary_color
-        #)
-        #self.snackbar.open()
+        # )
+        # self.snackbar.open()
 
     def dialog_close(self, *args):
         for z in range(len(self.dialog2)):
@@ -5751,7 +5787,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
     def animate_money_new(self, y):
         global gshow
-        import libs.lib_new
 
         global x
         xx9 = x
@@ -6004,15 +6039,16 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                             x, l = str.split(x, ")")
                             # logging.info(x)
             except:
-                self.snackbarx('fail')
+                self.snackbarx("fail")
                 # if not self.snackbar:
         if old == True:
-            self.snackbarx('old')
+            self.snackbarx("old")
             self.snackbar.open()
         if fail == "fail":
-            self.snackbarx('already confirmed')
+            self.snackbarx("already confirmed")
         if old == False and fail != "fail":
-            self.snackbarx('success')
+            self.snackbarx("success")
+
     def confirm_real(self, what):
         global browser
         import ssl
@@ -6079,7 +6115,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
     def closeDialog(self, inst):
         self.dialog.dismiss()
 
-    def delete_shows(self, what):
+    def delete_shows(self):
         # logging.info (what)
         from os import walk
 
@@ -6103,10 +6139,69 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 g = g + 1
             except:
                 f = f + 1
-        toast("deleted " + str(g) + " files, " + str(f) + " failed")
-        self.dialog.dismiss()
+        self.snackbarx("deleted " + str(g) + " files, " + str(f) + " failed")
+        self.menu3.dismiss()
 
     def show_delete_dialog(self):
+        self.menu3 = MDDialog(
+            # type=simple,
+            # ----------------------------Icon-----------------------------
+            # MDDialogIcon(
+            #    icon=self.find_type(d, "type"),
+            # ),
+            # -----------------------Headline text-------------------------
+            MDDialogHeadlineText(
+                text="Delete All Data",
+            ),
+            # -----------------------Supporting text-----------------------
+            MDDialogSupportingText(
+                text="Paychecks, User Data, Google Login, Rhino Login",
+            ),
+
+            # -----------------------Custom content------------------------
+
+            # ---------------------Button container------------------------
+            MDDialogButtonContainer(
+                Widget(),
+                # MDFabButton(icon="arrow-right-bold", style="small"),
+                MDExtendedFabButton(
+                    MDExtendedFabButtonText(
+                        text="Yes",
+                    ),
+                    # MDExtendedFabButtonIcon(
+                    #    icon="check-circle",
+                    # ),
+                    # style="small",
+                    # icon="content-copy",
+                    # text='View Demo',
+                    # MDExtendedFabButtonText(text=)
+                    on_release=lambda x: self.delete_shows(),
+                ),
+                MDExtendedFabButton(
+                    MDExtendedFabButtonText(
+                        text="No",
+                    ),
+                    # icon="close-box",
+                    style="small",
+                    # text='Accept and Continue',
+                    on_release=lambda x: self.menu3.dismiss(),
+                ),
+                spacing="20dp",
+                # cent2er=(50, 0),
+                #right=False,
+                #size_hint=(None, None),
+                #pos_hint={"center_x": 0.5, "center_y": 0.5},
+                #center_y=2100,
+            ),
+            # -------------------------------------------------------------
+        )
+
+        App.get_running_app().root.current_screen.ids["test2"] = self.menu3
+        self.menu3.open()
+
+
+
+        """
         from kivymd.uix.dialog import MDDialog
 
         if not self.dialog:
@@ -6115,19 +6210,20 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 buttons=[
                     MDButton(
                         text="CANCEL",
-                        theme_text_color="Custom",
-                        text_color=self.theme_cls.primary_color,
+                        #theme_text_color="Custom",
+                        #text_color=self.theme_cls.primary_color,
                         on_press=self.closeDialog,
                     ),
                     MDButton(
                         text="DELETE",
-                        theme_text_color="Custom",
-                        text_color=self.theme_cls.primary_color,
+                        #theme_text_color="Custom",
+                        #text_color=self.theme_cls.primary_color,
                         on_press=self.delete_shows,
                     ),
                 ],
             )
         self.dialog.open()
+        """
 
     def handle_selection(self, selection):
         """
@@ -6524,7 +6620,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         except:
             pass
 
-        import libs.lib_new
         import libs.lib_positions
 
         # try:
@@ -6637,8 +6732,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         self.update_show()
 
     def update_show_single(self, f):
-        import libs.lib_new
-
         try:
             b = (
                 "%%%"
@@ -6663,7 +6756,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
     def hide_show(self):
         logging.info("hide_show")
         z = App.get_running_app().root.current_screen
-        import libs.lib_new
 
         show, filee = libs.lib_new.load_archive_json(ad, z.ids["show"].tertiary_text)
         show["hidden"] = True
@@ -6694,7 +6786,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
     def update_show(self):
         z = App.get_running_app().root.current_screen
-        import libs.lib_new
 
         show, filee = libs.lib_new.load_archive_json(ad, z.ids["show3"].text)
         show["endtime"] = z.ids["newhours"].text
@@ -6765,11 +6856,10 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
             show["earnings"] = show["earnings"] + otearnings
             # show['earnings']=self.format_money(show['earnings'])
-            App.get_running_app().root.current_screen.ids[
-                "earningsl"
-            ].text = str(self.format_money(show["earnings"]))
+            App.get_running_app().root.current_screen.ids["earningsl"].text = str(
+                self.format_money(show["earnings"])
+            )
             logging.info(str(ot) + "boo ya, test")
-
 
             # logging.info (timeout,lunches,ota,rate,notes,show,'THISISTHEINFO')
 
@@ -6791,41 +6881,42 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             self.do_share_ios(out_file, "Some title")
         if platform != "ios":
             filechooser.open_file(on_selection=self.handle_selection)
-    def share_android(self,title):
-        #https://stackoverflow.com/questions/38983649/kivy-android-share-image
-        if platform == 'android':
+
+    def share_android(self, title):
+        # https://stackoverflow.com/questions/38983649/kivy-android-share-image
+        if platform == "android":
             from android.storage import primary_external_storage_path
             from jnius import autoclass
             from jnius import cast
             import os
-            
-            StrictMode = autoclass('android.os.StrictMode')
+
+            StrictMode = autoclass("android.os.StrictMode")
             StrictMode.disableDeathOnFileUriExposure()
-            
-            PythonActivity = autoclass('org.kivy.android.PythonActivity')
-            
-            Intent = autoclass('android.content.Intent')
-            String = autoclass('java.lang.String')
-            Uri = autoclass('android.net.Uri')
-            File = autoclass('java.io.File')
+
+            PythonActivity = autoclass("org.kivy.android.PythonActivity")
+
+            Intent = autoclass("android.content.Intent")
+            String = autoclass("java.lang.String")
+            Uri = autoclass("android.net.Uri")
+            File = autoclass("java.io.File")
 
             shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.setType('"application/pdf"')
 
-            path = os.path.join(primary_external_storage_path(),title)
+            path = os.path.join(primary_external_storage_path(), title)
 
             imageFile = File(path)
             uri = Uri.fromFile(imageFile)
-            parcelable = cast('android.os.Parcelable', uri)
+            parcelable = cast("android.os.Parcelable", uri)
             shareIntent.putExtra(Intent.EXTRA_STREAM, parcelable)
 
-            currentActivity = cast('android.app.Activity', PythonActivity.mActivity)
+            currentActivity = cast("android.app.Activity", PythonActivity.mActivity)
             currentActivity.startActivity(shareIntent)
 
     def do_share_ios(self, data, title):
-        if platform=='ios':
-            data='wow'
-            data=title
+        if platform == "ios":
+            data = "wow"
+            data = title
             URL = NSURL.fileURLWithPath_(data)
             UIActivityViewController = autoclass("UIActivityViewController")
             UIcontroller = sharedApplication.keyWindow.rootViewController()
@@ -6837,7 +6928,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             UIcontroller.presentViewController_animated_completion_(
                 activityViewController, True, None
             )
-        if platform=='android':
+        if platform == "android":
             self.share_android(title)
 
     def backup(self):
@@ -6859,7 +6950,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             return f
 
         except:
-            self.snackbarx('no show files')
+            self.snackbarx("no show files")
 
     def restorebin(self, x):
         import shutil
@@ -6878,7 +6969,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 f.write(x)
             shutil.unpack_archive(nf2, ad + "/shows")
         except:
-            self.snackbarx('not valid backup')
+            self.snackbarx("not valid backup")
 
     def search_menu(self):
         # scale=2
@@ -7384,13 +7475,15 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             f1 = datetime.strptime(file, "%m-%d-%Y.html")
             # logging.info (f1,self.fday,self.lday,'LOADPPDates')
             # logging.info (type(f1),type(self.fday),type(self.lday),'LOADPPDates')
-
-            dd, junk, junk, junk, junk, junk = lib_parse.parsepayperiod(
-                ad + "/pp/" + file
-            )
-            if self.fday <= f1 and f1 <= self.lday:
-                listofdicks.append(dd)
-                x = x + 1
+            try:
+                dd, junk, junk, junk, junk, junk = lib_parse.parsepayperiod(
+                    ad + "/pp/" + file
+                )
+                if self.fday <= f1 and f1 <= self.lday:
+                    listofdicks.append(dd)
+                    x = x + 1
+            except:
+                logging.debug('Paycheck Error')
             # logging.info(x)
             # toast("loaded:" + str(x))
             # Clock.schedule_once(self.dumb(x))
@@ -7514,21 +7607,19 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         ot = 0
         pay = 0
         reg = 0
-        checks=0
-        # print(listofdicks[0])
+        checks = 0
         for bb in range(len(listofdicks)):
             reg = reg + float((listofdicks[bb]["reghours"]))
             ot = ot + float((listofdicks[bb]["othours"]))
             hours = hours + float((listofdicks[bb]["totalhours"]))
             pay = pay + float(listofdicks[bb]["moneytotal"])
-        if len(listofdicks)>0:
+        if len(listofdicks) > 0:
             per = ot / reg
 
             per = per * 100
             per = round(per, 2)
         else:
-            per=0
-        # print(per, "percc")
+            per = 0
 
         self.root.get_screen("pay").ids.payperiod_list.add_widget(
             MDListItem(
@@ -7626,7 +7717,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
     def do_pay_ind(self, b):
         import libs.lib_parse2
 
-        print(str(b["paydate"].date()), "WHAT")
+        # rint(str(b["paydate"].date()), "WHAT")
 
         m = str(b["paydate"].month)
 
@@ -7648,7 +7739,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             + str(b["paydate"].year)
             + ".html",
         )
-        #print (z,'what is this thing')
         # logging.info(z, "gigigig")
         # for line in o.readlines():
         #    logging.info(line)
@@ -7657,9 +7747,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         # logging.info(os.getcwd(), "CWDDDDD")
         os.chdir(cwd)
         # logging.info(os.getcwd(), "CWDDDDD")
-        #print (z,'this is the paycheck')
 
-        
         self.root.push("pay_breakdown")
         self.root.current_screen.ids["pay_gigs"].clear_widgets()
         self.root.get_screen("pay_breakdown").ids.pay_gigs.add_widget(
@@ -7675,21 +7763,21 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                     pos_hint={"center_x": 0.5, "center_y": 0.5},
                 ),
                 # MDListItemHeadlineText(text=listofdicks[z]["show"]),
-                MDListItemHeadlineText(text="Date: " + str(z['paydate'])),
+                MDListItemHeadlineText(text="Date: " + str(z["paydate"])),
                 MDListItemSupportingText(
                     text="Hours: "
-                    + str(float(z['reghours'])+float(z['othours']))
+                    + str(float(z["reghours"]) + float(z["othours"]))
                     + " Regular: "
-                    + str(z['reghours'])
+                    + str(z["reghours"])
                     + " OT:"
-                    + str(z['othours'])
+                    + str(z["othours"])
                 ),
-                #MDListItemSupportingText(text="$" + str(pay) + " OT %" + str(per)),
-                #MDListItemSupportingText(text="$" + "text6"),
-            ),)
+                # MDListItemSupportingText(text="$" + str(pay) + " OT %" + str(per)),
+                # MDListItemSupportingText(text="$" + "text6"),
+            ),
+        )
         for i in range(len(z["gigs"])):
             d = z["gigs"][i]
-            print (d)
             din, tin = str.split(d["timeIn"], " ")
             junk, monthi, datei = str.split(din, "-")
             h_i, min_i, junk = str.split(tin, ":")
@@ -7702,51 +7790,46 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             if float((d["otH"])) > 0:
                 hours_nice = hours_nice + " Overtime: " + str(d["otH"])
             time = (
-                    monthi
-                    + "-"
-                    + datei
-                    + " "
-                    + h_i
-                    + ":"
-                    + min_i
-                    + " -- "
-                    + h_o
-                    + ":"
-                    + min_o
-                )
-        
+                monthi
+                + "-"
+                + datei
+                + " "
+                + h_i
+                + ":"
+                + min_i
+                + " -- "
+                + h_o
+                + ":"
+                + min_o
+            )
+
             self.root.get_screen("pay_breakdown").ids.pay_gigs.add_widget(
-                    MDListItem(
-                        MDListItemLeadingIcon(
-                            # icon=self.find_type(i, "type"),
-                            pos_hint={"center_x": 0.5, "center_y": 0.5},
-                            icon_color=self.theme_cls.primaryColor,
-                        ),
-                        MDListItemTrailingIcon(
-                            # icon=self.find_type(i, "pos"),
-                            icon_color=self.theme_cls.errorColor,
-                            pos_hint={"center_x": 0.5, "center_y": 0.5},
-                        ),
-                        # MDListItemHeadlineText(text=listofdicks[z]["show"]),
-                        MDListItemHeadlineText(
-                            text=str(d["show"])
-                        ),
-                        MDListItemSupportingText(
-                            text=time
-
-                        ),
-                        MDListItemSupportingText(
-                            text=str(hours_nice)
-                            #+ " OT %"
-                            #+ str(perc)
-                        ),
-                        # MDListItemHeadlineText(listofdicks[z]['show']),
-                        # MDListItemHeadlineText(text=str(len(listofdicks))+' Shows Total'),
-                        # MDListItemSupportingText(text=color + show_date + " " + ntime),))
-                        # on_release=self.edit_show_details()))
-                        #on_release=lambda x, y=(listofdicks[z]): self.do_pay_ind(y),
-
-                    ))
+                MDListItem(
+                    MDListItemLeadingIcon(
+                        # icon=self.find_type(i, "type"),
+                        pos_hint={"center_x": 0.5, "center_y": 0.5},
+                        icon_color=self.theme_cls.primaryColor,
+                    ),
+                    MDListItemTrailingIcon(
+                        # icon=self.find_type(i, "pos"),
+                        icon_color=self.theme_cls.errorColor,
+                        pos_hint={"center_x": 0.5, "center_y": 0.5},
+                    ),
+                    # MDListItemHeadlineText(text=listofdicks[z]["show"]),
+                    MDListItemHeadlineText(text=str(d["show"])),
+                    MDListItemSupportingText(text=time),
+                    MDListItemSupportingText(
+                        text=str(hours_nice)
+                        # + " OT %"
+                        # + str(perc)
+                    ),
+                    # MDListItemHeadlineText(listofdicks[z]['show']),
+                    # MDListItemHeadlineText(text=str(len(listofdicks))+' Shows Total'),
+                    # MDListItemSupportingText(text=color + show_date + " " + ntime),))
+                    # on_release=self.edit_show_details()))
+                    # on_release=lambda x, y=(listofdicks[z]): self.do_pay_ind(y),
+                )
+            )
 
         """
         panel = MDListItem(
@@ -7788,7 +7871,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 # on_release=self.do_pay_ind,
             )
         """
-        #self.root.get_screen("pay_breakdown").ids.pay_gigs.add_widget(panel)
+        # self.root.get_screen("pay_breakdown").ids.pay_gigs.add_widget(panel)
 
     def do_payperiod2(self, ssort, rreverse):
         self.root.push("pay")
@@ -8014,7 +8097,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         if v == "notes":
             ttt = mjds[idex][v]
             if len(ttt) < 2:
-                self.snackbarx('empty')
+                self.snackbarx("empty")
 
             if not self.dialog:
                 self.dialog = MDDialog(
@@ -8068,8 +8151,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         logging.info(blank, "BLANK")
         success = False
         if blank == False:
-            import libs.lib_new
-
             import libs.lib_enc
 
             self.root.current = "login"

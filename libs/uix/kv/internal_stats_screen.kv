@@ -1,104 +1,169 @@
 <internal_statsscreen>
     name: "internal_stats"
-    #FitImage:
-        #source: 'images/rh.jpg'
-    #    id: pic
-    #    source: app.get_wall("today")
-    #    size: self.width,self.height
-    
-
     BoxLayout:
         orientation: "vertical"
         MDTopAppBar:
             #title: "Settings"
         #    height: app.mheight
-            left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+            #left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+
+
+            MDTopAppBarLeadingButtonContainer:
+    
+                MDActionTopAppBarButton:
+                    icon: "chevron-left"
+                    on_release: app.root.pop()
+                    pos_hint:{"center_x": 0.5, "center_y": 0.5}
         ScrollView:
 
 
             MDList:
-                MDListItem:
-                    text: "Share Stats"
+                #MDListItem:
+                    #text: "Share Stats"
                     #on_release:app.makenots("1")
-                    YourContainer:
-                        id: container
-                        MDSwitch:
+                    #YourContainer:
+                        #id: container
+                        #MDSwitch:
                             #on_active: app.enable_nots()
-                            widget_style: "ios"
-                            id:share_stats
-                            active: app.check_att('share_stats')
-                            on_active:
+                            #widget_style: "ios"
+                            #id:share_stats
+                            #active: app.check_att('share_stats')
+                            #on_active:
                                 #app.on_checkbox_active(*args)
-                                app.updatetext("share_stats")
-                    IconLeftWidget:
-                        icon: "share" 
-                        on_release: app.update_global()
+                                #app.updatetext("share_stats")
+                    #IconLeftWidget:
+                    #    icon: "share" 
+                    #    on_release: app.update_global()
                 MDListItem:
                     icon: 'account'
-                    text:'Individual Stats:'
-                    IconLeftWidget:
+                    MDListItemHeadlineText:
+                        text:'Individual Stats:'
+                    MDListItemSupportingText:
+                        text:'Individual Stats:'
+                    MDListItemLeadingIcon:
                         icon: "account" 
-                ThreeLineListItem:
-                    id:update
-                    text:"Successfully Updated Schedule:"
-                ThreeLineListItem:
-                    id:lstreak
-                    text:"Longest Updated Schedule Streak (Days)"
-                ThreeLineListItem:
-                    id:streak
-                    text:"Current Updated Schedule Streak (Days)"
-                ThreeLineListItem:
-                    id:max
-                    text:"Maximum Number of Current Schedule"
-                ThreeLineListItem:
-                    id:min
-                    text:"Minimum Number of Current Schedule"
-                ThreeLineListItem:
-                    id:poses
-                    text:"Total Positions Worked"
-
-
-                ThreeLineListItem:
-                    id:opened
-                    text:"Times App Opened"
-                    divider: "Full"
-                
-                ThreeLineListItem:
-                    id:confirm
-                    text:"Shows Confirmed"
-                ThreeLineListItem:
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
                 MDListItem:
-                    text:'Global Stats:'
-                    IconLeftWidget:
-                        on_release: app.update_global()
+                    MDListItemHeadlineText:
+                        text:"Successfully Updated Schedule:"
+                    MDListItemSupportingText:
+                        id:update
+                MDListItem:
+                    
+                    MDListItemSupportingText:
+                        text:"Longest Updated Schedule Streak (Days)"
+                    MDListItemSupportingText:
+                        id:lstreak
+                MDListItem:
+                    
+                    MDListItemSupportingText:
+                        text:"Current Updated Schedule Streak (Days)"
+                    MDListItemSupportingText:
+                        id:streak
+                MDListItem:
+                    
+                    MDListItemSupportingText:
+                        text:"Maximum Number of Current Schedule"
+                    MDListItemSupportingText:
+                        id:max
+                MDListItem:
+                    
+                    MDListItemSupportingText:
+                        text:"Minimum Number of Current Schedule"
+                    MDListItemSupportingText:
+                        id:min
+                MDListItem:
+
+                    MDListItemSupportingText:
+                        text:"Total Positions Worked"
+                    MDListItemSupportingText:
+                        id:poses
+
+
+                MDListItem:
+                    
+                    MDListItemSupportingText:
+                        text:"Times App Opened"
+                    MDListItemSupportingText:
+                        id:opened
+
+                
+                
+                MDListItem:
+                    
+                    MDListItemSupportingText:
+                        text:"Shows Confirmed"
+                    MDListItemSupportingText:
+                        id:confirm
+                MDDivider:
+                MDListItem:
+                    MDListItemHeadlineText:
+                        text:'Global Stats:'
+                    MDListItemSupportingText:
+                        text: ' '
+                    MDListItemLeadingIcon:
                         icon: "earth" 
-                    IconRightWidget:
-                        on_release: app.update_global()
-                        icon: "download" 
-                ThreeLineListItem:
-                    id:gupdate
-                    text:"Successfully Updated Schedule:"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+                MDListItem:
+                    
+                    MDListItemSupportingText:
+                        text:"Successfully Updated Schedule:"
+                    MDListItemSupportingText:
+                        text:'*sdf'
+                        id:gupdate
                 #ThreeLineListItem:
                     #id:gstreak
                     #text:"Highest Schedule Streak (Days)"
-                ThreeLineListItem:
-                    id:gmax
-                    text:"Largest Schedule"
-
-                
-                ThreeLineListItem:
-                    id:gconfirm
-                    text:"Shows Confirmed"
-
-                ThreeLineListItem:
-                    id:gopened
-                    text:"App Opened"
-                
-                ThreeLineListItem:
-                    id:users
-                    text:"Users"
-                ThreeLineListItem:
                 MDListItem:
-                    text:'Local Stats:  (coming soon!)'
-                    IconLeftWidget:
-                        icon: "map-marker-outline" 
+                    
+                    MDListItemSupportingText:
+
+                        text:"Largest Schedule"
+                    MDListItemSupportingText:
+                        id:gmax
+                        text:"Shows Confirmed"
+
+                
+                MDListItem:
+                    
+                    MDListItemSupportingText:
+                        text:"Shows Confirmed"
+                    MDListItemSupportingText:
+                        id:gconfirm
+                        text:"*"
+
+                MDListItem:
+                    
+                    MDListItemSupportingText:
+                        text:"App Opened"
+                    MDListItemSupportingText:
+                        id:gopened
+                        text:"*"
+
+                MDListItem:
+                    
+                    MDListItemSupportingText:
+                        text:"Users"
+                    MDListItemSupportingText:
+                        id:users9
+                        text:"*"
+
+                MDListItem:
+                    
+                    MDListItemSupportingText:
+                        text:"Locations"
+                        #text:"Shows Confirmed"
+                    MDListItemSupportingText:
+                        id:locations
+                        text:"1"
+                
+
+
+
+
+
+                #MDListItem:
+                #    MDListItemSupportingText:
+                #        text:'Local Stats:  (coming soon!)'
+                    #IconLeftWidget:
+                    #    icon: "map-marker-outline" 

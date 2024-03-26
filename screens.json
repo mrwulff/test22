@@ -188,5 +188,10 @@
         "import": "from libs.uix.baseclass.md2_screen import md2screen",
         "object": "md2screen()",
         "kv": "libs/uix/kv/md2_screen.kv"
+    },
+    "menuitems": {
+        "import": "from libs.uix.baseclass.menuitems_screen import menuitemsscreen",
+        "object": "menuitemsscreen()",
+        "kv": "libs/uix/kv/menuitems_screen.kv"
     }
 }

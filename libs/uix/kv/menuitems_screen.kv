@@ -1,0 +1,24 @@
+<menuitemsscreen>
+
+    name: "menuitems"
+
+    BoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            #title: "Settings"
+        #    height: app.mheight
+            #left_action_items: [['chevron-left', lambda screen: app.change_screen('today','left'),'home']]
+
+
+            MDTopAppBarLeadingButtonContainer:
+    
+                MDActionTopAppBarButton:
+                    icon: "chevron-left"
+                    on_release: app.root.pop()
+                    pos_hint:{"center_x": 0.5, "center_y": 0.5}
+        ScrollView:
+
+
+            MDList:
+                id:box
+            

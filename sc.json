@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "schedulara",
+  "private_key_id": "6aec4f77bc1a85601794d620d7cd0cf3cf45547f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCMkjx8vB333nBN\nwIfhboj+/5vFvqA/vZCSGv+I0LNv6Bfc/qQEQ/jyTXrBMaZCYQ8tg4hmEs8ZkkOb\nRbVri8MjN1pxa1X07JXB25jmlO6EBw6LQRMS3xkYWxoSiIP9KWgOiGMf7eKz366n\nP/CZBB7X1BI5d8Np43Ja3G/1s8FM1dYN+HXEsmDiu95bLMpjRF4URnK97b/nXi8n\ndJP36BXZi6gdwGR8Xb83yeKMBhHemQs1EGY7jBEacXSzE58CphNtB0DztScQsGJU\nHegQAr0cGYCMiIoP80O1SUhzNFQqcMN2oAwDEYZaNM3c6svbhmGC1MDETcLqFXOV\n7cweKp3NAgMBAAECggEACPlJ7r2UnS8AVNpaYlAL41l+gIJxmPgZS1Z5YyrNlbKH\nmXZREqujMBa1pDEu97RaA3IO6lM/kNaXRcmOshmnQK+HMM/lGiBjVA+YhHnT+y43\nJbknBlCjObyRHsdDw8zZpXnb+B0X2JtKO0eX7LDIZkdVzYDhgvg/4+CILjOGPskc\nq2teGob8XsBuqnu50/bU4odaXgTxwaCuIPGhn6Y5DGauiyZM0PtP5etpV0QlcRh9\nQgd9Cmp49dpciMp9poPGMhzRqv3XdokSJFrY8+VEeP7N9B1bw4khtPMSVMczQ/MK\ntUKhBV85IuBRA+KXpXBT45/OxJJR+PNK0vhyLNbg0QKBgQC95DUkJLIK6efLmT7O\n6G2hZ8K+VmKQamoHGxG5l9S9NZJcdXSrzTNZBoo7ogpF/feTYLljqXQ4cOnomOpD\nH7w95HNIlVzEFkIUtF06goMafiz1OSLDbS547fk++v7h/AHdAx+wb/RXGZt5voTV\n6qVTW+Ap+0hYXXAJ56xmMJXJPQKBgQC9gnBkEI2gtxurag2oxWc+jmzrCfN+/7vs\nWc4ZH3Q2Orbkt46G2ABiiZY3+4fE4xkKZD3bZnL+v3Iy/HfOlcYaIilsOfe9vpnj\nvaTo7AHK5NNCzmocy+y/wnJFOt1gfRKxoGDX6TExY0vLFrJ5zTUb7DOqkm9gtkTm\nmPXd113P0QKBgQC0oNN74fwKLZ10Kf14y9cc5Zp1e66eONtKjxE5PZf7s23ZzVCB\n69ugH3x2ZRjoo0BRTHyMtK/80EtwGaUc3J8vMJQIwytOyu1ozHiyI1uaY9NYIFVV\nGBJQre2dXxv80r7jAQmvx47hG1atY/DvmxhQRuDgjkqu45KjmWCAhE628QKBgDbK\nc7w6nPgOeM2CiBh3mnYXr5307pWVUrvu6wuQcIUNTLur5mVOJi5XITtmWcau8hpz\nCP9aC31j1JyxKeJsoy4DGn7T87DEXrHdrsQ5F/uVVQ9Hpp5Ux0pZ6bfiYQb4omMA\nv38tSK/CybMaCNf2YJiGHhn+5HzNtfYF23AcSF9BAoGATLpWGA8wjac7P/lX0RWU\nzacOvrltQ9t8SmDZPWOj8IKfaWIc2H1AfSW3WlISc2zfWdvbsAMi5dFEL3gNkg0d\nO7mn11LXa0PvudBwDhnxoEQsLi4aQ98cpKQS9L7l1enJMhtjhKv2Cb7VMOCYCcCj\niRCEKYPeYxKWzblK8pgW2LI=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-hgpf4@schedulara.iam.gserviceaccount.com",
+  "client_id": "104856738651895895862",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-hgpf4%40schedulara.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -55,6 +55,15 @@
                         icon: "cloud-download"
                         pos_hint:{"center_x": 0.5, "center_y": 0.5}
                 MDListItem:
+                    on_release: 
+                        app.menu_items()
+                    MDListItemHeadlineText:
+                        text: 'Edit Menu'
+
+                    MDListItemLeadingIcon:
+                        icon: "menu-open"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+                MDListItem:
                     
                     
                     #text: "Sample Schedule"
@@ -79,7 +88,7 @@
                     on_release:
                         app.show_delete_dialog()
                     MDListItemHeadlineText:
-                        text: "Clear Data"
+                        text: "Clear All Data"
                     
 
                     MDListItemLeadingIcon:
@@ -118,8 +127,13 @@
 
 
                 MDListItem:
-                    text: "Notifications"
                     on_release:app.makenots("1")
+                    MDListItemHeadlineText:
+                        text: "Notifications"
+                    MDListItemLeadingIcon:
+                        icon: "bell"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
+                    
                 #    YourContainer:
                 #        id: container
                 #        MDSwitch:

@@ -103,7 +103,7 @@ def find_paychecks(a, ad):
     return g
 
 
-def thinkpp(x, ad):
+def thinkpp(x, ad, kind):
     # logging.info("thinkpp", x)
     import libs.lib_enc
 
@@ -116,7 +116,10 @@ def thinkpp(x, ad):
 
     # PE_LOGIN = 'http://www.thinkrhino.com/employee/lasvegas/'
     PE_LOGIN = "https://www.thinkrhino.com/employee/lasvegas/index.aspx"
+
     PE_COUNTRIES = "payperiods.aspx"
+    if kind == "sheets":
+        PE_COUNTRIES = "timekeeper.aspx"
 
     pp = "test2.html"
     try:
