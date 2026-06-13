@@ -7,6 +7,7 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager
 
 from libs.applibs import utils
+from kivy.resources import resource_find
 
 
 class Root(ScreenManager):
@@ -19,12 +20,19 @@ class Root(ScreenManager):
         logging.info("exists=%s", os.path.exists(utils.abs_path("screens.json")))
         Window.bind(on_keyboard=self._handle_keyboard)
         # get screen data from screens.json
+        path = resource_find("screens.json")
+        print(path,"THIS IS THE FREAKING PATH")
         try:
-            with open(utils.abs_path("screens.json")) as f:
+            with open(path) as f:
                 self.screens_data = json.load(f)
+
         except:
-            with open(utils.abs_path("YourApp/screens.json")) as f:
-                self.screens_data = json.load(f)
+            try:
+                with open(utils.abs_path("screens.json")) as f:
+                    self.screens_data = json.load(f)
+            except:
+                with open(utils.abs_path("YourApp/screens.json")) as f:
+                    self.screens_data = json.load(f)
 
     def _handle_keyboard(self, instance, key, *args):
         if key == 27:
