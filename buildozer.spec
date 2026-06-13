@@ -9,7 +9,7 @@ version = 1.1.10
 #p4a.branch = master
 #android.ndk = 23b
 ##changelog! edited requirements
-
+android.archs = arm64-v8a
 
 requirements =kivy==master,tzlocal,more-itertools https://github.com/kivymd/KivyMD/archive/master.zip ,git+https://github.com/kivymd-extensions/sweetalert.git,uritemplate,httplib2,google-api-core==2.8.2,oauthlib,requests_oauthlib,cachetools,rsa,pyasn1,pyasn1_modules,urllib3,plyer,jnius,pyparsing,webencodings,html5lib,beautifulsoup4,soupsieve, python3,appdirs, pillow,python-dateutil, humanize, mechanize==0.4.0, bs4, emoji, webcolors, pyperclip, kivy-garden, kivy-garden.graph, faker, kivy-garden, kivy-garden.graph, kivymd_extensions.akivymd, ndicts, ,google-api-python-client, google-auth-oauthlib,google-auth-httplib2,google-auth,sentry_sdk ,watchdog,pip-system-certs,more-itertools
 
@@ -270,7 +270,7 @@ android.permissions = INTERNET,BILLING, ACCESS_NETWORK_STATE, READ_EXTERNAL_STOR
 # In past, was `android.arch` as we weren't supporting builds for multiple archs at the same time.
 #ndroid.archs =  armeabi-v7a
 
-android.archs = arm64-v8a,armeabi-v7a
+
 
 
 
