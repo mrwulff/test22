@@ -94,27 +94,37 @@ def make_json_schedule(x, ad):
         if "Red" in str(can):
             # logging.info ("OMG ITS RED")
             canceled = True
-
-        show_date = datetime.strptime(ax[0].get_text(), "%m/%d/%Y")
+        print (ax[1].get_text(), "DATEEE")
+        try:
+            show_date = datetime.strptime(ax[1].get_text(), "%m/%d/%Y")
+            now = datetime.now()
+            if show_date.date() < now.date():
+                old = True
+        except:
+            #show_date="06/10/2026"
+            #show_date = datetime.strptime(show_date, "%m/%d/%Y")
+            #old=False
+            #print (show_date,'SHOW DATE')
+            continue
+        ###added actions to column 1. date must now be column 2.
         now = datetime.now()
-        if show_date.date() < now.date():
-            old = True
+
 
         thisdict = {
-            "date": ax[0].get_text(),
-            "time": ax[1].get_text(),
-            "job": ax[2].get_text(),
-            "show": ax[3].get_text(),
-            "venue": ax[4].get_text(),
-            "location": ax[5].get_text(),
-            "client": ax[6].get_text(),
-            "type": ax[7].get_text(),
-            "pos": ax[8].get_text(),
-            "details": ax[9].get_text(),
-            "status": ax[10].get_text(),
-            "notes": ax[11].get_text(),
-            "timekeep": ax[12].get_text(),
-            "plus": ax[13].get_text(),
+            "date": ax[1].get_text(),
+            "time": ax[2].get_text(),
+            "job": ax[3].get_text(),
+            "show": ax[4].get_text(),
+            "venue": ax[5].get_text(" ", strip=True),
+            "location": ax[6].get_text(),
+            "client": ax[7].get_text(),
+            "type": ax[8].get_text(),
+            "pos": ax[9].get_text(),
+            "details": ax[10].get_text(),
+            "status": ax[11].get_text(),
+            "notes": ax[12].get_text(),
+            "timekeep": ax[13].get_text(),
+            "plus": ax[14].get_text(),
             "canceled": canceled,
             "confirmid": "",
             "lunches": "",

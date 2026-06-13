@@ -2089,7 +2089,7 @@ class Demo3App(MDApp):
 
         # libs.lib_updateuserdata.updateuser(x, ad)
         logging.info("what in the hell")
-        return "wow"
+        return "wow2"
 
     def on_start2(self):
         global x
@@ -2845,13 +2845,15 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         return "help"
 
     def piplist(self):
-        import pkg_resources
+        #import pkg_resources
 
-        x = pkg_resources.get_distribution("kivymd").version
-        # logging.info(x, "listofkivymd")
+        #x = pkg_resources.get_distribution("kivymd").version
+        ## logging.info(x, "listofkivymd")
 
-        y = pkg_resources.get_distribution("kivy").version
+        #y = pkg_resources.get_distribution("kivy").version
         # logging.info(y, "listofkivy")
+        x=1
+        y=2
         return x, y
     def do_timesheets(self):
         #self.snackbarx('Almost!')
@@ -2907,13 +2909,20 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         if len(shows) < 3:
             ns = len(shows)
         for i in range(ns):
+
+            
             show_date = datetime.datetime.strptime(shows[i]["date"], "%m/%d/%Y")
             show_date = show_date.strftime("%A, %m/%d")
+            
+            #show_date='the :fuck'
+
+
             z = shows[i]["time"]
             ntime = self.ampm(z)
             fvenue = shows[i]["venue"]
-            if "las vegas" in fvenue:
-                fvenue = str.split(fvenue, "las vegas")
+            #if "Las Vegas" in fvenue:
+                #fvenue,junk = str.split(fvenue, "las vegas")
+            print ('fvenue',fvenue,'FVENUE')
 
             color = ""
             if shows[i]["canceled"] == True:
@@ -2925,7 +2934,9 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             self.root.get_screen("today").ids[li[i]].text = (
                 color + show_date + " " + ntime
             )
-            # logging.info(li[i] + str(i + 1), "thisistheid")
+            #logging.info(li[i] + str(i + 1), "thisistheid")
+            print (li[i] + str(i + 1), "thisistheid",color + shows[i]["show"])
+
             self.root.get_screen("today").ids[li[i] + "2"].text = (
                 color + shows[i]["show"]
             )
@@ -4408,7 +4419,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         logging.info(what)
 
     def newstart(self, search, useold):
-        import libs.lib_bonus
+        #import libs.lib_bonus
         from datetime import datetime, timedelta
 
         self.root.push("newhome")
@@ -5777,7 +5788,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             try:
                 self.dialog2[z].dismiss(force=True)
             except:
-                logging.info(z, "wow")
+                logging.info(z, "wow3")
             try:
                 self.dialog.dismiss(force=True)
             except:
@@ -6769,7 +6780,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         # logging.info(int(time), "zzzzzzzzzzzzzzzz")
         woop = "zz"
         hours = "5"
-        minutes = "wow"
+        minutes = "wow3"
         hours = int(time)
         try:
             hours = int(time)
@@ -6915,7 +6926,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
     def do_share_ios(self, data, title):
         if platform == "ios":
-            data = "wow"
+            data = "wow4"
             data = title
             URL = NSURL.fileURLWithPath_(data)
             UIActivityViewController = autoclass("UIActivityViewController")

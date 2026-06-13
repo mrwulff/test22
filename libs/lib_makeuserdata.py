@@ -158,7 +158,7 @@ def makeratefile(ad, rate, pos):
     dictionary = data2["positions"]
     #    dictionary = json.loads(dictionary)
     for z in range(len(dictionary)):
-        logging.info((dictionary[z]["abv"]), pos, "wow")
+        logging.info((dictionary[z]["abv"]), pos, "wo5w")
         if (dictionary[z]["abv"]) == pos:
             logging.info("omg")
             dictionary[z]["rate"] = rate
