@@ -31,13 +31,9 @@ Config.set("kivy", "log_level", "info")
 Config.write()
 
 
-# import logging
-# logging.basicConfig(
-# level=logging.INFO,
-# format='%(asctime)s %(levelname)s %(threadName)s[%(thread)s] %(message)s  %(filename)s %(lineno)d')
 
-# logging.disable(logging.ERROR)
-
+def dp(x):
+    return x
 
 from ast import Pass
 from asyncio import queues
@@ -47,7 +43,7 @@ from kivy.utils import hex_colormap
 import profile
 import time
 import sys
-from kivy.metrics import dp
+#from kivy.metrics import dp
 from kivy.base import ExceptionHandler, ExceptionManager
 
 from kivy.utils import platform
@@ -79,7 +75,7 @@ import libs.lib_ppdownloader as lib_ppdownloader
 # IconLeftWidget,
 # OneLineListItem,
 # )
-logging.info("What")
+
 
 from kivymd.uix.snackbar import (
     MDSnackbar,
@@ -117,7 +113,7 @@ from kivymd.uix.dialog import (
 import libs.lib_new
 import libs.lib_cal
 
-
+logging.info("What")
 class E(ExceptionHandler):
     def handle_exception(self, inst):
         # Logger.exception("Exception caught by ExceptionHandler")
@@ -5351,7 +5347,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
     def ach_top(self, lol):
         logging.info("achtop", lol)
-        from kivy.metrics import dp
+        #from kivy.metrics import dp
         from kivy.uix.anchorlayout import AnchorLayout
 
         self.root.push("achscore")
