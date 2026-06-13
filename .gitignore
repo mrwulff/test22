@@ -11,3 +11,4 @@ libs/__pycache__/lib_new.cpython-310.pyc
 libs/.DS_Store
 libs/__pycache__/lib_new.cpython-310.pyc
 libs/__pycache__/*.*
+libs/uix/baseclass/__pycache__/*.*

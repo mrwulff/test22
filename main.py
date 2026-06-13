@@ -2940,7 +2940,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             self.root.get_screen("today").ids[li[i] + "2"].text = (
                 color + shows[i]["show"]
             )
-            self.root.get_screen("today").ids[li[i] + "3"].text = color + fvenue[0]
+            self.root.get_screen("today").ids[li[i] + "3"].text = color + fvenue
             self.root.get_screen("today").ids[li[i]].text_color = "Blue"
             z44 = dir(self.root.get_screen("today").ids[li_l[i]])
             self.root.get_screen("today").ids[li_l[i]].icon = self.find_type(i, "type")
