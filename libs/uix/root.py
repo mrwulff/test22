@@ -1,4 +1,6 @@
 import json
+import logging
+import os
 
 from kivy.core.window import Window
 from kivy.lang import Builder
@@ -12,6 +14,9 @@ class Root(ScreenManager):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        logging.info("cwd=%s", os.getcwd())
+        logging.info("screens path=%s", utils.abs_path("screens.json"))
+        logging.info("exists=%s", os.path.exists(utils.abs_path("screens.json")))
         Window.bind(on_keyboard=self._handle_keyboard)
         # get screen data from screens.json
         try:
