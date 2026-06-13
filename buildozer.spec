@@ -20,16 +20,8 @@ presplash.filename = %(source.dir)s/images/nye2.png
 icon.filename = %(source.dir)s/images/nye.png
 
 
-# (str) Package name
-#package.name = org.kw.schedulara.kw.schedulara2.org.kw.schedulara.kw.schedulara
-package.name = org.kw.schedulara.kw.schedulara
-#package.name = org.kw.schedulara.kw.schedulara
-
-               
-
-# (str) Package domain (needed for android/ios packaging)
-package.domain = org.kw.schedulara.kw.schedulara2
-#package.domain = org.kw.schedulara.kw.schedulara
+package.name = schedulara
+package.domain = org.kw
 
 # (str) Source code where the main.py live
 source.dir = .
