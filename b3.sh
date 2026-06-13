@@ -8,16 +8,14 @@ APK=$(ls -t bin/*.apk | head -1)
 
 cp "$APK" /mnt/c/Users/kevin/Downloads/latest.apk
 
-powershell.exe -Command "& 'C:\Users\kevin\AppData\Local\Android\Sdk\platform-tools\adb.exe' shell am force-stop org.stagehandit.stagehanditinerary"
+ADB="C:\\Users\\kevin\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe"
 
-powershell.exe -Command "& 'C:\Users\kevin\AppData\Local\Android\Sdk\platform-tools\adb.exe' shell pm clear org.stagehandit.stagehanditinerary"
+powershell.exe -Command "& '$ADB' shell am force-stop  org.kw.schedulara.kw.schedulara" || true
 
-powershell.exe -Command "& 'C:\Users\kevin\AppData\Local\Android\Sdk\platform-tools\adb.exe' install -r 'C:\Users\kevin\Downloads\latest.apk'"
+powershell.exe -Command "& '$ADB' shell pm clear  org.kw.schedulara.kw.schedulara" || true
 
-powershell.exe -Command "& 'C:\Users\kevin\AppData\Local\Android\Sdk\platform-tools\adb.exe' shell monkey -p org.stagehandit.stagehanditinerary -c android.intent.cate>
+powershell.exe -Command "& '$ADB' install -r 'C:\Users\kevin\Downloads\latest.apk'"
 
-
-
-
+powershell.exe -Command "& '$ADB' shell monkey -p org.kw.schedulara.kw.schedulara -c android.intent.category.LAUNCHER 1"
 
 
