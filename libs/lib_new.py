@@ -1,3 +1,4 @@
+print("START 1")
 import logging
 
 print("lib_newwww")
@@ -34,13 +35,13 @@ def make_json_schedule(x, ad):
             #    print ("USERNAME IS UNDO, SETTING BACKDOOR TO FALSE")
             #    x["backdoor"] = False
             #    libs.lib_updateuserdata.updateuser(x, ad)
-            print ("created cache111222555555")
+            #print ("created cache111222555555")
             import libs.lib_createcache
-            print ("created cache111222")
+            #print ("created cache111222")
             libs.lib_createcache.createcache(ad, 25)
-            print ("created cache111")
+            #rint ("created cache111")
             z = open(ad + conf, "r", encoding="utf8")
-            print ("opened cache111")
+            #print ("opened cache111")
 
         if cache == False:
             logging.info("cache == false")
@@ -100,9 +101,9 @@ def make_json_schedule(x, ad):
         if "Red" in str(can):
             # logging.info ("OMG ITS RED")
             canceled = True
-        print (ax[1].get_text(), "DATEEE2")
+        #print (ax[1].get_text(), "DATEEE2")
         try:
-            print (ax[0].get_text(),'mmddyyyy')
+            #print (ax[0].get_text(),'mmddyyyy')
             show_date = datetime.strptime(ax[1].get_text(), "%m/%d/%Y")
             
             now = datetime.now()
@@ -116,7 +117,7 @@ def make_json_schedule(x, ad):
             continue
         ###added actions to column 1. date must now be column 2.
         now = datetime.now()
-        print ('afterdateee2')
+        #print ('afterdateee2')
 
 
         thisdict = {
@@ -150,7 +151,7 @@ def make_json_schedule(x, ad):
         if old == True:
             olddict.append(thisdict)
             # logging.info(old, "OLD")
-        logging.info("thisdict %s",thisdict)
+        #logging.info("thisdict %s",thisdict)
         update_history(thisdict, ad)
 
     cconfirmables = {
@@ -175,7 +176,7 @@ def make_json_schedule(x, ad):
     }
     # logging.info(olddict)
 
-    # logging.info(alldict)
+    # logging.info(alldict)DATEEE2
     import json
 
     json_object = json.dumps(s, indent=4)

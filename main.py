@@ -1,5 +1,6 @@
     ###cp \schedulara\.buildozer\android\platform\build-arm64-v8a_armeabi-v7a\dists\kw.schedulara\build\outputs\apk\debug\kw.schedullogara-0.1-arm64-v8a_armeabi-v7a-debug.apk /mnt/c/Users/kw/Desktop/app.apk
 ###
+print ('start1')
 ### RELEASE 10.2.2023
 ###
 debug = False
@@ -357,7 +358,7 @@ import urllib.request
 # import storagepath
 
 # storagepath.get_downloads_dir()
-
+"""
 if platform == "ios":
     app = App.get_running_app()
     import ios
@@ -366,6 +367,7 @@ if platform == "ios":
     NSURL = autoclass("NSURL")
     UIApplication = autoclass("UIApplication")
     sharedApplication = UIApplication.sharedApplication()
+"""
 
 
 class AboutScreen(Screen):
@@ -1678,6 +1680,7 @@ class Demo3App(MDApp):
     def build(
         self,
     ):
+        print ("BUILD")
         self.root = Root()
         self.theme_cls.theme_style_switch_animation = True
         # self.update_internal("opened", 1)
