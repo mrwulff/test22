@@ -8,11 +8,12 @@ from kivy.clock import Clock
 import humanize
 from datetime import timedelta
 from functools import partial
-
-
+import os
+import warnings
+warnings.filterwarnings("error")
 import logging
 # from kivy.logger import Logger
-
+os.system("clear") 
 if 1 == 2:
     logging.basicConfig(
         format="%(asctime)s,%(msecs)d %(levelname)-8s [%(pathname)s:%(lineno)d in "
@@ -44,7 +45,7 @@ import profile
 import time
 import sys
 #from kivy.metrics import dp
-from kivy.base import ExceptionHandler, ExceptionManager
+#from kivy.base import ExceptionHandler, ExceptionManager
 
 from kivy.utils import platform
 from kivymd.uix.button import (
@@ -76,7 +77,8 @@ import libs.lib_ppdownloader as lib_ppdownloader
 # OneLineListItem,
 # )
 
-
+from kivy.logger import LoggerHistory
+LoggerHistory.history.clear()
 from kivymd.uix.snackbar import (
     MDSnackbar,
     MDSnackbarSupportingText,
@@ -114,6 +116,7 @@ import libs.lib_new
 import libs.lib_cal
 
 logging.info("What")
+"""
 class E(ExceptionHandler):
     def handle_exception(self, inst):
         # Logger.exception("Exception caught by ExceptionHandler")
@@ -137,11 +140,11 @@ class E(ExceptionHandler):
             size_hint_x=0.5,
         ).open()
 
-        return ExceptionManager.PASS
+        #return ExceptionManager.PASS
 
-
-if debug == True:
-    ExceptionManager.add_handler(E())
+"""
+#if debug == True:
+ #   ExceptionManager.add_handler(E())
 
 #
 #
@@ -256,13 +259,13 @@ from kivymd.uix.selectioncontrol import MDSwitch
 import datetime
 import libs.lib_think as lib_think
 
-try:
-    import libs.lib_google2 as lib_google
-except:
-    pass
+#try:
+#    import libs.lib_google2 as lib_google
+#except:
+#    pass
 
 
-import libs.lib_google2 as lib_google
+#import libs.lib_google2 as lib_google
 
 import libs.lib_readuserdata as lib_readuserdata
 
@@ -1654,31 +1657,67 @@ class Demo3App(MDApp):
 
         # Window.keyboard_anim_args = {"d": 0.2, "t": "linear"}
         # Window.softinput_mode = "below_target"
+    def build3(self):
 
+        Window.clearcolor = (1, 0, 0, 1)
+
+        def test(*args):
+            Window.clearcolor = (0, 1, 0, 1)
+            print("CHANGED TO GREEN")
+
+        Clock.schedule_once(test, 5)
+
+        return Label(text="HELLO")
+    from kivy.uix.label import Label
+
+    def build6(self):
+        return Label(
+            text="HELLO",
+            font_size="60sp"
+        )
     def build(
         self,
     ):
         self.root = Root()
         self.theme_cls.theme_style_switch_animation = True
         # self.update_internal("opened", 1)
+        logging.info("Screens available: %s", list(self.root.screens_data.keys()))
 
         # from kivy.config import Config
 
-        # Config.set('graphics', 'fullscreen', 'auto')
-        # Config.set('graphics', 'window_state', 'maximized')
+        #screen', 'auto')
+        #Config.set('graphics', 'window_state', 'maximized')
         # Config.write()
         from kivy.core.window import Window
 
-        # Window.maximize()
+        #Window.maximize()
         # logging.info ('windowmax')
 
-        # Window.size = (1366, 1366)
-        # Window.fullscreen = True
+        #Window.size = (1366, 1366)
+        #Window.fullscreen = True
 
         # rv = self.root.ids.rv
         # self.data = [self.create_random_input(rv, index) for index in range(20)]
+        #self.root.push('test')
+        
+        
+        self.root.push("today")
 
-        # self.root.push("home")
+        #from kivy.uix.screenmanager import Screen
+
+        #s = Screen(name="test")
+        #self.root.add_widget(s)
+        self.root.current = "today"
+
+        logging.info("CURRENT=%s", self.root.current)
+        logging.info("SCREENS=%s", self.root.screen_names)
+        logging.info("COUNT=%s", len(self.root.screens))
+
+
+
+        logging.info("CURRENT=%s", self.root.current)
+        logging.info("SCREENS=%s", self.root.screen_names)
+        logging.info("COUNT=%s", len(self.root.screens))
         # toast("lol")
 
         zz = False
@@ -1774,7 +1813,48 @@ class Demo3App(MDApp):
 
         # fdate, ldate = self.get_dates("YTD")
         #            self.do_new_stats(fdate, ldate, "YTD")
+        #self.today(True)
+        logging.info("AFTER TODAY current=%s", self.root.current)
+        logging.info("BUILD COMPLETE")
+        logging.info("ROOT=%s", self.root)
+
+        logging.info("CURRENT SCREEN=%s", self.root.current)
+        logging.info("SCREENS=%s", self.root.screen_names)
+
+        for s in self.root.screens:
+            logging.info(
+                "SCREEN %s CHILDREN=%s",
+                s.name,
+                len(s.children)
+            )
+
+        from kivy.uix.label import Label
+        from kivy.uix.screenmanager import Screen
+
+        s = Screen(name="test2")
+        s.add_widget(Label(text="HELLO"))
+        self.root.add_widget(s)
+        #self.root.current = "test"
+        #self.root.current = "home"
+
+
+        logging.info("BUILD COMPLETE")
+        logging.info("ROOT=%s", self.root)
+        logging.info("CURRENT=%s", self.root.current)
+        logging.info("SCREENS=%s", self.root.screen_names)
+
+        try:
+            s = self.root.get_screen(self.root.current)
+            logging.info("CURRENT SCREEN OBJ=%s", s)
+        except Exception as e:
+            logging.info("SCREEN ERR=%s", e)
+
+
+
         self.today(True)
+        return self.root
+
+
 
     def keyboard(self, window, key, *args):
         if key == 27:
@@ -2863,7 +2943,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         x=self.on_start2()
 
-        # toast("today")
+        #toast("today")
         p = self.piplist()
 
         # toast(str(p))
@@ -2878,13 +2958,13 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         #except:
         #    logging.debug("cant reset")
         self.root.push("today")
-        self.root.get_screen("today").ids["pic"].source = self.get_wall("theme")
+        #self.root.get_screen("today").ids["pic"].source = self.get_wall("theme")
 
         #####hustle error checks
-        # logging.info(x, "this is xxx")
+        logging.info(x, "this is xxx")
         if 1 == 1:
             js = libs.lib_new.get_json_schedule(x, ad)
-        # logging.info("js,wtfiswrong", js)
+        logging.info("js,wtfiswrong", js)
         # except:
 
         self.root.get_screen("today").ids["pay1"].text = "blue"
@@ -2895,8 +2975,9 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         #    return "fail"
         try:
             shows = js["shows"]
+            print (shows,'shows!!!!')
         except:
-            return
+            print (shows,'shows!!!!')
         li = ["first", "second", "third"]
         li_r = ["1r", "2r", "3r"]
         li_l = ["1l", "2l", "3l"]
@@ -3062,6 +3143,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             #if 1==1:
             
             if x[menu_items_list[m]['name']] and start:
+                print("MENU COUNT", len(menu_items_list))
                 ii=self.root.get_screen("today").ids["drawer"].get_ids()
                 print (ii,'drawerids')
 
@@ -7455,7 +7537,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         year = nextdate.strftime("%Y")
         mmonth = nextdate.strftime("%B")
 
-        # paylist.secondary_text = "Payperiod: " + payperiod
+        # paylist.secondary_text = "Payperiod: " + payperiod∏
         # return (i, nextdate)
         # logging.info(month, year, "in find month", nextdate)
         return month, year, mmonth

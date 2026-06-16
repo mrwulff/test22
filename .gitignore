@@ -1,14 +1,41 @@
-libs/uix/baseclass/__pycache__/login_screen.cpython-310.pyc
-libs/__pycache__/charts.cpython-310.pyc
-libs/__pycache__/lib_ach.cpython-310.pyc
-libs/__pycache__/lib_fieldnotes.cpython-310.pyc
-libs/__pycache__/lib_new.cpython-310.pyc
-libs/uix/baseclass/__pycache__/newstats_screen.cpython-310.pyc
-libs/uix/baseclass/__pycache__/internal_stats_screen.cpython-310.pyc
-libs/uix/baseclass/__pycache__/allfieldnotes_screen.cpython-310.pyc
-libs/__pycache__/lib_new.cpython-310.pyc
+
+
+build/freetype/iphoneos-arm64/freetype-2.5.5/ChangeLog.22
+# macOS
 .DS_Store
-libs/.DS_Store
-libs/__pycache__/lib_new.cpython-310.pyc
-libs/__pycache__/*.*
-libs/uix/baseclass/__pycache__/*.*
+**/.DS_Store
+
+# Python
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Build outputs
+build/
+dist/
+
+# Kivy logs
+*.log
+
+# Virtual environments›
+venv/
+.env/
+kivytest/
+kivytest311/
+
+# Xcode
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Kivy-iOS generated junk
+YourApp/build/
+YourApp/dist/
+
+# Simulator/device artifacts
+*.app
+.cache/freetype-freetype-2.5.5.tar.bz2
+.cache/
+.DS_Store
+main.oldtest.py

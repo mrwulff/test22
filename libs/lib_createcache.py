@@ -1,15 +1,20 @@
+import logging
+import datetime
+import random
+import platform
+import appdirs
+import os
 def createcache(ad, numshows):
-    # logging.info ('THISISIOS',ad)
-    import platform
-    import appdirs
+    logging.info ('THISISIOS2 %s',ad)
+
 
     # appdirs.user
     # pf=( platform.platform()[:1])
     if ad == "ad":
         ad = appdirs.user_config_dir()
+        ad=ad+"demo3/"
 
-    import datetime
-    import random
+    logging.info ('THISISIOS %s',ad)
 
     # from faker import Faker
     # fake = Faker()
@@ -120,6 +125,8 @@ def createcache(ad, numshows):
         next = (
             """<tr>
             <td class="cell-noborder" style="background-color:Gray;">"""
+            + "dgR"
+            + """</td><td class="cell-noborder" style="background-color:Gray;">"""
             + nexts
             + """</td><td class="cell-noborder" style="background-color:Gray;width:10px;">"""
             + (random.choice(ctimes))
@@ -134,10 +141,14 @@ def createcache(ad, numshows):
         </tr><br>\n"""
         )
         aaa.write(next)
+        print (next)
     aaa.write(conf)
     aaa.write(footers)
     aaa.close()
-    # ('omg it saved a fucking file')
+    print ('omg it saved a fucking file')
+    print(os.path.abspath(ad + "/conf.html"))
+    #input('press enter to continue')
+
     return ad
 
 

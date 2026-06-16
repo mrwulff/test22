@@ -108,12 +108,12 @@
     BoxLayout:
         orientation: "vertical"
         id: sv3
-        MDTopbar:
+        MDTopAppBar:
             set_notch: True
             title: "Schedulee"
             title: ""
             height: app.mheight
-            type: app.mtype
+            #type: app.mtype
             left_action_items: [["magnify", lambda screen: app.search_menu(),'search'],["home-circle", lambda screen: app.mainmenuf(),'mm'],]
             right_action_items: [["calendar-blank-multiple", lambda x: app.do_history(),'calendar'],["menu", lambda screen: app.do_settings(),'settings'],["menu", lambda screen: app.make_stats('all',0,0),'makestats']]
         

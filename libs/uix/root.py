@@ -50,6 +50,7 @@ class Root(ScreenManager):
 
         # checks if the screen is already added to the screen-manager
         if not self.has_screen(screen_name):
+            logging.info("LOAD_SCREEN %s", screen_name)
             screen = self.screens_data[screen_name]
             # load the kv file (libs/uix/kv/screen_kv_file.kv)
             try:
@@ -62,9 +63,16 @@ class Root(ScreenManager):
             # calls the screen class to get the instance of it
             # (ScreenObjectName())
             screen_object = eval(screen["object"])
+
+            logging.info("CREATING %s", screen["object"])
+            screen_object = eval(screen["object"])
+            logging.info("CREATED %s", screen["object"])
+
+
             # set the screen name using screen_name arg
             screen_object.name = screen_name
             # add the screen to the screen-manager
+            logging.info("ADDING %s", screen_name)
             self.add_widget(screen_object)
 
     def push(self, screen_name, side="left"):
