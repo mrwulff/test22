@@ -4057,12 +4057,13 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         # logging.info("check confirm", xx9)
         logging.info(xx9["num_shows"], "NUMSHOWS")
         if xx9["num_shows"] > 0 and x["usecache"] == False:
-            logging.info(x, "thisisx")
-            logging.info(xx9["num_shows"])
+            #logging.info(x, "thisisx")
+            #logging.info(xx9["num_shows"])
             self.new_confirm("all")
             #toast("Success")
-            self.update_internal("confirm", "1")
-            self.update()
+        self.update_internal("confirm", "1")
+        self.update()
+        print ('updating')
         if x["usecache"] == True:
             toast("You are in demo mode")
 
