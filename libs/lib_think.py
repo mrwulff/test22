@@ -1,4 +1,8 @@
 import logging
+from multiprocessing import context
+import ssl
+
+import certifi
 
 
 def login(ad, x, ios, App):
@@ -14,6 +18,13 @@ def login(ad, x, ios, App):
     logging.debug("using real data")
     ssl.verify = False
     ssl._create_default_https_context = ssl._create_unverified_context
+
+    import certifi
+    ssl.create_default_context(cafile=certifi.where())
+    context = ssl.create_default_context(cafile=certifi.where())
+    logging.info("context %s", context)
+    logging.info("ssl:::: %s", ssl)
+
     # logging.info("using real data66")
     logging.info(libs.lib_enc.r_password(x["password"]))
     # logging.info(x["username"])

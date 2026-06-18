@@ -1,7 +1,6 @@
 print("START 1")
 import logging
 
-print("lib_newwww")
 
 
 def make_json_schedule(x, ad):
@@ -49,7 +48,7 @@ def make_json_schedule(x, ad):
 
             # lib_createcache.createcache(ad, 15)
             good_login = True
-            good_login = libs.lib_think.login(ad, x, False, False)
+            #good_login = libs.lib_think.login(ad, x, False, False)
             if good_login == False:
                 return False
             z = open(ad + conf, "r", encoding="utf8")
@@ -333,9 +332,9 @@ def update_history(thisdict, ad):
 
 
 def get_json_schedule(x, ad):
-    # import libs.lib_think
 
-    # logging.info(x["usecache"], "usecache!!!")
+
+    logging.info( "get_json_schedule")
     if x["usecache"] == "True" or x["usecache"] == True or x["usecache"] == "true":
         logging.info("USING CACHE true")
         show = "jason_show_cache_fake.json"
@@ -348,17 +347,18 @@ def get_json_schedule(x, ad):
             or x["refreshreload"] == True
             or x["refreshreload"] == "true"
         ):
-            logging.info("forcing new data", type(x["refreshreload"]))
-            make_json_schedule(x, ad)
+            logging.info("no cache! (orig) %s", (x["refreshreload"]))
+            #make_json_schedule(x, ad)
             # good_login = lib_think.login(ad, x, "True", App)
-    logging.info("showasdf", show)
-    print ("showasdf", show)
+    #logging.info("showasdf", show)
+    #print ("showasdf", show)
     data = get_json_schedule_2(x, ad, show)
     return data
 
 
-def get_json_schedule_1(x, ad):
-    # import libs.lib_think
+def get_json_schedule_123(x, ad):
+    #get_json_schedule_1
+    import libs.lib_think
 
     # logging.info(x["usecache"], "usecache!!!")
     if x["usecache"] == "True" or x["usecache"] == True or x["usecache"] == "true":
@@ -373,9 +373,9 @@ def get_json_schedule_1(x, ad):
             or x["refreshreload"] == True
             or x["refreshreload"] == "true"
         ):
-            logging.info("forcing new data from thingys", type(x["refreshreload"]))
+            logging.info("forcing new data from thingys`123 %s", type(x["refreshreload"]))
             # make_json_schedule(x, ad)
-            # good_login = lib_think.login(ad, x, "True", App)
+            good_login = lib_think.login(ad, x, "True", App)
             pass
     data = get_json_schedule_2(x, ad, show)
     return data
@@ -525,29 +525,22 @@ def make_menu(self, x):
 def get_json_schedule_2(x, ad, show):
     import json, os
 
-    logging.info("get_json_schedule2222",x,ad,show)
-
     if 1 == 1:
-        logging.info("no " + show + "  Createing now")
-        #logging.info("forcing new data", type(x["refreshreload"]))
-        if 1==1:
-        #if x["refreshreload"] == False:
-            make_json_schedule(x, ad)
-            print("made json schedule55")
+        logging.info("get json schedule2 %s", (x["refreshreload"]))
+
+
         nf = os.path.join(ad, show)
-        # logging.info(nf, "NF lib new")
         try:
             with open(nf) as json_file:
                 data = json.load(json_file)
-                logging.info(data,'loaded json super fast')
-                logging.info("LOADED JSON FILE SUPER FAST on second try")
+                logging.info('loaded json super fast')
         except:
             try:
                 make_json_schedule(x, ad)
                 with open(nf) as json_file:
                     data = json.load(json_file)
                     # logging.info(data)
-                    logging.info("LOADED JSON FILE SUPER FAST on second try")
+                    logging.info("LOADED JSON FILE SUPER FAST on second try part 2")
             except:
                 data = {"num_shows": 0}
 

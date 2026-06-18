@@ -15,13 +15,13 @@ class Root(ScreenManager):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        logging.info("cwd=%s", os.getcwd())
-        logging.info("screens path=%s", utils.abs_path("screens.json"))
-        logging.info("exists=%s", os.path.exists(utils.abs_path("screens.json")))
+        #logging.info("cwd=%s", os.getcwd())
+        #logging.info("screens path=%s", utils.abs_path("screens.json"))
+        #logging.info("exists=%s", os.path.exists(utils.abs_path("screens.json")))
         Window.bind(on_keyboard=self._handle_keyboard)
         # get screen data from screens.json
         path = resource_find("screens.json")
-        print(path,"THIS IS THE FREAKING PATH")
+        #print(path,"THIS IS THE FREAKING PATH")
         try:
             with open(path) as f:
                 self.screens_data = json.load(f)

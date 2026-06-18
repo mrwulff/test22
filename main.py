@@ -1,6 +1,13 @@
     ###cp \schedulara\.buildozer\android\platform\build-arm64-v8a_armeabi-v7a\dists\kw.schedulara\build\outputs\apk\debug\kw.schedullogara-0.1-arm64-v8a_armeabi-v7a-debug.apk /mnt/c/Users/kw/Desktop/app.apk
 ###
-print ('start1')
+#import os
+#os.system('clear')
+import kivymd.uix.button as b
+
+
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
 ### RELEASE 10.2.2023
 ###
 debug = False
@@ -9,19 +16,16 @@ from kivy.clock import Clock
 import humanize
 from datetime import timedelta
 from functools import partial
-import os
 import warnings
-warnings.filterwarnings("error")
+#warnings.filterwarnings("error")
 import logging
-# from kivy.logger import Logger
-os.system("clear") 
-if 1 == 2:
-    logging.basicConfig(
-        format="%(asctime)s,%(msecs)d %(levelname)-8s [%(pathname)s:%(lineno)d in "
-        "function %(funcName)s] %(message)s",
-        datefmt="%Y-%m-%d:%H:%M:%S",
-        level=logging.DEBUG,
-    )
+try:
+    import kivymd
+except Exception:
+    import traceback
+    traceback.print_exc()
+    raise
+
 
 
 from kivy.config import Config
@@ -31,7 +35,7 @@ Config.set("kivy", "log_name", "my_file.log")
 Config.set("kivy", "log_level", "info")
 
 Config.write()
-
+#os.system('clear')
 
 
 def dp(x):
@@ -42,19 +46,15 @@ from asyncio import queues
 from kivy.utils import hex_colormap
 
 
-import profile
+#import profile
 import time
-import sys
-#from kivy.metrics import dp
-#from kivy.base import ExceptionHandler, ExceptionManager
+
 
 from kivy.utils import platform
-from kivymd.uix.button import (
-    MDFabButton,
-    MDExtendedFabButton,
-    MDExtendedFabButtonText,
-    MDExtendedFabButtonIcon,
-)
+from kivymd.uix.button import MDExtendedFabButton
+from kivymd.uix.button import MDExtendedFabButtonText
+print ('after imports')
+
 from kivymd.uix.navigationdrawer import (
     MDNavigationLayout,
     MDNavigationDrawer,
@@ -116,7 +116,6 @@ from kivymd.uix.dialog import (
 import libs.lib_new
 import libs.lib_cal
 
-logging.info("What")
 """
 class E(ExceptionHandler):
     def handle_exception(self, inst):
@@ -350,14 +349,12 @@ if platform == "android5":
 
 
 toc1 = time.perf_counter()
-logging.info(str(tic - toc1) + "firsttimer")
+#logging.info(str(tic - toc1) + "firsttimer")
 from kivy.utils import platform
 
 import urllib.request
 
-# import storagepath
 
-# storagepath.get_downloads_dir()
 """
 if platform == "ios":
     app = App.get_running_app()
@@ -719,7 +716,7 @@ class Demo3App(MDApp):
     sp = True
 
     i = 0
-    logging.info(str(tic - time.perf_counter()) + "supershort")
+    #logging.info(str(tic - time.perf_counter()) + "supershort")
     cspacing = 10
 
     mtype = "top"
@@ -1680,48 +1677,19 @@ class Demo3App(MDApp):
     def build(
         self,
     ):
-        print ("BUILD")
+        print ("def BUILD")
         self.root = Root()
         self.theme_cls.theme_style_switch_animation = True
-        # self.update_internal("opened", 1)
-        logging.info("Screens available: %s", list(self.root.screens_data.keys()))
 
-        # from kivy.config import Config
-
-        #screen', 'auto')
-        #Config.set('graphics', 'window_state', 'maximized')
-        # Config.write()
         from kivy.core.window import Window
 
-        #Window.maximize()
-        # logging.info ('windowmax')
 
-        #Window.size = (1366, 1366)
-        #Window.fullscreen = True
-
-        # rv = self.root.ids.rv
-        # self.data = [self.create_random_input(rv, index) for index in range(20)]
-        #self.root.push('test')
-        
         
         self.root.push("today")
 
-        #from kivy.uix.screenmanager import Screen
-
-        #s = Screen(name="test")
-        #self.root.add_widget(s)
-        self.root.current = "today"
-
-        logging.info("CURRENT=%s", self.root.current)
-        logging.info("SCREENS=%s", self.root.screen_names)
-        logging.info("COUNT=%s", len(self.root.screens))
+        #self.root.current = "today"
 
 
-
-        logging.info("CURRENT=%s", self.root.current)
-        logging.info("SCREENS=%s", self.root.screen_names)
-        logging.info("COUNT=%s", len(self.root.screens))
-        # toast("lol")
 
         zz = False
         if 1 == 1:
@@ -1730,13 +1698,8 @@ class Demo3App(MDApp):
 
                 x = libs.lib_readuserdata.readuserdata(App, ad, ios)
 
-                if x.get("backdoor") == False:
-                    zz = False
-                    logging.info("user11false")
                 logging.info("good user read")
-                # toast("lol")
-                # toast(str(x.get("backdoor")+' test'))
-                # logging.info('BACKDOOR')
+
             except:
                 logging.info("bad user read")
                 import libs.lib_makeuserdata
@@ -1745,16 +1708,8 @@ class Demo3App(MDApp):
 
                 x = libs.lib_readuserdata.readuserdata(App, ad, ios)
 
-                # toast('backdoor=unknown')
-                # self.snackbar = Snackbar(text="bla", bg_color=self.theme_cls.primary_color)
-                # self.snackbar.open()
-        logging.info(str(zz) + " BACKDOOR true or false")
         self.theme_cls.primary_palette = x["pcolor"]
-        if x["theme"] == "Light":
-            logging.info("switching to light mode")
-        else:
-            self.theme_cls.switch_theme()
-        # if zz == True:
+        """
         if 1 == 2:
             self.data.update(
                 {
@@ -1813,16 +1768,9 @@ class Demo3App(MDApp):
                     ]
                 }
             )
+        """
 
-        # fdate, ldate = self.get_dates("YTD")
-        #            self.do_new_stats(fdate, ldate, "YTD")
-        #self.today(True)
-        logging.info("AFTER TODAY current=%s", self.root.current)
-        logging.info("BUILD COMPLETE")
-        logging.info("ROOT=%s", self.root)
 
-        logging.info("CURRENT SCREEN=%s", self.root.current)
-        logging.info("SCREENS=%s", self.root.screen_names)
 
         for s in self.root.screens:
             logging.info(
@@ -2907,7 +2855,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
     def find_type(self, a, b):
         # z=self.root.get_screen("today").ids["first"].text
-        js = libs.lib_new.get_json_schedule(x, ad)
+        js = libs.lib_new.just_get_json_schedule(x, ad)
         try:
             icon = js["shows"][a][b]
         except:
@@ -2941,49 +2889,28 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         logging.info("Downloaded  " + str(new) + " out of  " + str(paystubs))
         self.snackbarx("Downloaded  " + str(new) + " out of  " + str(paystubs))
     def today(self,start):
+        logging.info('Starting today function')
         import libs.lib_think
         global draw_menu
 
         x=self.on_start2()
-
-        #toast("today")
-        p = self.piplist()
-
-        # toast(str(p))
-        # logging.info(str(p), "piplistggggg")
-
-        #  libs.lib_think.login_basic(ad, x, App)
-
-        # self.update_internal("opened", 1)
-
-        #try:
-        #    self.root.current_screen.ids["drawer"].clear_widgets()
-        #except:
-        #    logging.debug("cant reset")
-        self.root.push("today")
-        #self.root.get_screen("today").ids["pic"].source = self.get_wall("theme")
-
-        #####hustle error checks
-        logging.info(x, "this is xxx")
         if 1 == 1:
             js = libs.lib_new.get_json_schedule(x, ad)
-        logging.info("js,wtfiswrong", js)
-        # except:
+        logging.info("js,wtfiswrong %s", js)
 
-        self.root.get_screen("today").ids["pay1"].text = "blue"
-        self.root.get_screen("today").ids["pay2"].text = "green"
-        self.root.get_screen("today").ids["pay3"].text = "red"
 
-        #    toast("login failed5")
-        #    return "fail"
-        try:
-            shows = js["shows"]
-            print (shows,'shows!!!!')
-        except:
-            print (shows,'shows!!!!')
+
         li = ["first", "second", "third"]
         li_r = ["1r", "2r", "3r"]
         li_l = ["1l", "2l", "3l"]
+
+        try:
+            shows = js["shows"]
+            logging.info ("jsshows!!!! %s",len(shows))
+        except:
+            logging.info ('shows!!!! %s',len(shows))
+        
+
 
         ns = 3
         if len(shows) < 3:
@@ -3002,7 +2929,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             fvenue = shows[i]["venue"]
             #if "Las Vegas" in fvenue:
                 #fvenue,junk = str.split(fvenue, "las vegas")
-            print ('fvenue',fvenue,'FVENUE')
+            #print ('fvenue',fvenue,'FVENUE')
 
             color = ""
             if shows[i]["canceled"] == True:
@@ -3015,6 +2942,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 color + show_date + " " + ntime
             )
             #logging.info(li[i] + str(i + 1), "thisistheid")
+
             print (li[i] + str(i + 1), "thisistheid",color + shows[i]["show"])
 
             self.root.get_screen("today").ids[li[i] + "2"].text = (
@@ -3023,15 +2951,10 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             self.root.get_screen("today").ids[li[i] + "3"].text = color + fvenue
             self.root.get_screen("today").ids[li[i]].text_color = "Blue"
             z44 = dir(self.root.get_screen("today").ids[li_l[i]])
-            self.root.get_screen("today").ids[li_l[i]].icon = self.find_type(i, "type")
-            self.root.get_screen("today").ids[li_r[i]].icon = self.find_type(i, "pos")
-            # logging.info(z44, "leftwidget")
-            fff = self.root.get_screen("today").ids[li[i]].children
-            # logging.info(fff, dir(fff), "FFFFFFFF")
-            # fff.MDListItemSupportingText.text = "wowwwww"
-            # self.root.get_screen("today").ids["first1"].text = ntime
-            # self.root.get_screen("today").ids["first2"].text = ntime
-            # elf.root.get_screen("today").ids["first3"].text = ntime
+            #self.root.get_screen("today").ids[li_l[i]].icon = self.find_type(i, "type")
+            #self.root.get_screen("today").ids[li_r[i]].icon = self.find_type(i, "pos")
+
+
         qq = self.root.get_screen("today").ids
 
         # qq.branding_f.source = "images/logo/logo2.png"
@@ -3087,7 +3010,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             if numconf > 1:
                 stat_text = str(numconf) + " Shows Confirmable.  Click To Confrim All"
             stat_text2 = "Next show in " + diff3
-            stat_text3 = "Last updated " + diff2
+            stat_text3 = "Last updated:: " + diff2
 
             self.root.get_screen("today").ids["s1"].text = stat_text
 
@@ -3129,11 +3052,11 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         ###make calendar
         self.reset_cal()
 
-        # Clock.schedule_interval(self.update_label, 0.20)
-        Clock.schedule_interval(partial(self.update_label, js), 3)
-        # stats={"name":'Stats',"func":self.prep_stats(),'icon':'chart-areaspline','order':3}
+        print("SCHEDULING UPDATE LABEL")
 
-        # stats={"name":'Login',"func": ( lamda x:self.change_screen('login', 'left')),'icon':'account-circle','order':2}
+        #Clock.schedule_interval(partial(self.update_label, js), 3)
+        self._update_event = Clock.schedule_interval(self.update_label, 10)
+
 
         menu_items_list,x,update = libs.lib_new.make_menu(self,x)
         for m in range(len(menu_items_list)):
@@ -3146,9 +3069,9 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             #if 1==1:
             
             if x[menu_items_list[m]['name']] and start:
-                print("MENU COUNT", len(menu_items_list))
+                #print("MENU COUNT", len(menu_items_list))
                 ii=self.root.get_screen("today").ids["drawer"].get_ids()
-                print (ii,'drawerids')
+                #print (ii,'drawerids')
 
                 self.root.get_screen("today").ids["drawer"].add_widget(
                     MDNavigationDrawerItem(
@@ -3184,27 +3107,24 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
             bb = bb + 1
         diff3 = humanize.naturaltime(now - next_show)
-        diff2 = "Updated " + diff2
+        diff2 = "Updated> " + diff2
         diff3 = "Next Show: " + diff3
         if now.second % 2 == 0:
             diff2 = diff2 + str("...")
 
         return diff2, diff3
 
-    def update_label(self, dt, u):
-        diff3, diff2 = self.check_update(dt)
+    def update_label(self, dt):
+        js = libs.lib_new.get_json_schedule(x, ad)
+
+        diff2, diff3 = self.check_update(js)
+        print ("UPDATING LABEL", diff2, diff3)
         try:
-            self.root.get_screen("today").ids["s3"].text = str(diff3)
-            self.root.get_screen("today").ids["s2"].text = str(diff2)
+            self.root.get_screen("today").ids["s2"].text = str(diff3)
+            self.root.get_screen("today").ids["s3"].text = str(diff2)
         except:
             logging.debug("today does not exist")
-        # callist = self.root.get_screen("today").ids["cal_month_text"]
 
-        # label.text = temp_text[index:index+15]
-        # index += 1
-
-        # if index >= text_length:
-        #    index = 0
 
     def reset_cal(self):
         print("lol")
@@ -4506,27 +4426,13 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         self.root.push("newhome")
         self.root.current_screen.ids["rlist"].clear_widgets()
-
+        logging.info('newstart!!!:!:!:!:!:!:')
         js = libs.lib_new.get_json_schedule(x, ad)
         if useold == False:
             shows = js["shows"]
         if useold == True:
             shows = js["old_shows"]
-        rshows = (len(shows)) - (js["num_shows"])
-        """
-        self.root.get_screen("today").ids[li[i] + "1"].text = (
-                color + show_date + " " + ntime
-            )
-            self.root.get_screen("today").ids[li[i]].text = (
-                color + show_date + " " + ntime
-            )
-            logging.info(li[i] + str(i + 1), "thisistheid")
-            self.root.get_screen("today").ids[li[i] + "2"].text = (
-                color + shows[i]["show"]
-            )
-            self.root.get_screen("today").ids[li[i] + "3"].text = color + fvenue[0]
-        
-        """
+
 
         for i in range(len(shows)):
             show_date = datetime.strptime(shows[i]["date"], "%m/%d/%Y")
@@ -4537,10 +4443,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             color = ""
             if shows[i]["canceled"] == True:
                 color = "[color=#ff0000]"
-            # color = "[color=#ff000055]"
-
-            # if "las vegas" in fvenue:
-            #   fvenue = str.split(fvenue, "las vegas")
             self.root.get_screen("newhome").ids.rlist.add_widget(
                 MDListItem(
                     MDListItemLeadingIcon(
