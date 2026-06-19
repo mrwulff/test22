@@ -1,5 +1,9 @@
 print("START 1")
 import logging
+import libs.lib_think as lib_think
+from kivy.app import App
+
+
 
 
 
@@ -337,10 +341,10 @@ def get_json_schedule(x, ad):
     logging.info( "get_json_schedule")
     if x["usecache"] == "True" or x["usecache"] == True or x["usecache"] == "true":
         logging.info("USING CACHE true")
-        show = "jason_show_cache_fake.json"
+        show = "jason_show_cache_real.json"
 
     if x["usecache"] == "False" or x["usecache"] == False or x["usecache"] == "false":
-        # logging.info("USING Real?", x["refreshreload"])
+        logging.info("USING Real? %s", x["refreshreload"])
         show = "jason_show_cache_real.json"
         if (
             x["refreshreload"] == "True"
@@ -349,10 +353,14 @@ def get_json_schedule(x, ad):
         ):
             logging.info("no cache! (orig) %s", (x["refreshreload"]))
             #make_json_schedule(x, ad)
-            # good_login = lib_think.login(ad, x, "True", App)
-    #logging.info("showasdf", show)
+    good_login = lib_think.login(ad, x, "True", App)
+    logging.info("showasdf %s", show)
     #print ("showasdf", show)
     data = get_json_schedule_2(x, ad, show)
+    #logging.info("did you get data yet? %s", data)
+    #print ('did you get data yet',data)
+    
+
     return data
 
 

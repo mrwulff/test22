@@ -101,7 +101,7 @@ from kivymd.uix.textfield import (
 
 from kivymd.uix.divider import MDDivider
 from kivy.uix.widget import Widget
-from kivymd.uix.button import MDButton, MDButtonText
+from kivymd.uix.button import MDButton, MDButtonText,MDFabButton
 
 
 from kivymd.uix.dialog import (
@@ -281,7 +281,7 @@ os.environ["KIVY_NO_CONSOLELOG"] = "1"
 import kivy
 
 cwd = os.getcwd()
-from pyparsing import ParseExpression
+#from pyparsing import ParseExpression
 import webcolors
 
 w = 1125 / 3
@@ -648,7 +648,7 @@ class Content2(MDBoxLayout):
     pass
 
 
-from plyer import filechooser
+#from plyer import filechooser
 
 """
 class CountDownLbl(Label):
@@ -2622,7 +2622,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             gg = d[1][d[0]]
             d = d[0]
         else:
-            js = libs.lib_new.get_json_schedule_1(x, ad)
+            js = libs.lib_new.just_get_json_schedule(x, ad)
             gg = js["shows"][d]
 
         pos = libs.lib_positions.get_position_name(ad, gg["pos"])
@@ -2888,6 +2888,14 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         logging.info("Downloaded  " + str(new) + " out of  " + str(paystubs))
         self.snackbarx("Downloaded  " + str(new) + " out of  " + str(paystubs))
+    def erase(self):
+
+        MDSnackbar(
+            MDSnackbarText(
+                text="Deleting bad data..."
+            ))
+        print ('showed the snackbar')
+
     def today(self,start):
         logging.info('Starting today function')
         import libs.lib_think
@@ -2896,7 +2904,10 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         x=self.on_start2()
         if 1 == 1:
             js = libs.lib_new.get_json_schedule(x, ad)
-        logging.info("js,wtfiswrong %s", js)
+        logging.info(f"js,wtfiswrong {js}")
+        print ('wtfmanisyourdeal',js)
+        if 1==1:
+            self.erase()
 
 
 
@@ -6874,8 +6885,8 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         if platform == "ios":
             self.do_share_ios(out_file, "Some title")
-        if platform != "ios":
-            filechooser.open_file(on_selection=self.handle_selection)
+        #if platform != "ios":
+        #    filechooser.open_file(on_selection=self.handle_selection)
 
     def share_android(self, title):
         # https://stackoverflow.com/questions/38983649/kivy-android-share-image

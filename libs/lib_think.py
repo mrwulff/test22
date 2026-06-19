@@ -9,10 +9,11 @@ def login(ad, x, ios, App):
     import mechanize
     import ssl
     import libs.lib_enc
+    print (x["password"],x["username"])
 
-    if ios == True:
-        app = App.get_running_app()
-        ad = app.user_data_dir
+    #if ios == True:
+    #    app = App.get_running_app()
+    #    ad = app.user_data_dir
     # logging.info (x)
 
     logging.debug("using real data")
@@ -28,6 +29,7 @@ def login(ad, x, ios, App):
     # logging.info("using real data66")
     logging.info(libs.lib_enc.r_password(x["password"]))
     # logging.info(x["username"])
+
 
     PE_LOGIN = "https://www.thinkrhino.com/employee/" + x["city"] + "/index.aspx"
     PE_COUNTRIES = "https://www.thinkrhino.com/employee/" + x["city"] + "/Schedule.aspx"
