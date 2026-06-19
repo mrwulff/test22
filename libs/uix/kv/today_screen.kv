@@ -421,7 +421,7 @@
                                 id:cal_month_text
                     MDCard:
                         orientation: "horizontal"
-                        size_hint: .5, None
+                        size_hint: 1, None
                         font_size:3
                         #size:.5,.5
                         height: dp(42)
@@ -433,71 +433,17 @@
                         id:calm
                         text:'month'
                         #md_bg_color:app.cal_bg
-                    MDCard:
-                        font_size:app.cal_font_size
-                        radius: app.cradius
-                        id:cal0
-                        orientation: "horizontal"
-                        size_hint_x: 1
+
+
+
+                    MDGridLayout:
+                        id: calgrid
+                        cols: 7
+                        spacing: dp(2)
                         size_hint_y: None
-                        height: app.cal_height
-                        spacing: app.cal_spacing
-
-
-                    MDCard:
-                        font_size:app.cal_font_size
-                        radius: app.cradius
-                        id:cal1
-                        orientation: "horizontal"
-                        size_hint_x: 1
-                        size_hint_y: None
-                        height: app.cal_height
-                        spacing: app.cal_spacing
-
-                    MDCard:
-                        font_size:app.cal_font_size
-                        radius: app.cradius
-                        id:cal2
-                        orientation: "horizontal"
-                        size_hint_x: 1
-                        size_hint_y: None
-                        height: app.cal_height
-                        spacing: app.cal_spacing
-
-                    MDCard:
-                        font_size:app.cal_font_size
-                        radius: app.cradius
-                        id:cal3
-                        orientation: "horizontal"
-                        size_hint_x: 1
-                        size_hint_y: None
-                        height: app.cal_height
-                        spacing: app.cal_spacing
-
-                    MDCard:
-                        font_size:app.cal_font_size
-                        radius: app.cradius
-                        id:cal4
-                        orientation: "horizontal"
-                        size_hint_x: 1
-                        size_hint_y: None
-                        height: app.cal_height
-                        spacing: app.cal_spacing
-
-
-                    MDCard:
-                        
-                        font_size:app.cal_font_size
-                        radius: app.cradius
-                        id:cal5
-                        orientation: "horizontal"
-                        size_hint_x: 1
-                        size_hint_y: None
-                        height: app.cal_height
-                        spacing: app.cal_spacing
-
-
-
+                        height: self.minimum_height
+                        row_default_height: dp(48)
+                        row_force_default: True
 
                 #Label:
     MDNavigationDrawer:

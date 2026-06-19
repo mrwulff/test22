@@ -10,7 +10,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 ### RELEASE 10.2.2023
 ###
-debug = True
+debug = False
 debug_online = False
 from kivy.clock import Clock
 import humanize
@@ -3203,80 +3203,35 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         now_month = now.strftime("%m")
         now_year = now.strftime("%Y")
         now_day = now.strftime("%d")
-        from kivy.uix.button import Button
-
-        # t_color = self.theme_cls.backgroundColor
-
-        for z in range(6):
-            self.root.current_screen.ids["cal" + str(z)].clear_widgets()
-        self.root.current_screen.ids["calm"].clear_widgets()
+        #from kivy.uix.button import Button
         c = libs.lib_cal.basic_cal(month, year)
-        # yyy = self.theme_cls
-        # logging.info(dir(yyy))
 
         week_l = ["S", "M", "T", "W", "T", "F", "S"]
-        cell_width = (Window.width - dp(20)) / 7
-        cell_height = cell_width  
-        calendar_width = self.root.get_screen("today").ids.cal0.width
-        cell_width = calendar_width / 7    
-        for we in range(len(week_l)):
-            self.root.get_screen("today").ids["calm"].add_widget(
-                # MDRectangleFlatIconButton(
-                # MDRectangleFlatButton(
-                MDButton(MDButtonText(
-        text=str(week_l[we])
-    ),
-                    # MDIconButton(
-                    size_hint=(None, None),
-                    size=(cell_width, cell_width),
-                    # icon=ic,
-                    # icon_size=dp(6),
-                    #font_size=cell_width * 0.3,
-                    text=str(week_l[we]),
-                    # width=500,
-                    # type=type_button,
-                    theme_icon_color="Custom",
-                    # text_color=t_color,
-                    #md_bg_color=self.theme_cls.onErrorColor,
-                    md_bg_color="red",
-                    # background_color=b_color,
-                    # color=t_color
-                    # size_hint_max=(5, 5),
-                    # primary_dark
-                    # icon_color=data[type_button]["text_color"],
-                    
-                )
+        screen = self.root.get_screen("today")  
+        screen.ids.calm.clear_widgets()
+        screen.ids.calgrid.clear_widgets()
+        for day_name in week_l:
+            screen.ids.calm.add_widget(
+            MDCard(
+                MDLabel(
+                    text=day_name,
+                    halign="center",
+                ),
+                radius=[20],
+                size_hint_y=None,
+                height=dp(40),
             )
+        )
+
         for week in range(len(c)):
             for day in range(len(c[1])):
                 dd = c[week][day]
 
-                # logging.info(dd, type(dd), dd.day, "c sub week")
-                b_color = "black"
-                # t_color = "white"
+                b_color = (1, 1, 1, 1)
                 status = "false"
-
                 ic = ""
                 gray = "EEEEEE"
-                if dd.day < int(c[week][0].day):
-                    b_color = gray
-                if dd.day % 4 == 0:
-                    ic = "pencil"
-                    # t_color = self.theme_cls.bg_dark
-                if week == 0:
-                    if dd.day <= int(c[week][6].day):
-                        b_color = "black"
-                        # logging.info("changing it to primamary")
-                    else:
-                        b_color = gray
-                        # logging.info("changing it to black")
-                if (
-                    int(dd.day) == int(now_day)
-                    and int(dd.month) == int(now_month)
-                    and int(dd.year) == int(now_year)
-                ):
-                    b_color = self.theme_cls.primaryColor
-                    # t_color = self.theme_cls.secondaryColor
+                
 
                 try:
                     status, info = self.check_working(
@@ -3291,59 +3246,87 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 except:
                     status_old = False
 
-                # rint(status, "STATUSSSSS")
-                t_color = "gray"
-                if status_old == True:
-                    t_color = self.theme_cls.secondaryColor
-                if status == True:
-                    # self.theme_cls.primary_palette = x["pcolor"]
-                    ####GIG COLOR
-                    t_color = "blue"
-                    # t_color = self.theme_cls.primaryColor
+                color_a = (1, 1, 1, 1)        # current month
+                color_b = (.3, .3, .3, 1)     # prev/next month
+                color_c = (.2, .7, 1, 1)      # show day
+                color_d = (1, .5, .5, 1)      # today
+                b_color = color_a
+                t_color = (0, 0, 0, 1)
+                is_today = (
+                dd.day == int(now_day)
+                and dd.month == int(now_month)
+                and dd.year == int(now_year)
+            )
 
-                # if status == False:
+                is_current_month = dd.month == int(month)
 
-                self.root.get_screen("today").ids["cal" + str(week)].add_widget(
-                    # MDRectangleFlatIconButton(
-                    # MDRectangleFlatButton(
-                    MDButton(MDButtonText(
-        text=str(dd.day),text_color="green",
-    ),
-                        # (
-                        size_hint=(None, None),
-                        size=(cell_width, cell_width),
+                has_show = status
+                if not is_current_month:
+                    b_color = color_b
 
-                        md_bg_color="green",
-                        theme_icon_color="Secondary",
-                        #text_color=self.theme_cls.secondaryColor,
-                        on_release=self.find_cal,
-                    )
+                if has_show:
+                    b_color = color_c
+                    t_color = (1, 1, 1, 1)
+
+                if is_today:
+                    b_color = color_d
+                    t_color = (1, 1, 1, 1)
+                print(dd.day, b_color, t_color)
+                screen.ids.calgrid.add_widget(
+                    self.make_day_button(dd, b_color, t_color)
                 )
+                                
+
+                
         callist = self.root.get_screen("today").ids["cal_month_text"]
         callist.text = mmonth + " " + year
+        
+
+
+
+    def make_day_button(self, dd, b_color, t_color):
+        return MDButton(
+            MDButtonText(
+                text=str(dd.day),
+                theme_text_color="Custom",
+                text_color=t_color,
+            ),
+            style="filled",
+            theme_bg_color="Custom",
+            md_bg_color=b_color,
+
+            #size_hint=(1, 1),
+
+            on_release=lambda x, d=dd: self.find_cal(d),
+        )
 
     def find_cal(self, y):
         import libs.lib_archive
+        js = libs.lib_new.just_get_json_schedule("x", ad)
+        print (js,'holy crap its js')
+        status, info = self.check_working(y.day, y.month, y.year, js["shows"]
+                    )
 
         from dateutil.relativedelta import relativedelta
 
-        # logging.info(y.background_color, y.color, "bg color")
+        logging.info("bg color %s", y)
+        logging.info("bg color2 %s", status)
         # logging.info(self.theme_cls.bg_dark[0], self.theme_cls.bg_dark, "colors")
         bg = "black"
         offset = 0
-        if y.background_color[0] == 0.9333333333333333:
+        if status == True:
             # logging.info(".933")
             bg = "gray"
-            if int(y.text) > 20:
-                offset = -1
-            if int(y.text) < 10:
-                offset = 1
+            #if int(y.text) > 20:
+            #    offset = -1
+            #if int(y.text) < 10:
+            #    offset = 1
 
-        if y.background_color[0] == 0.0:
-            logging.info(".0")
-        if y.background_color[0] == self.theme_cls.primaryColor[0]:
-            logging.info("red.primary")
-            bg = "red"
+        #if y.background_color[0] == 0.0:
+        #    logging.info(".0")
+        #if y.background_color[0] == self.theme_cls.primaryColor[0]:
+        #    logging.info("red.primary")
+        #    bg = "red"
 
         callist = self.root.get_screen("today").ids["cal_month"].text
         # callist = callist + " " + str(y.text)
@@ -3352,10 +3335,9 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         cur_month = cur_month + relativedelta(months=+offset)
         y1, m1, d1 = str.split(str(cur_month), "-")
         cur_month = y1 + "-" + m1
-        cur_month = datetime.datetime.strptime(
-            str(cur_month) + " " + str(y.text), "%Y-%m %d"
-        ).date()
-        z, z1, f1, f2 = self.find_pay_date(cur_month)
+        cur_month = y.month
+        print ("find_pay_date",self.find_pay_date(cur_month))
+        f1, f2 = self.find_pay_date(cur_month)
         listofdicks = libs.lib_archive.load("/future_shows", ad, f1, f2)
 
         dd = cur_month
