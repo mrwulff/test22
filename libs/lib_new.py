@@ -1,5 +1,7 @@
 print("START 1")
 import logging
+from libs import lib_createcache
+
 import libs.lib_think as lib_think
 from kivy.app import App
 
@@ -341,11 +343,20 @@ def get_json_schedule(x, ad):
     logging.info( "get_json_schedule")
     if x["usecache"] == "True" or x["usecache"] == True or x["usecache"] == "true":
         logging.info("USING CACHE true")
-        show = "jason_show_cache_real.json"
+        try:
+            show = "jason_show_cache_real.json"
+        except:
+            show = "jason_show_cache_fake.json"
+
+
 
     if x["usecache"] == "False" or x["usecache"] == False or x["usecache"] == "false":
         logging.info("USING Real? %s", x["refreshreload"])
-        show = "jason_show_cache_real.json"
+
+        try:
+            show = "jason_show_cache_real.json"
+        except:
+            show = "jason_show_cache_fake.json"
         if (
             x["refreshreload"] == "True"
             or x["refreshreload"] == True
@@ -353,7 +364,7 @@ def get_json_schedule(x, ad):
         ):
             logging.info("no cache! (orig) %s", (x["refreshreload"]))
             #make_json_schedule(x, ad)
-    good_login = lib_think.login(ad, x, "True", App)
+        good_login = lib_think.login(ad, x, "True", App)
     logging.info("showasdf %s", show)
     #print ("showasdf", show)
     data = get_json_schedule_2(x, ad, show)
@@ -535,6 +546,13 @@ def get_json_schedule_2(x, ad, show):
 
     if 1 == 1:
         logging.info("get json schedule2 %s", (x["refreshreload"]))
+        logging.info("username %s", (x["username"]))
+        if x["username"] =="test@gmail.com":
+            #import libs.lib_createcache
+            #print ("USERNAME IS TEST, SETTING oldcache)
+            lib_createcache.createcache(ad, 9)
+            make_json_schedule(x, ad)
+
 
 
         nf = os.path.join(ad, show)
@@ -558,22 +576,35 @@ def get_json_schedule_2(x, ad, show):
 def just_get_json_schedule(x, ad):
     import json, os
 
-    if x["usecache"] == "True" or x["usecache"] == True or x["usecache"] == "true":
-        logging.info("USING CACHE DATA OK?")
+    try:
+        
+        show = "/jason_show_cache_real.json"
+        nf = os.path.join(ad, show)
+
+        nf = ad + "/" + show
+
+
+        with open(nf) as json_file:
+            data = json.load(json_file)
+        print('opened real json file')
+
+    except:       
         show = "/jason_show_cache_fake.json"
 
-    if x["usecache"] == "False" or x["usecache"] == False or x["usecache"] == "false":
-        # logging.info("USING Real DATA OK?")
-        show = "/jason_show_cache_real.json"
+        nf = os.path.join(ad, show)
 
-    nf = os.path.join(ad, show)
+        nf = ad + "/" + show
+        try:
+            with open(nf) as json_file:
+                data = json.load(json_file)
+            print('opened fake json file')
+        except:
+            make_json_schedule(x, ad)
+            with open(nf) as json_file:
+                data = json.load(json_file)
+            print('made original json file')
 
-    nf = ad + "/" + show
-
-    # logging.info(nf, ad, "WTF MAN")
-
-    with open(nf) as json_file:
-        data = json.load(json_file)
+        
     return data
 
 

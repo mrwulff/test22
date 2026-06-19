@@ -10,7 +10,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 ### RELEASE 10.2.2023
 ###
-debug = False
+debug = True
 debug_online = False
 from kivy.clock import Clock
 import humanize
@@ -116,7 +116,8 @@ from kivymd.uix.dialog import (
 import libs.lib_new
 import libs.lib_cal
 
-"""
+from kivy.base import ExceptionHandler, ExceptionManager
+
 class E(ExceptionHandler):
     def handle_exception(self, inst):
         # Logger.exception("Exception caught by ExceptionHandler")
@@ -140,11 +141,11 @@ class E(ExceptionHandler):
             size_hint_x=0.5,
         ).open()
 
-        #return ExceptionManager.PASS
+        return ExceptionManager.PASS
 
-"""
-#if debug == True:
- #   ExceptionManager.add_handler(E())
+
+if debug == True:
+    ExceptionManager.add_handler(E())
 
 #
 #
@@ -696,10 +697,10 @@ class Demo3App(MDApp):
 
     import os
 
-    cal_width = dp(0)
-    cal_height = dp(50)
-    cal_font_size = 3
-    cal_size_hint = (0.0, None)
+    cal_width = dp(450)
+    cal_height = dp(450)
+    cal_font_size = 150
+    cal_size_hint = (None, None)
     cal_bg = (0, 0, 0, 0)
 
     cwd = os.getcwd()
@@ -2903,7 +2904,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         x=self.on_start2()
         if 1 == 1:
-            js = libs.lib_new.get_json_schedule(x, ad)
+            js = libs.lib_new.just_get_json_schedule(x, ad)
         logging.info(f"js,wtfiswrong {js}")
         print ('wtfmanisyourdeal',js)
         if 1==1:
@@ -3126,7 +3127,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         return diff2, diff3
 
     def update_label(self, dt):
-        js = libs.lib_new.get_json_schedule(x, ad)
+        js = libs.lib_new.just_get_json_schedule(x, ad)
 
         diff2, diff3 = self.check_update(js)
         print ("UPDATING LABEL", diff2, diff3)
@@ -3353,7 +3354,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         x = libs.lib_readuserdata.readuserdata(App, ad, ios)
 
-        js = libs.lib_new.get_json_schedule(x, ad)
+        js = libs.lib_new.just_get_json_schedule(x, ad)
         try:
             status, info = self.check_working(dd.day, dd.month, dd.year, js["shows"])
             # logging.info(status, "NEW STATUS")
@@ -3478,7 +3479,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         if 1 == 1:
             # try:
-            js = libs.lib_new.get_json_schedule(x, ad)
+            js = libs.lib_new.just_get_json_schedule(x, ad)
         # except:
         #    toast("login failed")
         #    return "fail"
