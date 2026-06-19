@@ -39,3 +39,4 @@ YourApp/dist/
 .cache/
 .DS_Store
 main.oldtest.py
+libs/uix/__pycache__/root.cpython-312.pyc

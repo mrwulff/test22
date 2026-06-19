@@ -103,10 +103,16 @@
                 radius: app.cradius
                 #text_color:app.theme_cls.primary_color
                 MDCard:
-                    size_hint: None,None
-                    height: stats.height
+
+                    size_hint_y: None
+                    height: dp(120)
+
+
+
+                    #size_hint: None,None
+                    #height: stats.height
                     #height: self.minimum_height
-                    width:stats.width
+                    #width:stats.width
                     id:branding
                     #radius: app.cradius
                     #pos_hint: {"center_x": .79, "center_y": .5}
@@ -274,15 +280,16 @@
                     height: dp(40)
                     #width: butt.width+butt2.width+butt3.width+butt3.width/2
                     #width:lolz.width
-                    spacing:lolz.width/3
-                    #padding: dp(40), dp(40)
+                    cols: 3
+                    adaptive_height: True
+                    padding: dp(10), dp(10)
                     focus_behavior: True
                     ripple_behavior: False
                     id:lolz
                     #pos_hint: {"center_x": .8, "center_y": .5}
                     radius: app.cradius
                     #padding:10
-                    #spacing:10
+                    spacing:10
                     MDButton:
                         size_hint: 6.9, None
                         style: "tonal"
@@ -366,16 +373,18 @@
                         MDListItemSupportingText:
                             id:pay3
                             secondary_text:'who'
-
+                ####start of cal########
                 MDBoxLayout:
                     orientation: "vertical"
                     
-                    size_hint:.9,.9
-                    size_hint_y: None
+                    #size_hint:.9,.9
+                    #size_hint_y: None
                     height: self.minimum_height
                     #pos_hint:None,None
                     md_bg_color:1,0,0,0
                     #height:cal_box.height
+                    width: app.cal_width
+                    #height: app.cal_height
 
                     
 
@@ -425,64 +434,67 @@
                         text:'month'
                         #md_bg_color:app.cal_bg
                     MDCard:
-                        orientation: "horizontal"
-                        size_hint: app.cal_size_hint
                         font_size:app.cal_font_size
-                        height: app.cal_height
-                        width:app.cal_width
                         radius: app.cradius
                         id:cal0
-                        text:'month'
-                        md_bg_color:app.cal_bg
+                        orientation: "horizontal"
+                        size_hint_x: 1
+                        size_hint_y: None
+                        height: app.cal_height
+                        spacing: app.cal_spacing
+
 
                     MDCard:
-                        orientation: "horizontal"
-                        size_hint: app.cal_size_hint
                         font_size:app.cal_font_size
-                        height: app.cal_height
-                        width:app.cal_width
                         radius: app.cradius
                         id:cal1
-                        md_bg_color:app.cal_bg
-                    MDCard:
                         orientation: "horizontal"
-                        size_hint: app.cal_size_hint
-                        font_size:app.cal_font_size
+                        size_hint_x: 1
+                        size_hint_y: None
                         height: app.cal_height
-                        width:app.cal_width
+                        spacing: app.cal_spacing
+
+                    MDCard:
+                        font_size:app.cal_font_size
                         radius: app.cradius
                         id:cal2
-                        md_bg_color:app.cal_bg
-                    MDCard:
                         orientation: "horizontal"
-                        size_hint: app.cal_size_hint
-                        font_size:app.cal_font_size
+                        size_hint_x: 1
+                        size_hint_y: None
                         height: app.cal_height
-                        width:app.cal_width
+                        spacing: app.cal_spacing
+
+                    MDCard:
+                        font_size:app.cal_font_size
                         radius: app.cradius
                         id:cal3
-                        md_bg_color:app.cal_bg
+                        orientation: "horizontal"
+                        size_hint_x: 1
+                        size_hint_y: None
+                        height: app.cal_height
+                        spacing: app.cal_spacing
 
                     MDCard:
-                        orientation: "horizontal"
-                        size_hint: app.cal_size_hint
                         font_size:app.cal_font_size
-                        height: app.cal_height
-                        width:app.cal_width
                         radius: app.cradius
                         id:cal4
-                        md_bg_color:app.cal_bg
+                        orientation: "horizontal"
+                        size_hint_x: 1
+                        size_hint_y: None
+                        height: app.cal_height
+                        spacing: app.cal_spacing
+
 
                     MDCard:
-                        orientation: "horizontal"
-                        size_hint: app.cal_size_hint
+                        
                         font_size:app.cal_font_size
-                        height: app.cal_height
-                        width:app.cal_width
                         radius: app.cradius
                         id:cal5
-                        #md_bg_color: self.theme_cls.backgroundColor
-
+                        orientation: "horizontal"
+                        size_hint_x: 1
+                        size_hint_y: None
+                        height: app.cal_height
+                        spacing: app.cal_spacing
 
 
 

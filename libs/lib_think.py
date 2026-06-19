@@ -16,7 +16,7 @@ def login(ad, x, ios, App):
     #    ad = app.user_data_dir
     # logging.info (x)
 
-    logging.debug("using real data")
+    logging.debug("using real data!")
     ssl.verify = False
     ssl._create_default_https_context = ssl._create_unverified_context
 

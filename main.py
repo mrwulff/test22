@@ -251,6 +251,8 @@ from kivymd.uix.list import (
 
 
 from kivy.uix.label import Label
+from kivymd.uix.label import MDLabel
+
 
 # from kivymd.uix.datatables import MDDataTable
 # from kivymd.uix.button import MDFlatButton
@@ -285,8 +287,8 @@ cwd = os.getcwd()
 #from pyparsing import ParseExpression
 import webcolors
 
-w = 1125 / 3
-h = 2436 / 3
+w = 1125 / 2
+h = 2436 / 2
 
 ipad = False
 # ipad = False
@@ -295,13 +297,13 @@ if ipad == True:
     h = 2732 / 2
 
 
-# Config.set("graphics", "width", str(w))
-# Config.set("graphics", "height", str(h))
-if platform == "win":
-    Window.size = (w, h)
+#Config.set("graphics", "width", str(w))
+#Config.set("graphics", "height", str(h))
+#if platform == "win":
+#    Window.size = (w, h)
 # scale = 1
-# if platform not in ["android", "ios"]:
-#    Window.size = (320,640)
+##if platform not in ["android", "ios"]:
+ #   Window.size = (320,640)
 
 App.get_running_app()
 
@@ -695,13 +697,25 @@ class Demo3App(MDApp):
         self.stop()
         return Demo3App().run()
 
-    import os
+    
 
-    cal_width = dp(450)
-    cal_height = dp(450)
-    cal_font_size = 150
-    cal_size_hint = (None, None)
+    cal_width = dp(250)
+    cal_height = dp(50)
+    cal_font_size = 0
+    cal_size_hint = (0.0,None)
     cal_bg = (0, 0, 0, 0)
+    cal_spacing=dp(1)
+
+    #from kivy.core.window import Window
+    #from kivy.metrics import dp
+
+    padding = dp(5)
+    spacing = dp(2)
+    #calendar_width = self.root.get_screen("today").ids.cal0.width
+    #cell_width = calendar_width / 7
+    cell_width = (Window.width - padding * 2 - spacing * 6) / 7
+
+    cal_width = cell_width
 
     cwd = os.getcwd()
 
@@ -724,7 +738,7 @@ class Demo3App(MDApp):
     bradius = 10 * scale
     radius = 10 * scale
     cpadding = 20
-    cradius = 0
+    cradius = 9
     cradius4 = 0, 0, 0, 0
     c_top = 3
     sound_effects = ["Ding", "Bang", "Lol"]
@@ -3130,7 +3144,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         js = libs.lib_new.just_get_json_schedule(x, ad)
 
         diff2, diff3 = self.check_update(js)
-        print ("UPDATING LABEL", diff2, diff3)
+        #print ("UPDATING LABEL", diff2, diff3)
         try:
             self.root.get_screen("today").ids["s2"].text = str(diff3)
             self.root.get_screen("today").ids["s3"].text = str(diff2)
@@ -3181,7 +3195,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         z, z1, f1, f2 = self.find_pay_date(month + "-" + year)
         listofdicks = libs.lib_archive.load("/future_shows", ad, f1, f2)
 
-        js = libs.lib_new.get_json_schedule(x, ad)
+        js = libs.lib_new.just_get_json_schedule(x, ad)
 
         from datetime import date
 
@@ -3201,28 +3215,36 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         # logging.info(dir(yyy))
 
         week_l = ["S", "M", "T", "W", "T", "F", "S"]
+        cell_width = (Window.width - dp(20)) / 7
+        cell_height = cell_width  
+        calendar_width = self.root.get_screen("today").ids.cal0.width
+        cell_width = calendar_width / 7    
         for we in range(len(week_l)):
             self.root.get_screen("today").ids["calm"].add_widget(
                 # MDRectangleFlatIconButton(
                 # MDRectangleFlatButton(
-                Button(
+                MDButton(MDButtonText(
+        text=str(week_l[we])
+    ),
                     # MDIconButton(
                     size_hint=(None, None),
-                    size=(dp(50), dp(50)),
+                    size=(cell_width, cell_width),
                     # icon=ic,
                     # icon_size=dp(6),
-                    font_size=dp(15),
+                    #font_size=cell_width * 0.3,
                     text=str(week_l[we]),
                     # width=500,
                     # type=type_button,
-                    # theme_icon_color="Custom",
+                    theme_icon_color="Custom",
                     # text_color=t_color,
-                    # md_bg_color=b_color,
+                    #md_bg_color=self.theme_cls.onErrorColor,
+                    md_bg_color="red",
                     # background_color=b_color,
                     # color=t_color
                     # size_hint_max=(5, 5),
                     # primary_dark
                     # icon_color=data[type_button]["text_color"],
+                    
                 )
             )
         for week in range(len(c)):
@@ -3284,28 +3306,16 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 self.root.get_screen("today").ids["cal" + str(week)].add_widget(
                     # MDRectangleFlatIconButton(
                     # MDRectangleFlatButton(
-                    Button(
-                        # MDIconButton(
+                    MDButton(MDButtonText(
+        text=str(dd.day),text_color="green",
+    ),
+                        # (
                         size_hint=(None, None),
-                        size=(dp(50), dp(50)),
-                        # icon=ic,
-                        # icon_size=dp(6),
-                        font_size=dp(15),
-                        text=str(dd.day),
-                        # + "[size=0]"
-                        # + str(dd.day)
-                        # + "-"
-                        # + str(dd.month),
-                        # width=500,
-                        # type=type_button,
-                        # theme_icon_color="Custom",
-                        # text_color=t_color,
-                        # md_bg_color=b_color,
-                        background_color=b_color,
-                        color=t_color,
-                        # size_hint_max=(5, 5),
-                        # primary_dark
-                        # icon_color=data[type_button]["text_color"],
+                        size=(cell_width, cell_width),
+
+                        md_bg_color="green",
+                        theme_icon_color="Secondary",
+                        #text_color=self.theme_cls.secondaryColor,
                         on_release=self.find_cal,
                     )
                 )
@@ -7436,9 +7446,12 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         if t == "cal":
             global cal_index
             cal_index = cal_index + lala
+            logging.debug("cal_index %s", "first_cal")
             month, year, mmonth = self.find_month(cal_index)
             # logging.info(month, year, "cal in pp")
             self.make_calendar_today(month, year, mmonth)
+            logging.debug("cal_index %s", "second_cal")
+            
 
     def find_month(self, i):
         import datetime

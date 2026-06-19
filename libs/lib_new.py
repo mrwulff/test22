@@ -364,7 +364,10 @@ def get_json_schedule(x, ad):
         ):
             logging.info("no cache! (orig) %s", (x["refreshreload"]))
             #make_json_schedule(x, ad)
-        good_login = lib_think.login(ad, x, "True", App)
+        if 1==2:
+            good_login = lib_think.login(ad, x, "True", App)
+        if 1==1:
+            print ("FAKE LOGIN!!!")
     logging.info("showasdf %s", show)
     #print ("showasdf", show)
     data = get_json_schedule_2(x, ad, show)
@@ -586,7 +589,7 @@ def just_get_json_schedule(x, ad):
 
         with open(nf) as json_file:
             data = json.load(json_file)
-        print('opened real json file')
+        #print('opened real json file')
 
     except:       
         show = "/jason_show_cache_fake.json"

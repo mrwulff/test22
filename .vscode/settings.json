@@ -1,5 +1,5 @@
 {
     "inline-bookmarks.view.showVisibleFilesOnly": true,
-    "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "python-envs.defaultEnvManager": "ms-python.python:system",
     "materialkv.pythonFile": "main.py"
 }
