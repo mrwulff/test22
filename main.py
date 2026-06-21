@@ -2913,6 +2913,18 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
     def today(self,start):
         logging.info('Starting today function')
+        ctx = ssl.create_default_context(
+            cafile="cacert.pem"
+        )
+
+        print(
+            urllib.request.urlopen(
+                "https://www.thinkrhino.com",
+                context=ctx
+            ).read()[:200]
+        )
+
+
         import libs.lib_think
         global draw_menu
 
@@ -4656,10 +4668,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                         logging.info(u)
 
         else:
-            logging.info(
-                "one",
-                profile,
-            )
+            logging.info("failed to login one")
             # fail = self.confirm_real(asdf)
 
     def email_time(self, gg):

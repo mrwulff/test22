@@ -54,7 +54,7 @@ def make_json_schedule(x, ad):
 
             # lib_createcache.createcache(ad, 15)
             good_login = True
-            #good_login = libs.lib_think.login(ad, x, False, False)
+            good_login = libs.lib_think.login(ad, x, False, False)
             if good_login == False:
                 return False
             z = open(ad + conf, "r", encoding="utf8")

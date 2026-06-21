@@ -1,16 +1,28 @@
 import logging
 from multiprocessing import context
+import os
 import ssl
 
 import certifi
+import urllib
+
+_real = ssl.create_default_context
+
+def patched(*args, **kwargs):
+    kwargs["cafile"] = certifi.where()
+    return _real(*args, **kwargs)
+
+
 
 
 def login(ad, x, ios, App):
-    import mechanize
     import ssl
-    import libs.lib_enc
-    print (x["password"],x["username"])
+    ssl.create_default_context = patched
 
+    import mechanize
+
+
+    import libs.lib_enc
     #if ios == True:
     #    app = App.get_running_app()
     #    ad = app.user_data_dir
@@ -20,7 +32,6 @@ def login(ad, x, ios, App):
     ssl.verify = False
     ssl._create_default_https_context = ssl._create_unverified_context
 
-    import certifi
     ssl.create_default_context(cafile=certifi.where())
     context = ssl.create_default_context(cafile=certifi.where())
     logging.info("context %s", context)
@@ -29,13 +40,14 @@ def login(ad, x, ios, App):
     # logging.info("using real data66")
     logging.info(libs.lib_enc.r_password(x["password"]))
     # logging.info(x["username"])
-
+    
 
     PE_LOGIN = "https://www.thinkrhino.com/employee/" + x["city"] + "/index.aspx"
     PE_COUNTRIES = "https://www.thinkrhino.com/employee/" + x["city"] + "/Schedule.aspx"
 
     # logging.info(PE_COUNTRIES, "PE_COUNTRIES")
     browser = mechanize.Browser()
+    browser._factory._context = ssl._create_unverified_context()
 
     browser.set_handle_robots(False)
     browser.set_handle_equiv(False)
