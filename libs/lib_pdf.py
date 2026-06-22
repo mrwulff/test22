@@ -194,7 +194,7 @@ def alt(name, ad, a, m, y):
     c = createCalendar(
         name, a, m, y, filename=ad + "/" + str(m) + "-" + str(y) + ".pdf"
     )
-    logging.debug(a, m, y, "amy")
+    logging.debug("amy %s %s %s",a, m, y, )
     # now add January, 2006 to the end
     # createCalendar(1, 2006, canvas=c)
     c.save()

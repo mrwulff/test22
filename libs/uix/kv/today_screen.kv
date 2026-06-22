@@ -101,6 +101,7 @@
             #right_action_items: [['reload-alert', lambda screen: app.do_graphOrder(),'order']]
         
         ScrollView:
+            id: today_scroll
             MDGridLayout:
                 cols: 1
                 adaptive_height: True
@@ -108,6 +109,7 @@
                 spacing: dp(6)
                 border_radius: 15
                 radius: app.cradius
+                
                 #text_color:app.theme_cls.primary_color
                 MDCard:
 
@@ -336,6 +338,9 @@
                         #pos_hint: {"center_x": .79, "center_y": .5}
                         MDButtonText:
                             text: "Update"
+                    MDIconButton:
+                        id: refresh_button
+                        icon: "refresh"
                     
 
 
@@ -362,7 +367,7 @@
                         secondary_text: "Secondary text here"
                         #tertiary_text: "Shows: 50"
                         #height: pay.height+dp(1000)
-                        on_press:(app.do_payperiod_f('YTD'))
+                        #on_press:(app.do_payperiod_f('YTD'))
                         MDIconButton:
                             icon: "menu-left"  
                             on_release: app.do_pp_sum(-1,'pp')
@@ -383,45 +388,51 @@
                 ####start of cal########
                 MDBoxLayout:
                     orientation: "vertical"
-
+                    id: cal_box
                     height: self.minimum_height
+                    #pos_hint:None,None
                     md_bg_color:1,0,0,0
+                    #height:cal_box.height
                     width: app.cal_width
-
                     size_hint_y: None
-                    height: self.minimum_height
+
+                    
 
 
                     MDCard:
-                        orientation: "vertical"
-                        size_hint:1,None
-                        width: 50
-                        height:cal_month.height
-                        #spacing: app.mheight
-                        #radius: app.cradius
-                        MDListItem: 
-                            #size_hint:1,.8
-                            height: app.mheight/3
-                            #width:560
-                            ####bg_color:self.theme_cls.primary_dark
-                            #font_name:"seguiemj"
-                            #font_name: "NotoColorEmoji-Regular.ttf"
-                            text: 'Month/Year' 
-                            #text: '\U0001F600'
-                            id:cal_month
-                            #on_press: app.reset_cal()
+                        orientation: "horizontal"
+                        size_hint_y: None
+                        height: dp(42)
+
+                        MDListItem:
+                            id: cal_month
+                            height: dp(42)
+                            orientation: "horizontal"
+
+
                             MDIconButton:
-                                icon: "share"  
+                                icon: "share"
+                                pos_hint: {"center_y": .5}
+                                x: self.parent.width - dp(140)
                                 on_press: app.share_calendar()
+
+
                             MDIconButton:
-                                icon: "menu-left"  
-                                on_press: app.do_pp_sum(-1,'cal')
-                            MDIconButton:
-                                
-                                icon: "menu-right"  
-                                on_press: app.do_pp_sum(1,'cal')
+                                icon: "menu-left"
+                                pos_hint: {"center_y": .5}
+                                x: self.parent.width - dp(90)
+                                on_press: app.do_pp_sum(-1, 'cal')
+
                             MDListItemHeadlineText:
-                                id:cal_month_text
+                                id: cal_month_text
+
+                            MDIconButton:
+                                icon: "menu-right"
+                                pos_hint: {"center_y": .5}
+                                x: self.parent.width - dp(40)
+                                on_press: app.do_pp_sum(1, 'cal')
+
+
                     MDCard:
                         orientation: "horizontal"
                         size_hint: 1, None

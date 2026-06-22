@@ -3,7 +3,8 @@
 #import os
 #os.system('clear')
 import kivymd.uix.button as b
-
+from kivy.clock import Clock
+import threading
 
 import ssl
 
@@ -25,6 +26,7 @@ except Exception:
     import traceback
     traceback.print_exc()
     raise
+from kivy.animation import Animation
 
 
 
@@ -1689,6 +1691,13 @@ class Demo3App(MDApp):
             text="HELLO",
             font_size="60sp"
         )
+    def on_start(self):
+
+        print ("ON START")
+        screen = self.root.get_screen("today")
+        screen.ids.today_scroll.bind(scroll_y=self.check_pull_refresh)
+
+        self._refreshing = False
     def build(
         self,
     ):
@@ -3123,6 +3132,60 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                         on_release=bla,
                     )
                 )
+        
+        screen = self.root.get_screen("today")  
+        grid = screen.ids.calgrid
+
+        grid.do_layout()
+
+        from math import ceil
+        grid.height = ceil(len(grid.children) / 7) * dp(48)
+
+
+
+        print ("calbox", screen.ids.cal_box.height)
+        print("calgrid", screen.ids.calgrid.height)
+        print("calm", screen.ids.calm.height)
+        print("parent", screen.ids.calgrid.parent.height)
+        print("grandparent", screen.ids.calgrid.parent.parent.height)
+        print("children", len(screen.ids.calgrid.children))
+        
+        w = screen.ids.calgrid
+        p = w
+        import math
+        while p:
+            print(type(p), p.height)
+            p = p.parent
+        grid = screen.ids.calgrid
+
+        print("children", len(grid.children))
+
+        rows = math.ceil(len(grid.children) / 7)
+        grid.height = rows * dp(48)
+
+        print("forced height", grid.height)
+        Clock.schedule_once(self.refresh_layout, 0)
+        print("height", screen.ids.calgrid.height)
+        print("min", screen.ids.calgrid.minimum_height)
+
+        screen = self.root.get_screen("today") 
+        print("type today",type(screen.ids.today_scroll))
+
+        print("KKEYS",screen.ids.today_scroll.properties().keys())
+        print("CCLASS",screen.ids.today_scroll.__class__)
+
+#
+
+
+        
+    def refresh_layout(self,*args):
+        screen = self.root.get_screen("today")
+
+        screen.ids.calgrid.height = screen.ids.calgrid.minimum_height
+
+        screen.ids.cal_box.height = screen.ids.cal_box.minimum_height
+
+
 
     def check_update(self, js):
         shows = js["shows"]
@@ -3258,12 +3321,27 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 except:
                     status_old = False
 
-                color_a = (1, 1, 1, 1)        # current month
-                color_b = (.3, .3, .3, 1)     # prev/next month
-                color_c = (.2, .7, 1, 1)      # show day
-                color_d = (1, .5, .5, 1)      # today
+                theme = self.theme_cls
+
+                color_a = theme.surfaceContainerHighestColor   # current month
+                color_b = theme.inversePrimaryColor            # prev/next month
+                color_c = theme.primaryColor                   # show day
+                color_d = theme.errorColor                     # today
+
+                color_a = theme.surfaceContainerColor      # current month
+                color_b = theme.surfaceVariantColor        # other month
+                color_c = theme.primaryColor               # work day
+                color_d = theme.tertiaryColor              # today
+
+
+                text_normal = theme.onSurfaceColor
+                text_light = theme.onPrimaryColor
                 b_color = color_a
-                t_color = (0, 0, 0, 1)
+                t_color = text_normal
+                t_color = self.contrast_text(b_color)
+
+
+
                 is_today = (
                 dd.day == int(now_day)
                 and dd.month == int(now_month)
@@ -3274,27 +3352,40 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
                 has_show = status
                 if not is_current_month:
+                    b_color = (1,.5,.5,.5)
                     b_color = color_b
+                    t_color = self.contrast_text(b_color)
+
 
                 if has_show:
                     b_color = color_c
-                    t_color = (1, 1, 1, 1)
+                    t_color = self.contrast_text(b_color)
+
 
                 if is_today:
                     b_color = color_d
-                    t_color = (1, 1, 1, 1)
-                print(dd.day, b_color, t_color)
+                    t_color = self.contrast_text(b_color)
+
+                #print(dd.day, b_color, t_color)
                 screen.ids.calgrid.add_widget(
                     self.make_day_button(dd, b_color, t_color)
                 )
                                 
 
-                
+                print("DD.day!!!",dd.day, b_color, t_color)    
         callist = self.root.get_screen("today").ids["cal_month_text"]
         callist.text = mmonth + " " + year
         
 
+    def contrast_text(self,bg):
+        r, g, b = bg[:3]
 
+        luminance = (0.299 * r) + (0.587 * g) + (0.114 * b)
+
+        if luminance > 0.5:
+            return (0, 0, 0, 1)  # dark text
+        else:
+            return (1, 1, 1, 1)  # light text
 
     def make_day_button(self, dd, b_color, t_color):
         return MDButton(
@@ -3302,6 +3393,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 text=str(dd.day),
                 theme_text_color="Custom",
                 text_color=t_color,
+                #text_color=(1, 0, 0, 1)
             ),
             style="filled",
             theme_bg_color="Custom",
@@ -3915,7 +4007,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         import calendar
 
         # logging.info (c,'find pay date')
-        firstdate = datetime.date(2022, 10, 3)
+        firstdate = datetime.date(2026, 6, 9)
         #:
         # now = datetime.datetime.now()
         now = datetime.date.today()
@@ -8034,41 +8126,57 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         for i in range(len(allshows)):
             t = allshows[i] + "[size=1 sp]***" + str(i)
             self.root.current_screen.ids["history_list"].add_widget(HistoryItem(text=t))
+    def stop_refresh_icon(self):
+        screen = self.root.get_screen("today")
+        btn = screen.ids.refresh_button
 
-    def check_pull_refresh(self, view, grid):
-        pass
-        """
-        max_pixel = 200
-        # aa=self.root.get_screen("home").ids['sv']
-        # logging.info
+        Animation.cancel_all(btn)
+
+        btn.rotation = 0
+    def spin_refresh_icon(self):
+        screen = self.root.get_screen("today")
+        btn = screen.ids.refresh_button
+
+        self._spin = Animation(
+            rotation=360,
+            duration=.75
+        )
+
+        self._spin += Animation(
+            rotation=720,
+            duration=.75
+        )
+
+        self._spin.repeat = True
+        self._spin.start(btn)
+    def start_refresh(self, *args):
+        threading.Thread(
+            target=self.do_refresh,
+            daemon=True
+        ).start()
+    def finish_refresh(self, *args):
+        screen = self.root.get_screen("today")
+        screen.ids.refresh_button.icon = "refresh"
+
+        self._refreshing = False
+    def do_refresh(self):
         try:
-            totwidget = (plus_search) + 2
-            action = totwidget
-            stupid = view.scroll_y
-            max = (view.scroll_y) / totwidget
-            max2 = totwidget / view.scroll_y
-            max3 = totwidget * view.scroll_y
-            junk = 1 * (stupid - 1)
-            junk = junk * grid.height
-            #logging.info(junk, h / 3, plus_search)
-            if (junk) > (h / 3):
-                logging.info("overscroll")
-                # self.do_login("",useold)
-        except:
-            logging.info("fail")
-            """
+            self.update()
+        finally:
+            Clock.schedule_once(self.finish_refresh) 
+    def check_pull_refresh(self, scroll, value):
 
-        # for id in self.root.get_screen("home").ids:
-        # for id in self.root.get_screen("home").ids:
 
-        # logging.info (id)
-        # logging.info (view.height,aa.height,aa.pos,aa.size,aa.scroll_distance,dir(aa))
+        if self._refreshing:
+            return
 
-        # to_relative = max_pixel / ( view.height)
-        # if view.scroll_y < 1.0 + to_relative or self.refreshing:
-        # return
+        if value > 1.15:
+            self._refreshing = True
 
-        # self.refresh_data()
+            screen = self.root.get_screen("today")
+            screen.ids.refresh_button.icon = "loading"
+
+            Clock.schedule_once(self.start_refresh, 1)
 
     def grabText(self, inst):
         from kivy.core.clipboard import Clipboard
