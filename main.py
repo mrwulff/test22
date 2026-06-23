@@ -6,6 +6,7 @@ import kivymd.uix.button as b
 from kivy.clock import Clock
 import threading
 
+
 import ssl
 
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -308,6 +309,9 @@ if ipad == True:
  #   Window.size = (320,640)
 
 App.get_running_app()
+import builtins
+import traceback
+
 
 
 if platform == "android":
@@ -360,18 +364,33 @@ from kivy.utils import platform
 import urllib.request
 
 
-"""
-if platform == "ios":
+
+if platform == "ios2":
     app = App.get_running_app()
     import ios
     from pyobjus import autoclass
+    from pyobjus.dylib_manager import load_framework
+
 
     NSURL = autoclass("NSURL")
     UIApplication = autoclass("UIApplication")
     sharedApplication = UIApplication.sharedApplication()
-"""
+    logging.warning("USING SHARE SHEET")
+    #load_framework("UIKit")
 
+    NSURL = autoclass("NSURL")
+    NSArray = autoclass("NSArray")
+    UIActivityViewController = autoclass("UIActivityViewController")
+    UIApplication = autoclass("UIApplication")
 
+old_print = print
+
+def debug_print(*args, **kwargs):
+    if "WindowSDL" in str(args):
+        traceback.print_stack(limit=5)
+    old_print(*args, **kwargs)
+
+builtins.print = debug_print
 class AboutScreen(Screen):
     pass
 
@@ -948,6 +967,324 @@ class Demo3App(MDApp):
             diff2 = humanize.naturaltime(now - old_update)
             l_backup.secondary_text = "Last Backup: " + diff2
         # logging.info(x.get("last_backup"), "LAST BACKUP")
+    def share_file(self, show):
+        import os
+        import requests
+        import logging
+
+        from urllib.parse import urljoin, urlparse, unquote
+
+        if 1==1:
+            from pyobjus import autoclass
+
+            UIApplication = autoclass("UIApplication")
+            NSURL = autoclass("NSURL")
+            NSArray = autoclass("NSArray")
+            UIActivityViewController = autoclass("UIActivityViewController")
+
+            logging.warning("USING SHARE SHEET")
+
+            # -------------------------
+            # Build PDF URL
+            # -------------------------
+
+            link = show.get("venue_pdf", "")
+
+            if not link:
+                logging.error("No venue_pdf found")
+                return
+
+            pdf_url = urljoin(
+                "https://www.thinkrhino.com/",
+                link
+            )
+
+            logging.info("PDF URL %s", pdf_url)
+
+            # -------------------------
+            # Determine local filename
+            # -------------------------
+
+            filename = unquote(
+                os.path.basename(
+                    urlparse(pdf_url).path
+                )
+            )
+
+            local_pdf = os.path.join(ad, filename)
+
+            logging.info("LOCAL PDF %s", local_pdf)
+            url = NSURL.fileURLWithPath_(local_pdf)
+
+            print(url)
+            print(url.path)
+            print(url.isFileURL())
+
+            from pyobjus import autoclass
+
+            print("loading classes")
+
+            app = UIApplication.sharedApplication()
+
+            window = app.keyWindow
+            root = window.rootViewController()
+
+            print("local_pdf", local_pdf)
+            print("exists", os.path.exists(local_pdf))
+
+            with open("Test.html", "w") as f:
+                f.write("<h1>Hello</h1>")
+
+            WKWebView = autoclass("WKWebView")
+            NSURLRequest = autoclass("NSURLRequest")
+            NSURL = autoclass("NSURL")
+
+
+            print("classes loaded")
+
+            WKWebView = autoclass("WKWebView")
+            NSURL = autoclass("NSURL")
+
+            webview = WKWebView.alloc().init()
+
+            file_url = NSURL.fileURLWithPath_(local_pdf)
+
+            folder_url = NSURL.fileURLWithPath_(
+                os.path.dirname(local_pdf)
+            )
+            print(hasattr(
+                webview,
+                "loadFileURL_allowingReadAccessToURL_"
+            ))
+
+            print("local_pdf", local_pdf)
+            print("dirname", os.path.dirname(local_pdf))
+
+
+            print("FILE URL", file_url)
+            print("FOLDER URL", folder_url)
+
+            documents_dir = os.path.join(
+                os.path.expanduser("~"),
+                "Documents"
+            )
+
+            folder_url = NSURL.fileURLWithPath_(documents_dir)
+
+            webview.loadFileURL_allowingReadAccessToURL_(
+                file_url,
+                folder_url
+            )
+
+            print("loaded local pdf")
+
+    def get_cached_pdf(self, venue_pdf):
+        venue_pdf=venue_pdf['venue_pdf']
+
+        import os
+        import requests
+        import logging
+        from urllib.parse import urljoin, unquote
+        print (venue_pdf,'VENUEPDF CACHED')
+        pdf_url = urljoin(
+            "https://www.thinkrhino.com/",
+            venue_pdf
+        )
+
+        filename = os.path.basename(
+            unquote(venue_pdf)
+        )
+
+        pdf_dir = os.path.join(ad, "pdfs")
+
+        os.makedirs(pdf_dir, exist_ok=True)
+
+        local_pdf = os.path.join(
+            pdf_dir,
+            filename
+        )
+
+        logging.info("PDF URL %s", pdf_url)
+        logging.info("LOCAL PDF %s", local_pdf)
+
+        # already downloaded
+
+        if os.path.exists(local_pdf):
+
+            size = os.path.getsize(local_pdf)
+
+            if size > 1000:
+                logging.info("Using cached PDF")
+                return local_pdf
+
+            logging.warning("Cached PDF too small, redownloading")
+
+        # download
+
+        logging.info("Downloading PDF")
+
+        r = requests.get(
+            pdf_url,
+            timeout=30
+        )
+
+        if r.status_code != 200:
+
+            logging.error(
+                "PDF download failed %s",
+                r.status_code
+            )
+
+            return None
+
+        with open(local_pdf, "wb") as f:
+            f.write(r.content)
+
+        logging.info(
+            "Downloaded %s bytes",
+            len(r.content)
+        )
+
+        return local_pdf
+
+
+
+    def only_html(self,local_pdf):
+        local_pdf=self.get_cached_pdf(local_pdf)
+        #print ("local pdf",local_pdf)
+        import os
+
+        from pyobjus import autoclass
+
+
+        print("show_local_pdf", local_pdf)
+
+        if not os.path.exists(local_pdf):
+            print("PDF DOES NOT EXIST")
+            return
+
+        # -----------------------------
+        # Build HTML wrapper
+        # -----------------------------
+
+        html_file = os.path.join(
+            os.path.dirname(local_pdf),
+            #"pdfs",
+            "pdf_viewer.html"
+        )
+
+        pdf_name = os.path.basename(local_pdf)
+        pdf_uri = "file://" + local_pdf
+
+
+
+        with open(html_file, "w") as f:
+            f.write(f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1">
+    <style>
+    html, body {{
+        margin:0;
+        padding:0;
+        width:100%;
+        height:100%;
+        overflow:hidden;
+        background:#111;
+    }}
+
+    embed {{
+        width:100%;
+        height:100%;
+    }}
+    </style>
+    </head>
+
+    <body>
+
+   
+        <embed src="{pdf_uri}">
+
+
+    </body>
+    </html>
+    """)
+
+        print("html wrapper", html_file)
+
+        # -----------------------------
+        # UIKit classes
+        # -----------------------------
+
+        WKWebView = autoclass("WKWebView")
+        NSURL = autoclass("NSURL")
+        UIApplication = autoclass("UIApplication")
+
+        print("loading classes")
+
+        # -----------------------------
+        # Create webview
+        # -----------------------------
+
+        webview = WKWebView.alloc().init()
+
+        print("created webview")
+
+        # -----------------------------
+        # File URLs
+        # -----------------------------
+
+        file_url = NSURL.fileURLWithPath_(html_file)
+
+        folder_url = NSURL.fileURLWithPath_(
+            os.path.dirname(local_pdf)
+        )
+
+        print("file_url", file_url)
+        print("folder_url", folder_url)
+
+        # -----------------------------
+        # Kivy root controller
+        # -----------------------------
+
+        app = UIApplication.sharedApplication()
+
+        window = app.keyWindow
+
+        root = window.rootViewController()
+
+        view = root.view()
+
+        print("window", window)
+        print("root", root)
+        print("view", view)
+
+        # -----------------------------
+        # Full screen
+        # -----------------------------
+
+        webview.setFrame_(view.bounds())
+
+        view.addSubview_(webview)
+
+        view.bringSubviewToFront_(webview)
+        bounds = view.bounds()
+
+        webview.setFrame_(((0, 100), (bounds.size.width, bounds.size.height - 100)))      
+
+        # -----------------------------
+        # Load wrapper HTML
+        # -----------------------------
+
+        webview.loadFileURL_allowingReadAccessToURL_(
+            file_url,
+            folder_url
+        )
+
+        print("loaded wrapper html")
 
     def do_backups(self):
         import os
@@ -1695,13 +2032,13 @@ class Demo3App(MDApp):
 
         print ("ON START")
         screen = self.root.get_screen("today")
-        screen.ids.today_scroll.bind(scroll_y=self.check_pull_refresh)
+        #screen.ids.today_scroll.bind(scroll_y=self.check_pull_refresh)
 
         self._refreshing = False
     def build(
         self,
     ):
-        print ("def BUILD")
+        #print ("def BUILD")
         self.root = Root()
         self.theme_cls.theme_style_switch_animation = True
 
@@ -1796,12 +2133,7 @@ class Demo3App(MDApp):
 
 
 
-        for s in self.root.screens:
-            logging.info(
-                "SCREEN %s CHILDREN=%s",
-                s.name,
-                len(s.children)
-            )
+
 
         from kivy.uix.label import Label
         from kivy.uix.screenmanager import Screen
@@ -1814,21 +2146,100 @@ class Demo3App(MDApp):
 
 
         logging.info("BUILD COMPLETE")
-        logging.info("ROOT=%s", self.root)
-        logging.info("CURRENT=%s", self.root.current)
-        logging.info("SCREENS=%s", self.root.screen_names)
+        #logging.info("ROOT=%s", self.root)
+        #logging.info("CURRENT=%s", self.root.current)
+        #logging.info("SCREENS=%s", self.root.screen_names)
 
-        try:
-            s = self.root.get_screen(self.root.current)
-            logging.info("CURRENT SCREEN OBJ=%s", s)
-        except Exception as e:
-            logging.info("SCREEN ERR=%s", e)
+        #try:
+        #    s = self.root.get_screen(self.root.current)
+        #    logging.info("CURRENT SCREEN OBJ=%s", s)
+        #except Exception as e:
+        #    logging.info("SCREEN ERR=%s", e)
 
 
 
         self.today(True)
         return self.root
 
+    def fix_resume(self, *args):
+        
+        scroll = self.root.get_screen("today").ids.today_scroll
+
+        # Kill kinetic scrolling
+        scroll.effect_y.velocity = 0
+        scroll.effect_y.value = 0
+
+        try:
+            scroll.effect_y.displacement = 0
+        except:
+            pass
+
+        try:
+            scroll.effect_y.scroll = 0
+        except:
+            pass
+
+        scroll.scroll_y = 1
+
+
+    def on_resume(self):
+        for t in [0, .5, 1, 2, 5,7,9,11,13,15,17,20,25,30,45]:
+            Clock.schedule_once(
+                lambda dt, tt=t: print(
+                    "t=", tt,
+                    "scroll_y=",
+                    self.root.get_screen("today").ids.today_scroll.scroll_y
+                ),
+                t
+            )
+        screen = self.root.get_screen("today")
+        screen.ids.today_scroll.scroll_y = 1
+
+
+        print(
+            "scroll_y",
+            screen.ids.today_scroll.scroll_y
+        )
+        print(
+            "window h/w",
+            Window.width,
+            Window.height
+            )
+        print(
+            "TODAYSCROLLHEIGHT",
+            screen.ids.today_scroll.height,
+            screen.ids.cal_box.height,
+            screen.ids.calgrid.height
+        )
+        Clock.schedule_once(self.fix_resume, .01)
+
+        from time import time
+
+        t = time()
+        print("RESUME START")
+        self.make_toast("RESUMED first")
+        screen = self.root.get_screen("today")  
+        logging.info("[KW] app resumed")
+
+
+        print("widgets", len(screen.ids.calgrid.children))
+        print("show widgets", len(screen.ids.graphs2.children))
+        Clock.schedule_once(self.refresh_after_resume, .25)
+        logging.warning("[KW] ON_RESUME")
+        def test(dt):
+            print("BUTTON TEXT", self.root.get_screen("today").ids.cal_month_text.text)
+            logging.warning("[KW] ON_RESUME def test")
+
+
+        #Clock.schedule_once(test, 1)
+        self.make_toast("RESUMED second!")
+        print("RESUME END", time() - t)
+
+
+    def refresh_after_resume(self, *args):
+        #self.today(True)
+        self.make_toast("test RESUMED")
+        logging.warning("[KW] app resumed")
 
 
     def keyboard(self, window, key, *args):
@@ -2150,7 +2561,7 @@ class Demo3App(MDApp):
 
         if 1 == 1:
             config_file = ad
-        logging.info(str(tic - time.perf_counter()) + "on start !!!")
+        #logging.info(str(tic - time.perf_counter()) + "on start !!!")
         import libs.lib_readuserdata
 
         try:
@@ -2189,20 +2600,9 @@ class Demo3App(MDApp):
             )
         except:
             asdf = "1.1"
-        logging.info(asdf)
+        #logging.info(asdf)
 
-        if 1 == 1:
-            if x["today_start"] == False:
-                logging.info("oldstart1!!!")
-                # self.newstart("", useold)
 
-            if x["today_start"] == True:
-                # toast("Success " + asdf)
-                logging.info("newstart!@!")
-                # self.today()
-                # self.md2()
-        # except:
-        #    self.today()
         return x
 
     def md2(self):
@@ -2733,6 +3133,11 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                     on_release=lambda x, y=(gg): self.open_menu("item", gg),
                 ),
                 MDFabButton(
+                    icon="file-pdf-box",
+                    style="small",
+                    on_release=lambda x, y=(gg): self.only_html(gg),
+                ),
+                MDFabButton(
                     icon="close-box",
                     style="small",
                     on_release=lambda x, y=(gg): self.menu.dismiss(),
@@ -2926,12 +3331,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             cafile="cacert.pem"
         )
 
-        print(
-            urllib.request.urlopen(
-                "https://www.thinkrhino.com",
-                context=ctx
-            ).read()[:200]
-        )
 
 
         import libs.lib_think
@@ -2940,8 +3339,8 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         x=self.on_start2()
         if 1 == 1:
             js = libs.lib_new.just_get_json_schedule(x, ad)
-        logging.info(f"js,wtfiswrong {js}")
-        print ('wtfmanisyourdeal',js)
+        #logging.info(f"js,wtfiswrong {js}")
+       # print ('wtfmanisyourdeal',js)
         if 1==1:
             self.erase()
 
@@ -2990,7 +3389,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             )
             #logging.info(li[i] + str(i + 1), "thisistheid")
 
-            print (li[i] + str(i + 1), "thisistheid",color + shows[i]["show"])
+            #print (li[i] + str(i + 1), "thisistheid",color + shows[i]["show"])
 
             self.root.get_screen("today").ids[li[i] + "2"].text = (
                 color + shows[i]["show"]
@@ -3099,7 +3498,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         ###make calendar
         self.reset_cal()
 
-        print("SCHEDULING UPDATE LABEL")
+        #print("SCHEDULING UPDATE LABEL")
 
         #Clock.schedule_interval(partial(self.update_label, js), 3)
         self._update_event = Clock.schedule_interval(self.update_label, 10)
@@ -3143,36 +3542,36 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
 
 
-        print ("calbox", screen.ids.cal_box.height)
-        print("calgrid", screen.ids.calgrid.height)
-        print("calm", screen.ids.calm.height)
-        print("parent", screen.ids.calgrid.parent.height)
-        print("grandparent", screen.ids.calgrid.parent.parent.height)
-        print("children", len(screen.ids.calgrid.children))
+        #print ("calbox", screen.ids.cal_box.height)
+        #print("calgrid", screen.ids.calgrid.height)
+        #print("calm", screen.ids.calm.height)
+        #print("parent", screen.ids.calgrid.parent.height)
+        #print("grandparent", screen.ids.calgrid.parent.parent.height)
+        #print("children", len(screen.ids.calgrid.children))
         
         w = screen.ids.calgrid
         p = w
         import math
-        while p:
-            print(type(p), p.height)
-            p = p.parent
+        #while p:
+        #    print(type(p), p.height)
+        #    p = p.parent
         grid = screen.ids.calgrid
 
-        print("children", len(grid.children))
+        #print("children", len(grid.children))
 
         rows = math.ceil(len(grid.children) / 7)
         grid.height = rows * dp(48)
 
-        print("forced height", grid.height)
+        #print("forced height", grid.height)
         Clock.schedule_once(self.refresh_layout, 0)
-        print("height", screen.ids.calgrid.height)
-        print("min", screen.ids.calgrid.minimum_height)
+        #print("height", screen.ids.calgrid.height)
+        #print("min", screen.ids.calgrid.minimum_height)
 
         screen = self.root.get_screen("today") 
-        print("type today",type(screen.ids.today_scroll))
+        #print("type today",type(screen.ids.today_scroll))
 
-        print("KKEYS",screen.ids.today_scroll.properties().keys())
-        print("CCLASS",screen.ids.today_scroll.__class__)
+        #print("KKEYS",screen.ids.today_scroll.properties().keys())
+        #print("CCLASS",screen.ids.today_scroll.__class__)
 
 #
 
@@ -3325,11 +3724,14 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
                 color_a = theme.surfaceContainerHighestColor   # current month
                 color_b = theme.inversePrimaryColor            # prev/next month
+                color_b= theme.surfaceContainerLowestColor
                 color_c = theme.primaryColor                   # show day
                 color_d = theme.errorColor                     # today
 
                 color_a = theme.surfaceContainerColor      # current month
                 color_b = theme.surfaceVariantColor        # other month
+                color_b= theme.surfaceContainerLowestColor
+
                 color_c = theme.primaryColor               # work day
                 color_d = theme.tertiaryColor              # today
 
@@ -3372,7 +3774,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 )
                                 
 
-                print("DD.day!!!",dd.day, b_color, t_color)    
+                #print("DD.day!!!",dd.day, b_color, t_color)    
         callist = self.root.get_screen("today").ids["cal_month_text"]
         callist.text = mmonth + " " + year
         
@@ -4424,7 +4826,8 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         # logging.info(ex, "EXTRA EXTRA")
 
     def make_toast(self, b):
-        logging.info(x, b)
+        logging.info('[KW] make_toast %s', b)
+        self.snackbarx(b)
 
     def update(self):
         logging.info("only updating schedule")
@@ -5980,7 +6383,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         # logging.info(dir(self.root.get_screen("info").ids["lunches"]))
         # logging.info(zzz, "zzz")
 
-        Clock.schedule_interval(self.update_label, 0.1)
+        #Clock.schedule_interval(self.update_label, 0.1)
 
     def update_label_new(self, dt):
         from datetime import datetime
@@ -7529,11 +7932,11 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         if t == "cal":
             global cal_index
             cal_index = cal_index + lala
-            logging.debug("cal_index %s", "first_cal")
+            #logging.debug("cal_index %s", "first_cal")
             month, year, mmonth = self.find_month(cal_index)
             # logging.info(month, year, "cal in pp")
             self.make_calendar_today(month, year, mmonth)
-            logging.debug("cal_index %s", "second_cal")
+            #logging.debug("cal_index %s", "second_cal")
             
 
     def find_month(self, i):

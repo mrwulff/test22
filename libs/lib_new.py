@@ -54,7 +54,7 @@ def make_json_schedule(x, ad):
 
             # lib_createcache.createcache(ad, 15)
             good_login = True
-            good_login = libs.lib_think.login(ad, x, False, False)
+            #good_login = libs.lib_think.login(ad, x, False, False)
             if good_login == False:
                 return False
             z = open(ad + conf, "r", encoding="utf8")
@@ -124,6 +124,16 @@ def make_json_schedule(x, ad):
         now = datetime.now()
         #print ('afterdateee2')
 
+        pdf_url = ""
+
+        link = ax[5].find("a")
+        if link and link.get("href"):
+            pdf_url = link["href"]
+
+        
+
+
+
 
         thisdict = {
             "date": ax[1].get_text(),
@@ -148,6 +158,10 @@ def make_json_schedule(x, ad):
             "confirable": f3,
             "old": old,
         }
+        try:
+            thisdict["venue_pdf"] = pdf_url
+        except:
+            thisdict["venue_pdf"] = False
         if "Turned Down" in thisdict["status"]:
             thisdict["canceled"] = True
         if old == False:
@@ -158,6 +172,7 @@ def make_json_schedule(x, ad):
             # logging.info(old, "OLD")
         #logging.info("thisdict %s",thisdict)
         update_history(thisdict, ad)
+        logging.info("Venue===%s", thisdict["venue"],ax[5])
 
     cconfirmables = {
         "confirmable": conf_bool,

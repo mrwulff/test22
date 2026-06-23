@@ -84,15 +84,20 @@
                 MDActionTopAppBarButton:
                     icon: "shape"
                     #on_release: app.do_payperiod_f("YTD")
-                    on_release: app.today(False)
+                    on_release: app.restart(False)
+               
+               
                 MDActionTopAppBarButton:
                     icon: "check"
                     #on_release: app.do_payperiod_f("YTD")
                     on_release: app.check_confirm()
+
+
                 MDActionTopAppBarButton:
-                    icon: "update"
+                    icon: "account-alert-outline"
                     #on_release: app.do_payperiod_f("YTD")
-                    on_release: app.update()
+                    on_release: app.make_toast("check_toast")
+
 
 
             #left_action_items:

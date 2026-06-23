@@ -23,10 +23,6 @@ def login(ad, x, ios, App):
 
 
     import libs.lib_enc
-    #if ios == True:
-    #    app = App.get_running_app()
-    #    ad = app.user_data_dir
-    # logging.info (x)
 
     logging.debug("using real data!")
     ssl.verify = False
@@ -34,12 +30,7 @@ def login(ad, x, ios, App):
 
     ssl.create_default_context(cafile=certifi.where())
     context = ssl.create_default_context(cafile=certifi.where())
-    logging.info("context %s", context)
-    logging.info("ssl:::: %s", ssl)
 
-    # logging.info("using real data66")
-    logging.info(libs.lib_enc.r_password(x["password"]))
-    # logging.info(x["username"])
     
 
     PE_LOGIN = "https://www.thinkrhino.com/employee/" + x["city"] + "/index.aspx"
@@ -58,13 +49,9 @@ def login(ad, x, ios, App):
         )
     ]
     # logging.info(PE_LOGIN, "PE_LOGIN")
-    if 1 == 1:
-        # try:
-        browser.open(PE_LOGIN)
-        logging.info("browser=open")
-    # except:
-    # logging.info("using real data669")
-    #    return False
+
+    browser.open(PE_LOGIN)
+
     try:
         browser.select_form(name="ctl00")
     except:
@@ -93,7 +80,7 @@ def login(ad, x, ios, App):
     b2.write(aa)
 
     b2.close()
-    logging.info("login success")
+    #logging.info("login success")
     return True
     # except:
     #    logging.info ('login failed')
