@@ -12,7 +12,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 ### RELEASE 10.2.2023
 ###
-debug = False
+debug = True
 debug_online = False
 from kivy.clock import Clock
 import humanize
@@ -1271,13 +1271,52 @@ class Demo3App(MDApp):
         view.addSubview_(webview)
 
         view.bringSubviewToFront_(webview)
-        bounds = view.bounds()
+        frame = view.frame()
 
-        webview.setFrame_(((0, 100), (bounds.size.width, bounds.size.height - 100)))      
+        print("FRAME",frame)
 
-        # -----------------------------
-        # Load wrapper HTML
-        # -----------------------------
+        frame = view.frame()
+
+        frame.origin.y = 100
+        frame.size.height -= 100
+        print('frame.fields',frame._fields_)
+        print(
+            "NEW",
+            frame.origin.x,
+            frame.origin.y,
+            frame.size.width,
+            frame.size.height,
+        )
+
+        NSRect = type(frame)
+
+        new_frame = NSRect()
+
+        new_frame.origin.x = 0
+        new_frame.origin.y = 100
+
+        new_frame.size.width = 440
+        new_frame.size.height = 856
+
+        webview.setFrame_(new_frame)
+        print("A")
+        webview.setFrame_(new_frame)
+
+        print("B")
+        view.addSubview_(webview)
+
+        print("C")
+        view.bringSubviewToFront_(webview)
+
+        print("D")
+        webview.loadFileURL_allowingReadAccessToURL_(
+            file_url,
+            folder_url
+        )
+
+        print("E")
+
+
 
         webview.loadFileURL_allowingReadAccessToURL_(
             file_url,
@@ -1286,6 +1325,20 @@ class Demo3App(MDApp):
 
         print("loaded wrapper html")
 
+    def old(self):
+        print ("old")
+    def close_pdf(self):
+        print ('close pdf')
+    def close_pdf(self, *args):
+        print ("CLOSEPDF")
+
+        if getattr(self, "pdf_webview", None):
+            self.pdf_webview.removeFromSuperview()
+            self.pdf_webview = None
+
+        self.root.get_screen("today").ids.topbar.right_action_items = (
+            self._old_topbar_items
+        )
     def do_backups(self):
         import os
         import shutil
