@@ -1215,6 +1215,15 @@ class Demo3App(MDApp):
 
         print("html wrapper", html_file)
 
+        screen = self.root.get_screen("today")
+
+        screen.ids.pdf_close.opacity = 1
+        screen.ids.pdf_close.disabled = False
+
+        self.pdf_webview = webview
+
+
+
         # -----------------------------
         # UIKit classes
         # -----------------------------
@@ -1339,6 +1348,15 @@ class Demo3App(MDApp):
         self.root.get_screen("today").ids.topbar.right_action_items = (
             self._old_topbar_items
         )
+
+            if getattr(self, "pdf_webview", None):
+        self.pdf_webview.removeFromSuperview()
+        self.pdf_webview = None
+
+        screen = self.root.get_screen("today")
+
+        screen.ids.pdf_close.opacity = 0
+        screen.ids.pdf_close.disabled = True
     def do_backups(self):
         import os
         import shutil

@@ -65,7 +65,17 @@
 
 <TodayScreen>
     name: "today"
+    MDFabButton:
+        id: pdf_close
+        icon: "close"
+        opacity: 0
+        disabled: True
 
+        #pos_hint:
+        #    right: .98
+        #    top: .98
+
+        on_release: app.close_pdf()
 
     MDBoxLayout:
         id: graphs2
