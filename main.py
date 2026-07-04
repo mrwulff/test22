@@ -1349,14 +1349,7 @@ class Demo3App(MDApp):
             self._old_topbar_items
         )
 
-            if getattr(self, "pdf_webview", None):
-        self.pdf_webview.removeFromSuperview()
-        self.pdf_webview = None
-
-        screen = self.root.get_screen("today")
-
-        screen.ids.pdf_close.opacity = 0
-        screen.ids.pdf_close.disabled = True
+        
     def do_backups(self):
         import os
         import shutil
