@@ -12,7 +12,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 ### RELEASE 10.2.2023
 ###
-debug = True
+debug = False
 debug_online = False
 from kivy.clock import Clock
 import humanize
@@ -23,6 +23,7 @@ import warnings
 import logging
 try:
     import kivymd
+    print("KIVYMDVERSION",kivymd.__version__)
 except Exception:
     import traceback
     traceback.print_exc()
@@ -300,13 +301,13 @@ if ipad == True:
     h = 2732 / 2
 
 
-#Config.set("graphics", "width", str(w))
-#Config.set("graphics", "height", str(h))
+Config.set("graphics", "width", str(w))
+Config.set("graphics", "height", str(h))
 #if platform == "win":
 #    Window.size = (w, h)
 # scale = 1
-##if platform not in ["android", "ios"]:
- #   Window.size = (320,640)
+if platform not in ["android", "ios"]:
+    Window.size = (320,640)
 
 App.get_running_app()
 import builtins

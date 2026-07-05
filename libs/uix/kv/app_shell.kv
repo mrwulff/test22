@@ -1,0 +1,44 @@
+#:import dp kivy.metrics.dp
+
+<AppShell>
+
+    orientation: "vertical"
+
+    ScreenManager:
+        id: sm
+        on_parent:
+            root.screen_manager = self
+
+    MDNavigationBar:
+
+        MDNavigationItem:
+
+            icon: "home"
+            text: "Home"
+
+            on_release:
+                root.go("today")
+
+        MDNavigationItem:
+
+            icon: "calendar"
+            text: "Calendar"
+
+            on_release:
+                root.go("calendar")
+
+        MDNavigationItem:
+
+            icon: "archive"
+            text: "Archive"
+
+            on_release:
+                root.go("archive")
+
+        MDNavigationItem:
+
+            icon: "cog"
+            text: "Settings"
+
+            on_release:
+                root.go("settings")

@@ -1,0 +1,108 @@
+#:import dp kivy.metrics.dp
+
+<TodayScreen>:
+
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: dp(16)
+        padding: dp(16)
+
+        MDTopAppBar:
+            type: "small"
+            headline_text: "Rhino Works"
+
+        MDCard:
+            orientation: "vertical"
+            padding: dp(20)
+            spacing: dp(8)
+            radius: [24]
+            size_hint_y: None
+            height: dp(150)
+
+            MDLabel:
+                text: "Good morning, Kevin"
+
+            MDLabel:
+                text: "11 Confirmed • 2 Waiting • Next show in 7 days"
+
+            MDLabel:
+                text: "Last updated: 15 hours ago"
+
+        MDGridLayout:
+            cols: 2
+            adaptive_height: True
+            spacing: dp(12)
+
+            MDCard:
+                size_hint_y: None
+                height: dp(110)
+                MDLabel:
+                    text: "Confirmed\n11"
+
+            MDCard:
+                size_hint_y: None
+                height: dp(110)
+                MDLabel:
+                    text: "Next Payday\nJun 22"
+
+            MDCard:
+                size_hint_y: None
+                height: dp(110)
+                MDLabel:
+                    text: "Hours\n148"
+
+            MDCard:
+                size_hint_y: None
+                height: dp(110)
+                MDLabel:
+                    text: "Travel\n2"
+
+        MDLabel:
+            text: "Up Next"
+
+        MDCard:
+            size_hint_y: None
+            height: dp(120)
+            MDLabel:
+                text: "THU 18 • ACMA Awards"
+
+        MDGridLayout:
+            cols: 4
+            adaptive_height: True
+            spacing: dp(12)
+
+            MDCard:
+                size_hint_y: None
+                height: dp(90)
+                MDLabel:
+                    text: "Calendar"
+
+            MDCard:
+                size_hint_y: None
+                height: dp(90)
+                MDLabel:
+                    text: "Confirm"
+
+            MDCard:
+                size_hint_y: None
+                height: dp(90)
+                MDLabel:
+                    text: "Pay"
+
+            MDCard:
+                size_hint_y: None
+                height: dp(90)
+                MDLabel:
+                    text: "Archive"
+
+        MDCard:
+            size_hint_y: None
+            height: dp(420)
+
+            MDLabel:
+                text: "June 2026"
+
+            MDGridLayout:
+                cols: 7
+                adaptive_height: True
+                spacing: dp(4)

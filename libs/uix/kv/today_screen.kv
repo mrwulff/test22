@@ -1,108 +1,239 @@
+
 #:import dp kivy.metrics.dp
 
 <TodayScreen>:
+    name: "today"
+    MDScrollView:
+        
 
-    MDBoxLayout:
-        orientation: "vertical"
-        spacing: dp(16)
-        padding: dp(16)
-
-        MDTopAppBar:
-            type: "small"
-            headline_text: "Rhino Works"
-
-        MDCard:
+        MDBoxLayout:
+            adaptive_height: True
+            spacing: dp(36)
+            #padding: dp(36)
             orientation: "vertical"
-            padding: dp(20)
-            spacing: dp(8)
-            radius: [24]
-            size_hint_y: None
-            height: dp(150)
 
-            MDLabel:
-                text: "Good morning, Kevin"
-
-            MDLabel:
-                text: "11 Confirmed • 2 Waiting • Next show in 7 days"
-
-            MDLabel:
-                text: "Last updated: 15 hours ago"
-
-        MDGridLayout:
-            cols: 2
-            adaptive_height: True
-            spacing: dp(12)
-
-            MDCard:
+            Widget:
                 size_hint_y: None
-                height: dp(110)
-                MDLabel:
-                    text: "Confirmed\n11"
+                #height: self.theme_cls.device_safe_area.top
+                height:dp(36)
+            
+            
 
-            MDCard:
-                size_hint_y: None
-                height: dp(110)
-                MDLabel:
-                    text: "Next Payday\nJun 22"
-
-            MDCard:
-                size_hint_y: None
-                height: dp(110)
-                MDLabel:
-                    text: "Hours\n148"
-
-            MDCard:
-                size_hint_y: None
-                height: dp(110)
-                MDLabel:
-                    text: "Travel\n2"
-
-        MDLabel:
-            text: "Up Next"
-
-        MDCard:
-            size_hint_y: None
-            height: dp(120)
-            MDLabel:
-                text: "THU 18 • ACMA Awards"
-
-        MDGridLayout:
-            cols: 4
-            adaptive_height: True
-            spacing: dp(12)
-
-            MDCard:
-                size_hint_y: None
-                height: dp(90)
-                MDLabel:
-                    text: "Calendar"
-
-            MDCard:
-                size_hint_y: None
-                height: dp(90)
-                MDLabel:
-                    text: "Confirm"
-
-            MDCard:
-                size_hint_y: None
-                height: dp(90)
-                MDLabel:
-                    text: "Pay"
-
-            MDCard:
-                size_hint_y: None
-                height: dp(90)
-                MDLabel:
-                    text: "Archive"
-
-        MDCard:
-            size_hint_y: None
-            height: dp(420)
-
-            MDLabel:
-                text: "June 2026"
 
             MDGridLayout:
-                cols: 7
+                cols: 2
+                spacing: dp(12)
+                #padding : dp(12)
                 adaptive_height: True
-                spacing: dp(4)
+
+                MDCard:
+                    style: "filled"
+                    radius: [18]
+                    height: dp(99)
+                    size_hint_y: None
+
+                    MDBoxLayout:
+                        orientation: "horizontal"
+                        padding: dp(6)
+                        spacing: dp(3)
+
+                        # Left icon column
+                        FloatLayout:
+                            size_hint_x: None
+                            width: dp(56)
+
+                            FloatLayout:
+                                size_hint: None, None
+                                size: dp(44), dp(44)
+                                pos_hint: {"center_x": .5, "center_y": .5}
+
+                                canvas.before:
+                                    Color:
+                                        rgba: app.theme_cls.primaryColor[0], app.theme_cls.primaryColor[1], app.theme_cls.primaryColor[2], .12
+                                    Ellipse:
+                                        pos: self.pos
+                                        size: self.size
+
+                                MDIcon:
+                                    icon: "calendar-check"
+                                    pos_hint: {"center_x": .5, "center_y": .5}
+                                    font_size: dp(22)
+
+                        # Right text column
+                        MDBoxLayout:
+                            orientation: "vertical"
+
+                            Widget:
+
+
+                            MDLabel:
+                                text: "11"
+                                font_style: "Headline"
+                                role: "small"
+                                adaptive_height: True
+
+                            MDLabel:
+                                text: "CONFIRMED"
+                                theme_text_color: "Secondary"
+                                adaptive_height: True
+
+                            
+
+                            MDLabel:
+                                text: "Next in 7 days"
+                                font_style: "Body"
+                                role: "small"
+                                adaptive_height: True
+                            Widget:
+                
+                MDCard:
+                    style: "filled"
+                    radius: [12]
+                    #padding: dp(5)
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        #spacing: dp(8)
+
+                        MDIcon:
+                            icon: "clock-outline"
+
+                        MDLabel:
+                            id: stat_hours
+                            text: "148"
+                            font_style: "Headline"
+
+                        MDLabel:
+                            text: "HOURS YTD"
+
+                        MDLabel:
+                            text: "As of today"
+                            theme_text_color: "Secondary"
+
+            
+
+
+
+
+
+
+            MDLabel:
+                text: "Up Next"
+                bold: True
+                adaptive_height: True
+
+            MDCard:
+                radius: [5]
+                size_hint_y: None
+                height: dp(130)
+                MDLabel:
+                    text: "THU 18 • ACMA Awards"
+                    halign: "center"
+            MDCard:
+                radius: [10]
+                size_hint_y: None
+                height: dp(130)
+                MDLabel:
+                    text: "THU 18 • ACMA Awards"
+                    halign: "center"
+
+            MDGridLayout:
+                cols: 4
+                adaptive_height: True
+                spacing: dp(12)
+
+                MDCard:
+                    radius: [20]
+                    size_hint_y: None
+                    height: dp(84)
+                    MDLabel:
+                        text: "Calendar"
+                        halign: "center"
+
+                MDCard:
+                    radius: [20]
+                    size_hint_y: None
+                    height: dp(84)
+                    MDLabel:
+                        text: "Confirm"
+                        halign: "center"
+
+                MDCard:
+                    radius: [20]
+                    size_hint_y: None
+                    height: dp(84)
+                    MDLabel:
+                        text: "Pay"
+                        halign: "center"
+
+                MDCard:
+                    radius: [20]
+                    size_hint_y: None
+                    height: dp(84)
+                    MDLabel:
+                        text: "Archive"
+                        halign: "center"
+
+            MDCard:
+                radius: [20]
+                size_hint_y: None
+                height: dp(260)
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    padding: dp(16)
+                    spacing: dp(12)
+
+                    MDBoxLayout:
+                        adaptive_height: True
+
+                        MDLabel:
+                            text: "June 2026"
+                            bold: True
+
+                        MDIconButton:
+                            icon: "chevron-left"
+
+                        MDIconButton:
+                            icon: "chevron-right"
+
+                    MDGridLayout:
+                        cols: 7
+                        adaptive_height: True
+                        spacing: dp(4)
+
+                        MDLabel:
+                            text: "S"
+                            halign: "center"
+
+                        MDLabel:
+                            text: "M"
+                            halign: "center"
+
+                        MDLabel:
+                            text: "T"
+                            halign: "center"
+
+                        MDLabel:
+                            text: "W"
+                            halign: "center"
+
+                        MDLabel:
+                            text: "T"
+                            halign: "center"
+
+                        MDLabel:
+                            text: "F"
+                            halign: "center"
+
+                        MDLabel:
+                            text: "S"
+                            halign: "center"
+
+            MDCard:
+                radius: [20]
+                size_hint_y: None
+                height: dp(100)
+                MDLabel:
+                    text: "Next Payday\nJune 22"
+                    halign: "center"
