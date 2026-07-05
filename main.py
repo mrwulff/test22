@@ -2222,8 +2222,12 @@ class Demo3App(MDApp):
 
 
 
-        self.today(True)
+        #self.today(True)
+        self.today2(True)
         return self.root
+    def today2(self,lol):
+        logging.info("today2")
+        screen = self.root.get_screen("today")  
 
     def fix_resume(self, *args):
         
