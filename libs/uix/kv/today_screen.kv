@@ -26,90 +26,31 @@
                 #padding : dp(12)
                 adaptive_height: True
 
-                MDCard:
-                    style: "filled"
-                    radius: [18]
-                    height: dp(99)
-                    size_hint_y: None
+                StatCard:
+                    icon: "clock-outline"
+                    value: "148"
+                    title: " YTD"
+                    subtitle: "today"
 
-                    MDBoxLayout:
-                        orientation: "horizontal"
-                        padding: dp(6)
-                        spacing: dp(3)
+                    icon_color: app.theme_cls.secondaryColor
+                    circle_color:
+                        app.theme_cls.secondaryColor[0], \
+                        app.theme_cls.secondaryColor[1], \
+                        app.theme_cls.secondaryColor[2], \
+                        .12
+            
+                StatCard:
+                    icon: "clock-outline"
+                    value: "1480"
+                    title: "HOURS "
+                    subtitle: "As of "
 
-                        # Left icon column
-                        FloatLayout:
-                            size_hint_x: None
-                            width: dp(56)
-
-                            FloatLayout:
-                                size_hint: None, None
-                                size: dp(44), dp(44)
-                                pos_hint: {"center_x": .5, "center_y": .5}
-
-                                canvas.before:
-                                    Color:
-                                        rgba: app.theme_cls.primaryColor[0], app.theme_cls.primaryColor[1], app.theme_cls.primaryColor[2], .12
-                                    Ellipse:
-                                        pos: self.pos
-                                        size: self.size
-
-                                MDIcon:
-                                    icon: "calendar-check"
-                                    pos_hint: {"center_x": .5, "center_y": .5}
-                                    font_size: dp(22)
-
-                        # Right text column
-                        MDBoxLayout:
-                            orientation: "vertical"
-
-                            Widget:
-
-
-                            MDLabel:
-                                text: "11"
-                                font_style: "Headline"
-                                role: "small"
-                                adaptive_height: True
-
-                            MDLabel:
-                                text: "CONFIRMED"
-                                theme_text_color: "Secondary"
-                                adaptive_height: True
-
-                            
-
-                            MDLabel:
-                                text: "Next in 7 days"
-                                font_style: "Body"
-                                role: "small"
-                                adaptive_height: True
-                            Widget:
-                
-                MDCard:
-                    style: "filled"
-                    radius: [12]
-                    #padding: dp(5)
-
-                    MDBoxLayout:
-                        orientation: "vertical"
-                        #spacing: dp(8)
-
-                        MDIcon:
-                            icon: "clock-outline"
-
-                        MDLabel:
-                            id: stat_hours
-                            text: "148"
-                            font_style: "Headline"
-
-                        MDLabel:
-                            text: "HOURS YTD"
-
-                        MDLabel:
-                            text: "As of today"
-                            theme_text_color: "Secondary"
-
+                    icon_color: app.theme_cls.secondaryColor
+                    circle_color:
+                        app.theme_cls.secondaryColor[0], \
+                        app.theme_cls.secondaryColor[1], \
+                        app.theme_cls.secondaryColor[2], \
+                        .12
             
 
 
