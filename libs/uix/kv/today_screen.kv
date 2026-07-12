@@ -8,7 +8,7 @@
 
         MDBoxLayout:
             adaptive_height: True
-            spacing: dp(36)
+            spacing: dp(6)
             #padding: dp(36)
             orientation: "vertical"
 
@@ -61,8 +61,26 @@
             MDLabel:
                 text: "Up Next"
                 bold: True
-                adaptive_height: True
+                size_hint_y: None
+                font_style: "Title"
+                role: "medium"
+                height: self.texture_size[1]
+                text_color: app.theme_cls.secondaryColor
+                #text_color: (1,1,1)
+            ShowCard:
+                badge: "SHOW"
+                badge_color: 0.2,0.45,0.9,1
+                stripe_color: 0.2,0.45,0.9,1
+                position: "A1"
+                position_color: 0.2,0.45,0.9,1
 
+                day: "Fri"
+                date: "Jun 19"
+                time: "8:30 PM"
+
+                show: "Summer Walker"
+                venue: "T-Mobile Arena"
+                address: "3780 S Las Vegas Blvd"
             MDCard:
                 radius: [5]
                 size_hint_y: None

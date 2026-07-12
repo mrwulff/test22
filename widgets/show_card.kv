@@ -1,0 +1,107 @@
+#:import dp kivy.metrics.dp
+
+<ShowCard>:
+    style: "filled"
+    radius: [18]
+    size_hint_y: None
+    height: dp(148)
+    ripple_behavior: True
+    focus_behavior: True
+
+    canvas.before:
+        Color:
+            rgba: root.stripe_color
+        RoundedRectangle:
+            pos: self.x, self.y
+            size: dp(4), self.height
+            radius: [18,0,0,18]
+
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: dp(18)
+        spacing: dp(12)
+
+        # ---------------- HEADER ----------------
+
+        MDBoxLayout:
+            adaptive_height: True
+            spacing: dp(10)
+
+            MDCard:
+                style: "filled"
+                radius: [16]
+                md_bg_color: root.badge_color
+                size_hint: None, None
+                size: dp(64), dp(32)
+
+                MDLabel:
+                    text: root.badge
+                    halign: "center"
+                    valign: "middle"
+                    bold: True
+                    theme_text_color: "Custom"
+                    text_color: 1,1,1,1
+
+            MDLabel:
+                text: f"{root.day} {root.date} • {root.time}"
+                valign: "middle"
+                adaptive_height: True
+
+            Widget:
+
+            MDCard:
+                style: "filled"
+                radius: [16]
+                md_bg_color: root.position_color
+                size_hint: None, None
+                size: dp(56), dp(32)
+
+                MDLabel:
+                    text: root.position
+                    halign: "center"
+                    valign: "middle"
+                    bold: True
+                    theme_text_color: "Custom"
+                    text_color: 1,1,1,1
+
+        # ---------------- SHOW NAME ----------------
+
+        MDLabel:
+            text: root.show
+            font_style: "Headline"
+            role: "medium"
+            adaptive_height: True
+
+        # ---------------- VENUE ----------------
+
+        MDBoxLayout:
+            adaptive_height: True
+            spacing: dp(8)
+
+            MDIcon:
+                icon: "map-marker-outline"
+                font_size: dp(16)
+                adaptive_width: True
+                theme_icon_color: "Secondary"
+
+            MDLabel:
+                text: root.venue
+                adaptive_height: True
+                theme_text_color: "Secondary"
+
+        # ---------------- ADDRESS ----------------
+
+        MDBoxLayout:
+            adaptive_height: True
+            spacing: dp(8)
+
+            MDIcon:
+                icon: "map-marker-radius-outline"
+                font_size: dp(16)
+                adaptive_width: True
+                theme_icon_color: "Secondary"
+
+            MDLabel:
+                text: root.address
+                adaptive_height: True
+                theme_text_color: "Secondary"
