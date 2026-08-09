@@ -1,13 +1,17 @@
+#:import dp kivy.metrics.dp
+
 <Badge>:
-    style: "filled"
-
     size_hint: None, None
-    width: dp(84)
-    height: dp(22)
+    size: dp(84), dp(24)
 
-    radius: [11]
+    canvas.before:
+        Color:
+            rgba: root.bg_color
 
-    md_bg_color: root.bg_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [12]
 
     MDLabel:
         text: root.text
@@ -15,8 +19,12 @@
         halign: "center"
         valign: "middle"
 
+        adaptive_height: True
+
         theme_text_color: "Custom"
         text_color: root.fg_color
 
         font_style: "Label"
         role: "small"
+
+        center: root.center

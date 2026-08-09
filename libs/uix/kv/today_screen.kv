@@ -27,10 +27,10 @@
                 adaptive_height: True
 
                 StatCard:
-                    icon: "clock-outline"
-                    value: "148"
-                    title: " YTD"
-                    subtitle: "today"
+                    icon: "update"
+                    value: "8 "
+                    title: "Hours ago"
+                    subtitle: "Tap to update"
 
                     icon_color: app.theme_cls.secondaryColor
                     circle_color:
@@ -40,10 +40,10 @@
                         .12
             
                 StatCard:
-                    icon: "clock-outline"
-                    value: "1480"
-                    title: "HOURS "
-                    subtitle: "As of "
+                    icon: "check-circle"
+                    value: "12"
+                    title: "Confirmed"
+                    subtitle: "0 Pending"
 
                     icon_color: app.theme_cls.secondaryColor
                     circle_color:
@@ -77,7 +77,7 @@
                 show_class: "SHOW"
 
                 status_color: (.18,.70,.32,1)
-                status: "CONFIRMED"
+                status: "Check!"
 
                 position_color: (.60,.45,.95,1)
                 position: "A1"
@@ -105,62 +105,66 @@
                 show: "Summer Walker"
                 venue: "T-Mobile Arena"
                 address: "3780 S Las Vegas Blvd"
-            MDCard:
-                radius: [5]
-                size_hint_y: None
-                height: dp(130)
-                MDLabel:
-                    text: "THU 18 • ACMA Awards"
-                    halign: "center"
-            MDCard:
-                radius: [10]
-                size_hint_y: None
-                height: dp(130)
-                MDLabel:
-                    text: "THU 18 • ACMA Awards"
-                    halign: "center"
+
+            ShowCard:
+                badge: "SHOW"
+                badge_color: 0.2,0.45,0.9,1
+                stripe_color: 0.2,0.45,0.9,1
+                position: "A1"
+                position_color: 0.2,0.45,0.9,1
+
+                day: "Fri"
+                date: "Jun 19"
+                time: "8:30 PM"
+
+                show: "Summer Walker"
+                venue: "T-Mobile Arena"
+                address: "3780 S Las Vegas Blvd"
+
+
+            
+
+
 
             MDGridLayout:
-                cols: 4
-                adaptive_height: True
+                cols: 2
                 spacing: dp(12)
+                #padding : dp(12)
+                adaptive_height: True
 
-                MDCard:
-                    radius: [20]
-                    size_hint_y: None
-                    height: dp(84)
-                    MDLabel:
-                        text: "Calendar"
-                        halign: "center"
+                StatCard:
+                    icon: "currency-usd"
+                    value: "8 Days "
+                    title: "Until Payday"
+                    subtitle: "August 8, 2026"
 
-                MDCard:
-                    radius: [20]
-                    size_hint_y: None
-                    height: dp(84)
-                    MDLabel:
-                        text: "Confirm"
-                        halign: "center"
+                    icon_color: app.theme_cls.secondaryColor
+                    circle_color:
+                        app.theme_cls.secondaryColor[0], \
+                        app.theme_cls.secondaryColor[1], \
+                        app.theme_cls.secondaryColor[2], \
+                        .12
+            
+                StatCard:
+                    icon: "hours-24"
+                    value: "10 shows"
+                    title: "Have Valid Data"
+                    subtitle: "5 Pending"
 
-                MDCard:
-                    radius: [20]
-                    size_hint_y: None
-                    height: dp(84)
-                    MDLabel:
-                        text: "Pay"
-                        halign: "center"
+                    icon_color: app.theme_cls.secondaryColor
+                    circle_color:
+                        app.theme_cls.secondaryColor[0], \
+                        app.theme_cls.secondaryColor[1], \
+                        app.theme_cls.secondaryColor[2], \
+                        .12
 
-                MDCard:
-                    radius: [20]
-                    size_hint_y: None
-                    height: dp(84)
-                    MDLabel:
-                        text: "Archive"
-                        halign: "center"
+            
+
 
             MDCard:
                 radius: [20]
                 size_hint_y: None
-                height: dp(260)
+                height: dp(130)
 
                 MDBoxLayout:
                     orientation: "vertical"
@@ -213,10 +217,6 @@
                             text: "S"
                             halign: "center"
 
-            MDCard:
-                radius: [20]
-                size_hint_y: None
-                height: dp(100)
-                MDLabel:
-                    text: "Next Payday\nJune 22"
-                    halign: "center"
+
+    NavigationBar:
+        selected: "home"

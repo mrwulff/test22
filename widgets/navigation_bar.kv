@@ -1,0 +1,54 @@
+<NavigationBar>:
+    size_hint_y: None
+    height: dp(68)
+
+    MDAnchorLayout:
+        anchor_x: "center"
+        anchor_y: "center"
+        #md_bg_color: (1, 1, .18, .1)
+        MDCard:
+            #style: "filled"
+            style: "outlined"
+            
+            
+            radius: [28]
+            theme_bg_color: "Custom"
+            #md_bg_color: app.theme_cls.surfaceContainerColor
+            md_bg_color: (.9, .91, .918, .9)
+
+            size_hint_x: .94
+            height: dp(72)
+
+
+        MDBoxLayout:
+
+            padding: dp(8)
+            NavButton:
+                icon: "home"
+                text: "Home"
+
+                on_touch_down:
+                    if self.collide_point(*args[1].pos): root.goto("today")
+                #width: dp(80)
+
+            NavButton:
+                icon: "calendar"
+                text: "Calendar"
+                #width: dp(80)
+
+                on_touch_down:
+                    if self.collide_point(*args[1].pos): root.goto("calendar")
+            NavButton:
+                icon: "history"
+                text: "Jobs"
+                #width: dp(80)
+
+                on_touch_down:
+                    if self.collide_point(*args[1].pos): root.goto("history")
+            NavButton:
+                icon: "hamburger"
+                text: "More"
+                #width: dp(80)
+
+                on_touch_down:
+                    if self.collide_point(*args[1].pos): root.goto("history")

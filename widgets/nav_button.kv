@@ -1,0 +1,36 @@
+#:import dp kivy.metrics.dp
+
+<NavButton>:
+    orientation: "vertical"
+    size_hint: 1, None
+    height: dp(64)
+    spacing: dp(2)
+
+    MDAnchorLayout:
+        anchor_x: "center"
+        anchor_y: "center"
+        size_hint_y: None
+        height: dp(36)
+
+        MDCard:
+            style: "filled"
+            radius: [18]
+            md_bg_color:
+                root.active_color if root.active else (0,0,0,0)
+
+            size_hint: None, None
+            size: dp(56), dp(32)
+
+            MDAnchorLayout:
+                MDIcon:
+                    icon: root.icon
+                    theme_icon_color: "Custom"
+                    icon_color:
+                        (1,1,1,1) if root.active else app.theme_cls.onSurfaceVariantColor
+
+    MDLabel:
+        text: root.text
+        halign: "center"
+        adaptive_height: True
+        font_style: "Label"
+        role: "small"
