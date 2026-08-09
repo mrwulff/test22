@@ -3,105 +3,116 @@
 <ShowCard>:
     style: "filled"
     radius: [18]
-    size_hint_y: None
-    height: dp(148)
-    ripple_behavior: True
-    focus_behavior: True
 
-    canvas.before:
-        Color:
-            rgba: root.stripe_color
-        RoundedRectangle:
-            pos: self.x, self.y
-            size: dp(4), self.height
-            radius: [18,0,0,18]
+    size_hint_y: None
+    height: dp(126)
+
+    padding: dp(16)
 
     MDBoxLayout:
-        orientation: "vertical"
-        padding: dp(18)
         spacing: dp(12)
 
-        # ---------------- HEADER ----------------
+        #
+        # LEFT CONTENT
+        #
 
         MDBoxLayout:
-            adaptive_height: True
-            spacing: dp(10)
+            orientation: "horizontal"
+            spacing: dp(14)
 
-            MDCard:
-                style: "filled"
-                radius: [16]
-                md_bg_color: root.badge_color
-                size_hint: None, None
-                size: dp(64), dp(32)
-
-                MDLabel:
-                    text: root.badge
-                    halign: "center"
-                    valign: "middle"
-                    bold: True
-                    theme_text_color: "Custom"
-                    text_color: 1,1,1,1
-
-            MDLabel:
-                text: f"{root.day} {root.date} • {root.time}"
-                valign: "middle"
-                adaptive_height: True
+            #
+            # class color stripe
+            #
 
             Widget:
+                size_hint_x: None
+                width: dp(8)
 
-            MDCard:
-                style: "filled"
-                radius: [16]
-                md_bg_color: root.position_color
-                size_hint: None, None
-                size: dp(56), dp(32)
+                canvas.before:
+                    Color:
+                        rgba: root.class_color
+
+                    RoundedRectangle:
+                        pos: self.x + dp(2), self.y + dp(2)
+                        size: dp(2), self.height - dp(1)
+                        radius: [2]
+
+            #
+            # text
+            #
+
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: dp(2)
+
+                Widget:
+                    size_hint_y: None
+                    height: dp(2)
 
                 MDLabel:
-                    text: root.position
-                    halign: "center"
-                    valign: "middle"
-                    bold: True
-                    theme_text_color: "Custom"
-                    text_color: 1,1,1,1
+                    text: root.show
+                    adaptive_height: True
 
-        # ---------------- SHOW NAME ----------------
+                    font_style: "Headline"
+                    role: "small"
 
-        MDLabel:
-            text: root.show
-            font_style: "Headline"
-            role: "medium"
-            adaptive_height: True
+                MDLabel:
+                    text: f"{root.day} {root.date} • {root.time}"
+                    adaptive_height: True
 
-        # ---------------- VENUE ----------------
+                    theme_text_color: "Primary"
+
+                    font_style: "Body"
+                    role: "large"
+
+                Widget:
+                    size_hint_y: None
+                    height: dp(6)
+
+                MDLabel:
+                    text: root.venue
+                    adaptive_height: True
+
+                    font_style: "Body"
+                    role: "medium"
+
+                MDLabel:
+                    text: root.address
+                    adaptive_height: True
+
+                    theme_text_color: "Secondary"
+
+                    font_style: "Body"
+                    role: "small"
+
+                Widget:
+
+        #
+        # RIGHT BADGES
+        #
 
         MDBoxLayout:
-            adaptive_height: True
-            spacing: dp(8)
+            orientation: "vertical"
 
-            MDIcon:
-                icon: "map-marker-outline"
-                font_size: dp(16)
-                adaptive_width: True
-                theme_icon_color: "Secondary"
+            size_hint_x: None
+            width: dp(86)
 
-            MDLabel:
-                text: root.venue
-                adaptive_height: True
-                theme_text_color: "Secondary"
+            spacing: dp(4)
 
-        # ---------------- ADDRESS ----------------
+            Badge:
+                text: root.position
+                bg_color: root.position_color
 
-        MDBoxLayout:
-            adaptive_height: True
-            spacing: dp(8)
+            Badge:
+                text: root.show_class
+                bg_color: root.class_color
 
-            MDIcon:
-                icon: "map-marker-radius-outline"
-                font_size: dp(16)
-                adaptive_width: True
-                theme_icon_color: "Secondary"
+            Badge:
+                text: root.status
+                bg_color: root.status_color
 
-            MDLabel:
-                text: root.address
-                adaptive_height: True
-                theme_text_color: "Secondary"
+            Badge:
+                text: root.venue_code
+                bg_color: root.venue_color
+
+            Widget:

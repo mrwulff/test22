@@ -15,7 +15,7 @@
             Widget:
                 size_hint_y: None
                 #height: self.theme_cls.device_safe_area.top
-                height:dp(36)
+                height:dp(12)
             
             
 
@@ -59,14 +59,38 @@
 
 
             MDLabel:
-                text: "Up Next"
+                text: "UP NEXT"
+                adaptive_height: True
+
+                font_style: "Label"
+                role: "large"
+
+                theme_text_color: "Secondary"
+
                 bold: True
-                size_hint_y: None
-                font_style: "Title"
-                role: "medium"
-                height: self.texture_size[1]
-                text_color: app.theme_cls.secondaryColor
-                #text_color: (1,1,1)
+
+                padding: dp(8), 0
+            ShowCard:
+                show: "Summer Walker"
+
+                class_color: (.20,.55,.95,1)
+                show_class: "SHOW"
+
+                status_color: (.18,.70,.32,1)
+                status: "CONFIRMED"
+
+                position_color: (.60,.45,.95,1)
+                position: "A1"
+
+                venue_color: (.55,.35,.80,1)
+                venue_code: "TMA"
+                day: "Fri"
+                date: "Jun 19"
+                time: "8:30 PM"
+
+                show: "Summer Walker"
+                venue: "T-Mobile Arena"
+                address: "3780 S Las Vegas Blvd"
             ShowCard:
                 badge: "SHOW"
                 badge_color: 0.2,0.45,0.9,1

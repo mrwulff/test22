@@ -150,9 +150,13 @@ class E(ExceptionHandler):
 from widgets.stat_card import StatCard
 
 from widgets.show_card import ShowCard
+from widgets.badge import Badge
+
 from kivy.lang import Builder
 Builder.load_file("widgets/stat_card.kv")
 Builder.load_file("widgets/show_card.kv")
+Builder.load_file("widgets/badge.kv")
+
 #Builder.load_file("widgets/stat_card.kv")
 if debug == True:
     ExceptionManager.add_handler(E())
