@@ -12,7 +12,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 ### RELEASE 10.2.2023
 ###
-debug = False
+debug = True
 debug_online = False
 from kivy.clock import Clock
 import humanize
@@ -2238,8 +2238,8 @@ class Demo3App(MDApp):
 
 
 
-        #self.today(True)
-        self.today2(True)
+        self.today(True)
+        #self.today2(True)
         return self.root
     def today2(self,lol):
         logging.info("today2")
@@ -3408,8 +3408,156 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 text="Deleting bad data..."
             ))
         print ('showed the snackbar')
+    def time_since(self,dt):
+        """
+        Returns:
+            value, title
 
+        Examples:
+            ("5", "Minutes Ago")
+            ("3", "Hours Ago")
+            ("2", "Days Ago")
+            ("1", "Week Ago")
+            ("4", "Weeks Ago")
+            ("7", "Months Ago")
+            ("1", "Year Ago")
+        """
+
+        from datetime import datetime
+
+        #now = datetime.now()
+        delta =  dt
+
+        seconds = int(delta.total_seconds())
+
+        if seconds < 60:
+            return "Just", "Updated"
+
+        minutes = seconds // 60
+        if minutes < 60:
+            return str(minutes), "Minute Ago" if minutes == 1 else "Minutes Ago"
+
+        hours = minutes // 60
+        if hours < 24:
+            return str(hours), "Hour Ago" if hours == 1 else "Hours Ago"
+
+        days = delta.days
+        if days < 7:
+            return str(days), "Day Ago" if days == 1 else "Days Ago"
+
+        weeks = days // 7
+        if days < 30:
+            return str(weeks), "Week Ago" if weeks == 1 else "Weeks Ago"
+
+        months = days // 30
+        if days < 365:
+            return str(months), "Month Ago" if months == 1 else "Months Ago"
+
+        years = days // 365
+        return str(years), "Year Ago" if years == 1 else "Years Ago"
+
+
+    def populate_stats(self, js):
+        shows = js["shows"]
+        update = js["updated"]
+        
+        old_update = datetime.datetime.strptime(update, "%Y-%m-%d %H:%M:%S.%f")
+        now = datetime.datetime.now()
+        diff2 = self.time_since(now - old_update)
+        next_show = shows[0]["date"] + " " + shows[0]["time"]
+        next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
+        bb = 0
+        nns = now - next_show
+        # logging.info('asdfasdf',nns,type(nns),shows)
+
+        while (nns) >= timedelta(0):
+            next_show = shows[bb]["date"] + " " + shows[bb]["time"]
+            next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
+            nns = now - next_show
+
+            bb = bb + 1
+        diff3 = humanize.naturaltime(now - next_show)
+        screen = self.root.get_screen("today")
+        print(screen.ids.keys(),"WHAT!!!!!")
+        print(list(screen.ids.keys()))
+        screen.ids.update_card.value = diff2[0]
+        screen.ids.update_card.title = diff2[1]
+        screen.ids.update_card.subtitle = "Tap to update"
+
+        #print (len(shows), "len shows")
+        len_shows=str(len(shows))
+        screen.ids.confirmed_card.value= len_shows
+        print (len(js['confirmables']),"len confirmables")
+        screen.ids.confirmed_card.subtitle= str(len(js['confirmables'])) + " Pending"
+        if (len(js['confirmables'])>0):
+            screen.ids.confirmed_card.value= str(len(js['confirmables']))
+            screen.ids.confirmed_card.title="Pending"
+            screen.ids.confirmed_card.subtitle= str("Tap to confirm")
+
+    def parse_show(self,show):
+        if show.startswith("(TMA) "):
+            return "TMA", show[6:]
+
+        if show.startswith("(MGM) "):
+            return "MGM", show[6:]
+
+        if show.startswith("(Dolby) "):
+            return "Dolby", show[8:]
+
+        return "", show
+    def populate_show_cards(self, js):
+        cards=["show_card_1","show_card_2","show_card_3"]
+        shows = js["shows"]
+        screen = self.root.get_screen("today")
+        for x in range(3):
+            #screen.ids[cards[x]].show= shows[x]["show"]
+            show_date = datetime.datetime.strptime(shows[x]["date"], "%m/%d/%Y")
+            #show_date = show_date.strftime("%A, %m/%d")
+            screen.ids[cards[x]].day= show_date.strftime("%A")
+            screen.ids[cards[x]].date= show_date.strftime("%B ") + str(show_date.day)
+            screen.ids[cards[x]].time= shows[x]["time"]
+            screen.ids[cards[x]].position= shows[x]["pos"]
+            #screen.ids[cards[x]].status= shows[x]["status"]
+            print("status_icon =", screen.ids[cards[x]].status_icon)
+            if shows[x]["status"]== "Confirmed":
+                screen.ids[cards[x]].status_color= "blue"
+                screen.ids[cards[x]].status_icon= "check-circle-outline"
+
+
+
+            screen.ids[cards[x]].show_class= shows[x]["type"]
+            print("after SET!status_icon =", screen.ids[cards[x]].status_icon)
+
+
+            badge, title = self.parse_show(shows[x]["show"])
+
+            screen.ids[cards[x]].show = title
+            screen.ids[cards[x]].venue_code = badge
+
+
+
+
+        
     def today(self,start):
+        logging.info('Starting today function')
+        x = self.on_start2()
+
+        js = libs.lib_new.just_get_json_schedule(x, ad)
+        shows = js["shows"]
+        #logging.info ("jsshows!!!! %s",len(shows))
+
+        self.populate_stats(js)
+        #logging.info ("populate_stats!!!! %s",(u))
+
+        self.populate_show_cards(js)
+
+        #self.populate_pay(js)
+
+        #self.populate_calendar(js)
+
+        #self.populate_drawer(x)
+
+    def today3(self,start):
         logging.info('Starting today function')
         ctx = ssl.create_default_context(
             cafile="cacert.pem"
@@ -4575,6 +4723,11 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             #logging.info(xx9["num_shows"])
             self.new_confirm("all")
             #toast("Success")
+        
+        if xx9["num_shows"]==0:
+            self.snackbarx("Nothing to Confirm")
+
+        
         self.update_internal("confirm", "1")
         self.update()
         print ('updating')

@@ -11,6 +11,7 @@
             spacing: dp(6)
             #padding: dp(36)
             orientation: "vertical"
+    
 
             Widget:
                 size_hint_y: None
@@ -27,10 +28,12 @@
                 adaptive_height: True
 
                 StatCard:
+                    id: update_card
                     icon: "update"
                     value: "8 "
                     title: "Hours ago"
                     subtitle: "Tap to update"
+                    on_release: app.update()
 
                     icon_color: app.theme_cls.secondaryColor
                     circle_color:
@@ -41,9 +44,11 @@
             
                 StatCard:
                     icon: "check-circle"
+                    id: confirmed_card
                     value: "12"
                     title: "Confirmed"
                     subtitle: "0 Pending"
+                    on_release: app.check_confirm()
 
                     icon_color: app.theme_cls.secondaryColor
                     circle_color:
@@ -71,13 +76,13 @@
 
                 padding: dp(8), 0
             ShowCard:
-                show: "Summer Walker"
+                id: show_card_1
+                #show: "Summer Walker"
 
                 class_color: (.20,.55,.95,1)
                 show_class: "SHOW"
 
                 status_color: (.18,.70,.32,1)
-                status: "Check!"
 
                 position_color: (.60,.45,.95,1)
                 position: "A1"
@@ -92,6 +97,7 @@
                 venue: "T-Mobile Arena"
                 address: "3780 S Las Vegas Blvd"
             ShowCard:
+                id: show_card_2
                 badge: "SHOW"
                 badge_color: 0.2,0.45,0.9,1
                 stripe_color: 0.2,0.45,0.9,1
@@ -107,6 +113,7 @@
                 address: "3780 S Las Vegas Blvd"
 
             ShowCard:
+                id: show_card_3
                 badge: "SHOW"
                 badge_color: 0.2,0.45,0.9,1
                 stripe_color: 0.2,0.45,0.9,1
@@ -216,6 +223,7 @@
                         MDLabel:
                             text: "S"
                             halign: "center"
+
 
 
     NavigationBar:

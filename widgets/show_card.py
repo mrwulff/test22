@@ -18,6 +18,8 @@ class ShowCard(MDCard):
     show_class = StringProperty("SHOW")
     status = StringProperty("CONFIRMED")
     venue_code = StringProperty("TMA")
+    status_icon = StringProperty("")   # <-- add this
+
 
 
     
