@@ -3486,13 +3486,17 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         #print (len(shows), "len shows")
         len_shows=str(len(shows))
-        screen.ids.confirmed_card.value= len_shows
+        
         print (len(js['confirmables']),"len confirmables")
         screen.ids.confirmed_card.subtitle= str(len(js['confirmables'])) + " Pending"
         if (len(js['confirmables'])>0):
             screen.ids.confirmed_card.value= str(len(js['confirmables']))
             screen.ids.confirmed_card.title="Pending"
             screen.ids.confirmed_card.subtitle= str("Tap to confirm")
+        if (len(js['confirmables'])==0):
+            screen.ids.confirmed_card.value= len_shows
+            screen.ids.confirmed_card.title="Confirmed"
+            screen.ids.confirmed_card.subtitle= str("0 Pending")
 
     def parse_show(self,show):
         if show.startswith("(TMA) "):
@@ -3505,6 +3509,23 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             return "Dolby", show[8:]
 
         return "", show
+    def find_next_show(self, shows):
+
+        now = datetime.datetime.now()
+        next_show = shows[0]["date"] + " " + shows[0]["time"]
+        next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
+        bb = 0
+        nns = now - next_show
+        # logging.info('asdfasdf',nns,type(nns),shows)
+
+        while (nns) >= timedelta(0):
+            next_show = shows[bb]["date"] + " " + shows[bb]["time"]
+            next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
+            nns = now - next_show
+
+            bb = bb + 1
+        diff3 = humanize.naturaltime(now - next_show)
+        return diff3
     def populate_show_cards(self, js):
         cards=["show_card_1","show_card_2","show_card_3"]
         shows = js["shows"]
@@ -3534,6 +3555,8 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             screen.ids[cards[x]].show = title
             screen.ids[cards[x]].venue_code = badge
 
+        next=self.find_next_show(shows)
+        screen.ids.upnext.text="UP NEXT: "+ next
 
 
 
@@ -3548,6 +3571,8 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         self.populate_stats(js)
         #logging.info ("populate_stats!!!! %s",(u))
+        
+
 
         self.populate_show_cards(js)
 

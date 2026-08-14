@@ -59,6 +59,7 @@
 
         MDLabel:
             text: "Up Next"
+            id:upnext
 
         MDCard:
             size_hint_y: None
