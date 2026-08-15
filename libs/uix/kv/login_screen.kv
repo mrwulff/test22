@@ -1,124 +1,101 @@
-<ClickableTextFieldRound>:
-    size_hint_y: None
-    height: tpassword.height
-    id: textfieldcontainer
-    MDTextField:
-        id:tpassword
-        hint_text: root.hint_text
-        text: root.text
-        password: True
-        #icon_left: "key-variant"
+#:import dp kivy.metrics.dp
 
-    MDIconButton:
-        icon: "eye-off"
-        pos_hint: {"center_y": .5}
-        pos: tpassword.width - self.width + dp(8), 0
-        theme_text_color: "Hint"
-        on_release:
-            self.icon = "eye" if self.icon == "eye-off" else "eye-off"
-            tpassword.password = False if tpassword.password is True else True
-
-<LoginScreen>
+<LoginScreen>:
     name: "login"
-    #Image:
-    #    source: 'images/rh.jpg'
-    #    size: self.width,self.height
-    id:lolz
-    BoxLayout:
-        #id:lolz
-        orientation: "vertical"
-        MDTopAppBar:
-#            type: app.mtype
-#           title: "Login"
-            #height: app.mheight
-#            left_action_items: [['chevron-left', lambda screen: app.change_screen('settings', 'left'),'login']]
-            MDTopAppBarLeadingButtonContainer:
     
-                MDActionTopAppBarButton:
-                    icon: "chevron-left"
-                    on_release: app.change_screen('settings', 'left')
-        Screen:
-            #id:lolz
-            
-            Image:
-                pos_hint:{'center_x': 0.5, 'center_y': 0.8}
-                source: 'images/cartoon.png'
-                size: 250, 250
-                allow_stretch: True
-                #size_hint_y: 1
-                #size:dp(20)
-            MDTextField:
-                
-                #helper_text: "to join the chat (test mode)"
-                #helper_text_mode: "on_focus"
-                #icon_right: "android"
-                #icon_right_color: app.theme_cls.primary_color
-                pos_hint:{'center_x': 0.5, 'center_y': 0.55}
-                size_hint_x:None
-                font_size:dp(20)
-                width:dp(300)
-                id:temail
 
-                MDTextFieldHintText:
-                    text: "Email"
-                    text_color_normal:"mediumaquamarine"
-                    text_color_focus:"tan"
-                    pos_hint:{"center_x": 0.5, "center_y": -0.2}
+    MDBoxLayout:
+        orientation: "vertical"
 
+        MDTopAppBar:
+            type: "small"
 
-            ClickableTextFieldRound:
-                size_hint_x: None
-                hint_text: "Password"
-                font_size:dp(20)
-                width:dp(300)
-                id:pass2
-                pos_hint:{'center_x': 0.5, 'center_y': 0.43}
-                MDTextFieldHintText:
-                    pos_hint:{"center_x": 0.15, "center_y": -0.25}
-                    text: "Password"
+            #MDTopAppBarHeadlineText:
+            #    text: "Sign In"
 
+        MDBoxLayout:
+            orientation: "vertical"
+
+            padding: dp(24)
+            spacing: dp(20)
+
+            Widget:
+                size_hint_y: .15
+
+            MDIcon:
+                icon: "calendar-account"
+                halign: "center"
+                font_size: dp(72)
 
             MDLabel:
+                text: "!!Schedulara"
 
-                #pos_hint: {'center_x': .5, 'center_y': .33}
                 halign: "center"
-                MDListItemSupportingText:
-                    pos_hint: {'center_x': .5, 'center_y': .33}
-                    text: "Select Your Location"
-            MDButton:
-                id: button4
-                #padding: [15, 15]
 
-                width: 50
-                text: "Select Location"
-                pos_hint: {'center_x': .5, 'center_y': .28}
-                values: app.sound_effects
-                items: app.sound_effects
-                #id: noise
-                on_release: app.open_drop_item_menu(app.locations,'city')
-                MDButtonText:
-                    id:lol
-                    text: "Select Location"
+                font_style: "Display"
+                role: "small"
 
-            MDButton:
-                text: "Login!"
-                theme_text_color: "Primary"
-                pos_hint: {"center_x": .5, "center_y": .17}
-                font_size:dp(20)
-                on_release:
-                    #app.check_login()
-                    app.save_login()
-                    #app.today()
-                MDButtonText:
-                    text: "Login"
+            MDLabel:
+                text: "Secure sign-in via Dispatch"
 
-            #MDButton:#
-#
-#                id: drop_item
-#                pos_hint: {"center_x": .5, "center_y": .05}
-#                on_release: app.open_drop_item_menu(app.locations,'city')##
-#
-#                MDDropDownItemText:
-#                    id: drop_text
-#                    text: "Item"
-                    
+                halign: "center"
+
+                theme_text_color: "Secondary"
+
+            Widget:
+                size_hint_y: None
+                height: dp(16)
+
+            MDCard:
+                style: "outlined"
+
+                radius: [18]
+
+                size_hint_y: None
+                height: dp(420)
+
+                MDBoxLayout:
+                    orientation: "vertical"
+
+                    padding: dp(16)
+
+                    spacing: dp(12)
+
+                    MDBoxLayout:
+                        id: webview_placeholder
+                        md_bg_color:
+                            app.theme_cls.surfaceContainerHighestColor
+
+                        radius: [12]
+
+                        canvas.before:
+                            Color:
+                                rgba: self.md_bg_color
+
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [12]
+
+                        MDLabel:
+                            text: "Loading Dispatch Portal..."
+
+                            halign: "center"
+
+                            theme_text_color: "Secondary"
+
+            Widget:
+    MDButton:
+        id: done_button
+
+        style: "text"
+
+        pos_hint: {"right": 1, "top": 1}
+
+        opacity: 1
+
+        on_release:
+            app.close_webview()
+
+        MDButtonText:
+            text: "Done"

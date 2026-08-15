@@ -9,10 +9,12 @@ import threading
 
 import ssl
 
+from libs.ios.webview import IOSWebView
+
 ssl._create_default_https_context = ssl._create_unverified_context
 ### RELEASE 10.2.2023
 ###
-debug = True
+debug = False
 debug_online = False
 from kivy.clock import Clock
 import humanize
@@ -2265,8 +2267,18 @@ class Demo3App(MDApp):
 
         scroll.scroll_y = 1
 
-
+    def close_webview(self):
+        if self.webview:
+            self.webview.close()
+        self.root.push("today")
+        
     def on_resume(self):
+        screen = self.root.current_screen
+
+        print("RESUME:", screen.name)
+
+        if screen.name != "today":
+            return
         for t in [0, .5, 1, 2, 5,7,9,11,13,15,17,20,25,30,45]:
             Clock.schedule_once(
                 lambda dt, tt=t: print(
@@ -5514,7 +5526,33 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 for recipe in category["Recipes"]:
                     if recipe["title"] == selected_r:
                         return recipe["shopping list"]
+    def new_login(self):
+        login_url = "https://www.thinkrhino.com/employee/lasvegas/Index.aspx"
 
+        if not hasattr(self, "webview"):
+            self.webview = IOSWebView()
+
+        self.webview.show_url(login_url)
+
+        Clock.schedule_once(self.inject_login_js, 3)
+
+
+    def inject_login_js(self, dt):
+
+        self.webview.inject_js("""
+            document.body.style.background = "red";
+        """)
+
+        self.webview.inject_js("""
+            document.querySelectorAll("section")[1].style.display = "none";
+        """)
+
+    def _launch_login_webview(self, dt):
+        from libs.ios.webview import IOSWebView
+
+        self.webview = IOSWebView()
+        self.webview.show_login("https://www.thinkrhino.com/employee/lasvegas/Index.aspx")
+           
     def do_login(self, search, useold):
         logging.info("do_login")
 
