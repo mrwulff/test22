@@ -1,0 +1,37 @@
+(function () {
+
+    function hook() {
+
+        const email = document.getElementById("emailaddress");
+        const password = document.getElementById("mypassword");
+        const button = document.getElementById("btnNewLogin");
+
+        if (!email || !password || !button)
+            return;
+
+
+        button.addEventListener("click", function (e) {
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const data = {
+                email: email.value,
+                password: password.value
+            };
+
+            location.href =
+                "schedulara://login?"
+                + encodeURIComponent(JSON.stringify(data));
+
+        }, true);
+
+    }
+
+    if (document.readyState === "loading")
+        document.addEventListener("DOMContentLoaded", hook);
+    else
+        hook();
+    location.href = "schedulara://hello";
+
+})();

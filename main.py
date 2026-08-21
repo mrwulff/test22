@@ -4,6 +4,7 @@
 #os.system('clear')
 import kivymd.uix.button as b
 from kivy.clock import Clock
+
 import threading
 
 
@@ -5527,16 +5528,39 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                     if recipe["title"] == selected_r:
                         return recipe["shopping list"]
     def new_login(self):
+        
+
         login_url = "https://www.thinkrhino.com/employee/lasvegas/Index.aspx"
+        #login_url='https://google.com'
 
         if not hasattr(self, "webview"):
             self.webview = IOSWebView()
 
         self.webview.show_url(login_url)
 
-        Clock.schedule_once(self.inject_login_js, 3)
+        Clock.schedule_once(
+            lambda dt: self.webview.run_js_file("thinkrhino.js"),
+            2
+        )
+
+        Clock.schedule_interval(self.check_webview, 0.2)
+
+    def check_webview(self, dt):
+        #print ("HECKING WEBVIEW")
+        msg = self.webview.get_message()
+
+        if not msg:
+            return
+
+        print(msg)
 
 
+    def on_login(
+        email,
+        password,
+        url
+    ):
+        logging.info("on_login", email, password, url)
     def inject_login_js(self, dt):
 
         self.webview.inject_js("""

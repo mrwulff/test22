@@ -1,5 +1,6 @@
 # libs/ios/webview.py
-
+import os 
+from kivy.clock import Clock
 from kivy.utils import platform
 
 if platform == "ios":
@@ -11,6 +12,10 @@ if platform == "ios":
     NSURLRequest = autoclass("NSURLRequest")
 
     KWWebViewHelper = autoclass("KWWebViewHelper")
+
+    print("FILE",__file__)
+
+    print("OSLISTDIR",os.listdir(os.path.dirname(__file__)))
 
 
 class IOSWebView:
@@ -56,6 +61,13 @@ class IOSWebView:
         self.webview.setFrame_(frame)
 
         self.helper = KWWebViewHelper.alloc().init()
+        print ("NEWDEBUG")
+        self.helper = KWWebViewHelper.alloc().init()
+
+        #print(dir(KWWebViewHelper))
+        print([x for x in dir(self.helper) if "URL" in x or "url" in x or "take" in x])
+        print ("NEWDEBUG_END")
+        self.webview.setNavigationDelegate_(self.helper)
 
         self.created = True
 
@@ -117,9 +129,9 @@ class IOSWebView:
 
     def show_url(self, url):
         print ("Showing URL:", url)
-
-        self.load_url(url)
         self.show()
+        self.load_url(url)
+        
 
     # --------------------------------------------------------
     # HTML
@@ -140,3 +152,36 @@ class IOSWebView:
 
         if self.helper:
             self.helper.runJS_script_(self.webview, js)
+
+    def run_js(self, js):
+
+        if self.helper:
+            self.helper.runJS_script_(self.webview, js)
+
+
+    def run_js_file(self, filename):
+        here = os.path.dirname(__file__)
+        path = os.path.join(here, filename)
+
+        print(path)
+
+        with open(path, "r", encoding="utf-8") as f:
+            self.inject_js(f.read())
+        print(self.helper.lastURL)
+
+        #print(self.helper.takeLastURL())
+        #lastURL
+    def get_message(self):
+        if not self.helper:
+            return None
+
+        msg = self.helper.lastURL
+
+        if msg:
+            # Clear it so we don't process it twice
+            self.helper.lastURL = None
+            return str(msg)
+
+        return None
+
+
