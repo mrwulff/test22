@@ -60,7 +60,6 @@ class IOSWebView:
 
         self.webview.setFrame_(frame)
 
-        self.helper = KWWebViewHelper.alloc().init()
         print ("NEWDEBUG")
         self.helper = KWWebViewHelper.alloc().init()
 
@@ -74,15 +73,16 @@ class IOSWebView:
     # --------------------------------------------------------
     # Show
     # --------------------------------------------------------
-
     def show(self):
-        print ("Showing WebView")
 
         if not self.created:
             self.create()
 
+        # Already attached?
+        if self.webview.superview():
+            return
+
         self.view.addSubview_(self.webview)
-        self.view.bringSubviewToFront_(self.webview)
 
     # --------------------------------------------------------
     # Hide
@@ -90,7 +90,7 @@ class IOSWebView:
 
     def hide(self):
 
-        if self.webview:
+        if self.webview and self.webview.superview():
             self.webview.removeFromSuperview()
 
     # --------------------------------------------------------
@@ -128,8 +128,9 @@ class IOSWebView:
     # --------------------------------------------------------
 
     def show_url(self, url):
-        print ("Showing URL:", url)
+
         self.show()
+
         self.load_url(url)
         
 
@@ -147,11 +148,11 @@ class IOSWebView:
     # JavaScript
     # --------------------------------------------- -----------
 
-    def inject_js(self, js):
-        print ("Injecting JS:", js)
-
-        if self.helper:
-            self.helper.runJS_script_(self.webview, js)
+    #def inject_js(self, js):
+    #    print ("Injecting JS:", js)
+#
+ #       if self.helper:
+ #           self.helper.runJS_script_(self.webview, js)
 
     def run_js(self, js):
 
@@ -166,22 +167,26 @@ class IOSWebView:
         print(path)
 
         with open(path, "r", encoding="utf-8") as f:
-            self.inject_js(f.read())
-        print(self.helper.lastURL)
+            self.run_js(f.read())
+        #print(self.helper.lastURL)
 
         #print(self.helper.takeLastURL())
         #lastURL
     def get_message(self):
+
         if not self.helper:
             return None
 
         msg = self.helper.lastURL
 
-        if msg:
-            # Clear it so we don't process it twice
-            self.helper.lastURL = None
-            return str(msg)
+        if msg is None:
+            return None
 
-        return None
+        #print("MESSAGE =", msg)
 
+        self.helper.setLastURL_(None)
 
+        #print(type(msg))
+        #print(dir(msg))
+
+        return msg.UTF8String()

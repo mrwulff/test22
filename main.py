@@ -11,6 +11,7 @@ import threading
 import ssl
 
 from libs.ios.webview import IOSWebView
+from libs.lib_rhino import RhinoClient
 
 ssl._create_default_https_context = ssl._create_unverified_context
 ### RELEASE 10.2.2023
@@ -293,7 +294,7 @@ import libs.lib_think as lib_think
 #import libs.lib_google2 as lib_google
 
 import libs.lib_readuserdata as lib_readuserdata
-
+from libs.lib_rhino import RhinoClient
 from kivy.uix.scatter import Scatter
 from kivy.uix.image import AsyncImage
 
@@ -2124,6 +2125,9 @@ class Demo3App(MDApp):
         #print ("def BUILD")
         self.root = Root()
         self.theme_cls.theme_style_switch_animation = True
+        self.rhino = RhinoClient()
+        self.load_rhino()
+
 
         from kivy.core.window import Window
 
@@ -5103,20 +5107,37 @@ Demo: If you are new to our app or would like to see how it works, click this bu
     def make_toast(self, b):
         logging.info('[KW] make_toast %s', b)
         self.snackbarx(b)
+    def make_rhino(self):
+        from libs.lib_rhino import RhinoClient
 
     def update(self):
-        logging.info("only updating schedule")
+        #from libs.lib_rhino import  RhinoParser
+        from libs.lib_rhino import RhinoClient
 
-        # try:
-        if 1 == 1:
-            libs.lib_new.make_json_schedule(x, ad)
-            logging.info("updated schedule")
-            self.update_internal("update", 1)
-            self.snackbarx("Success")
+        logging.info('"""***"def update""***""')
+        #self.rhino = RhinoClient()
+        #self.rhino.login(x["email"], x["password"])
 
-        # except:
-        ##    logging.info("login failed")
-        #   toast("login failed")
+
+
+        #schedule = libs.lib_rhino.rhino.get_schedule(x,ad)
+
+        #parser = RhinoParser(schedule)
+
+        #parser.user_name
+        #parser.shows
+       # parser.confirmables
+
+        #parser.save(...)
+
+
+
+        #libs.lib_new.make_json_schedule(x, ad)
+        #logging.info("updated schedule")
+        #self.update_internal("update", 1)
+        #self.snackbarx("Success")
+
+
         self.today(False)
 
     def open_panel2(self, xx, i, l, junk, z):
@@ -5527,32 +5548,148 @@ Demo: If you are new to our app or would like to see how it works, click this bu
                 for recipe in category["Recipes"]:
                     if recipe["title"] == selected_r:
                         return recipe["shopping list"]
-    def new_login(self):
+
+    def load_rhino(self):
+        #app = App.get_running_app()
+
+
+        x = libs.lib_readuserdata.readuserdata(App, ad, ios)
+
+        
         
 
-        login_url = "https://www.thinkrhino.com/employee/lasvegas/Index.aspx"
-        #login_url='https://google.com'
+        #rhino = RhinoClient()
+        print(self.rhino.city)
 
+        #print(rhino.city)
+        self.rhino.username = x["username"]
+        self.rhino.password = x["password"]
+        self.rhino.city = x["city"]
+        self.rhino.name = x["name"]
+
+        #self.rhino.build_urls()
+
+        print("Rhino loaded")
+        print (self.rhino.username)
+        print (self.rhino.password)
+
+
+        print ("load rhino done")
+
+
+    def login_ios(self):
         if not hasattr(self, "webview"):
             self.webview = IOSWebView()
 
-        self.webview.show_url(login_url)
+        #
+        # Show page
+        #
+
+        #self.webview.show_url(login_url)
+        
+        self.webview.show_url(self.rhino.login_url)
+
+        #
+        # Wait a bit, then inject JS
+        #
 
         Clock.schedule_once(
             lambda dt: self.webview.run_js_file("thinkrhino.js"),
             2
         )
 
-        Clock.schedule_interval(self.check_webview, 0.2)
+        #
+        # Don't start multiple polling timers
+        #
+
+        if not hasattr(self, "_webview_poll"):
+
+            self._webview_poll = Clock.schedule_interval(
+                self.check_webview,
+                0.2
+            )
+
+
+
+
+
+
+    def new_login(self):
+
+
+        if not hasattr(self, "rhino"):
+            self.rhino = RhinoClient("lasvegas")
+
+
+        if platform =="ios":
+            self.login_ios()
+        if platform !="ios":
+            print ("OLD LOGIN")
+
+
+
 
     def check_webview(self, dt):
-        #print ("HECKING WEBVIEW")
-        msg = self.webview.get_message()
 
-        if not msg:
+        import json
+        from urllib.parse import unquote
+
+        if not hasattr(self, "webview"):
             return
 
-        print(msg)
+        msg = self.webview.get_message()
+
+        if msg is None:
+            return
+
+        print("MESSAGE =", repr(msg))
+
+        #
+        # Force to python string
+        #
+
+        msg = f"{msg}"
+
+        if not msg.startswith("schedulara://login?"):
+            return
+
+        payload = msg.split("?", 1)[1]
+
+        data = json.loads(unquote(payload))
+
+        print("EMAIL =", data["email"])
+        print("PASSWORD =", data["password"])
+        print("URL =", data["url"])
+
+        #
+        # Stop polling
+        #
+
+        self._webview_poll.cancel()
+        del self._webview_poll
+
+        self.webview.hide()
+
+        import libs.lib_enc
+        EMAIL = data["email"]
+        PASSWORD = data["password"]
+
+        enc = libs.lib_enc.make_password(PASSWORD)
+        print (enc,"ENC!")
+
+        html = self.rhino.login(
+            EMAIL,
+            enc,
+        )
+        print (html,'login result')
+
+        schedule = self.rhino.download_schedule()
+        print (schedule,'schedule result')
+
+        with open(ad + "/realdata.html", "wb") as f:
+            f.write(schedule)
+
+
 
 
     def on_login(
@@ -8971,6 +9108,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
     # if good_login==True:
     # self.save_login()
     # self.root.current = "home"
+
 
     def save_login(self):
         loc = App.get_running_app().root.current_screen.ids["lol"].text

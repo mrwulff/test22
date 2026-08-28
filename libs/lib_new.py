@@ -20,11 +20,11 @@ def make_json_schedule(x, ad):
     if x["usecache"] == "True" or x["usecache"] == True or x["usecache"] == "true":
         conf = "/conf.html"
         cache = True
-        logging.info("WHY YOU NOT WORK CACHE TRUE")
+        logging.info("using cache")
     if x["usecache"] == "False" or x["usecache"] == False or x["usecache"] == "false":
         conf = "/realdata.html"
         cache = False
-        logging.info("WHY YOU NOT WORK")
+        logging.info("using real data")
 
     encoding = "utf8"
     logging.info(str(cache) + "CACHE IN NEW")
