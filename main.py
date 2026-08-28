@@ -12,6 +12,7 @@ import ssl
 
 from libs.ios.webview import IOSWebView
 from libs.lib_rhino import RhinoClient
+from libs.lib_rhino_models import RhinoParser
 
 ssl._create_default_https_context = ssl._create_unverified_context
 ### RELEASE 10.2.2023
@@ -33,6 +34,10 @@ except Exception:
     traceback.print_exc()
     raise
 from kivy.animation import Animation
+from kivy.app import App
+app = App.get_running_app()
+
+
 
 
 
@@ -5111,31 +5116,37 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         from libs.lib_rhino import RhinoClient
 
     def update(self):
-        #from libs.lib_rhino import  RhinoParser
-        from libs.lib_rhino import RhinoClient
-
-        logging.info('"""***"def update""***""')
-        #self.rhino = RhinoClient()
-        #self.rhino.login(x["email"], x["password"])
+        print ("def update")
 
 
+        #skip. no need to redownload every time when testing.
+        if 1==2:
 
-        #schedule = libs.lib_rhino.rhino.get_schedule(x,ad)
+            self.rhino.login(self.rhino.username,self.rhino.password)
+        
+            html=self.rhino.download_schedule()
+            self.rhino.save_schedule(ad + "/realdata.html")
 
-        #parser = RhinoParser(schedule)
-
-        #parser.user_name
-        #parser.shows
-       # parser.confirmables
-
-        #parser.save(...)
+        if 1==1:
+            html=self.rhino.load_cached_html()
 
 
+        parser = RhinoParser(html).parse()
 
-        #libs.lib_new.make_json_schedule(x, ad)
-        #logging.info("updated schedule")
-        #self.update_internal("update", 1)
-        #self.snackbarx("Success")
+        print(parser.name)
+
+        print(len(parser.shows))
+
+        print(parser.shows[1].show)
+
+        print(parser.shows[1].venue)
+
+        print(parser.shows[1].status)
+
+        print(parser.shows[0].confirm_id)
+
+
+
 
 
         self.today(False)

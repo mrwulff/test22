@@ -5,7 +5,8 @@ import ssl
 import certifi
 import logging
 import libs.lib_enc
-
+from kivy.app import App
+import os
 
 _real = ssl.create_default_context
 
@@ -35,7 +36,7 @@ class RhinoClient:
         self.username = ""
         self.password = ""
         self.city=""
-        #self.city = "lasvegas"
+        self.city = "lasvegas"
 
         self.usecache = False
 
@@ -60,7 +61,7 @@ class RhinoClient:
 
         self.name = ""
 
-        self.login = False
+        #self.login = False
 
         self.hide_canceled = False
         self.hide_shows = False
@@ -93,6 +94,23 @@ class RhinoClient:
 
         self.login_url = ""
         self.schedule_url = ""
+        self.set_city(self.city)
+
+        app = App.get_running_app()
+
+        self.data_dir = app.user_data_dir
+
+        self.schedule_cache_file = os.path.join(
+            self.data_dir,
+            "realdata.html",
+        )
+
+        self.login_cache_file = os.path.join(
+            self.data_dir,
+            "fullwebsite.html",
+        )
+
+        self.schedule_html = None
 
 
 
@@ -189,3 +207,18 @@ class RhinoClient:
             f.write(html)
 
         return filename
+
+    def load_cached_html(self):
+
+        try:
+
+            with open(self.schedule_cache_file, "rb") as f:
+                self.schedule_html = f.read()
+
+            return self.schedule_html
+
+        except FileNotFoundError:
+
+            logging.warning("No cached schedule found")
+
+            return None
