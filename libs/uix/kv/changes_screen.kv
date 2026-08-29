@@ -1,0 +1,309 @@
+#:import dp kivy.metrics.dp
+
+
+# =====================================================
+# CHANGE CARD
+# =====================================================
+
+<ChangeCard>:
+
+    orientation: "vertical"
+
+    size_hint_y: None
+    height: dp(125)
+
+    padding: dp(16), dp(10)
+    spacing: dp(4)
+
+    style: "filled"
+
+    radius: [18, 18, 18, 18]
+
+    theme_bg_color: "Custom"
+    md_bg_color: app.theme_cls.surfaceContainerColor
+
+
+    # =================================================
+    # MAIN CONTENT ROW
+    # =================================================
+
+    MDBoxLayout:
+
+        orientation: "horizontal"
+
+        size_hint_y: None
+        height: dp(100)
+
+        spacing: dp(8)
+
+
+        # =============================================
+        # LEFT SIDE
+        # =============================================
+
+        MDBoxLayout:
+
+            orientation: "vertical"
+
+            size_hint_y: None
+            height: dp(84)
+
+            pos_hint: {"center_y": .5}
+
+            spacing: dp(4)
+
+
+            # -----------------------------------------
+            # SHOW NAME
+            # -----------------------------------------
+
+            MDLabel:
+
+                text: root.show_name
+
+                font_style: "Title"
+                role: "medium"
+                bold: True
+
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.onSurfaceColor
+
+                size_hint_y: None
+                height: dp(36)
+
+                shorten: True
+                shorten_from: "right"
+
+
+            # -----------------------------------------
+            # SHOW DATE + TIME
+            # -----------------------------------------
+
+            MDLabel:
+
+                text:
+                    root.show_date + " • " + root.show_time \
+                    if root.show_date and root.show_time \
+                    else root.show_date \
+                    if root.show_date \
+                    else root.show_time
+
+                font_style: "Body"
+                role: "large"
+
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.onSurfaceColor
+
+                size_hint_y: None
+                height: dp(30)
+
+                shorten: True
+                shorten_from: "right"
+
+
+            # -----------------------------------------
+            # CHANGE DETECTED TIMESTAMP
+            # -----------------------------------------
+            #
+            # Keep this here but subtle. This is when
+            # Rhino detected the change, NOT the show time.
+            #
+
+            MDLabel:
+
+                text: root.timestamp
+
+                font_style: "Label"
+                role: "small"
+
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.onSurfaceVariantColor
+
+                size_hint_y: None
+                height: dp(18)
+
+                shorten: True
+                shorten_from: "right"
+
+        # =============================================
+        # RIGHT SIDE — BADGES
+        # =============================================
+
+                # =============================================
+        # RIGHT SIDE — BADGES
+        # =============================================
+
+        MDBoxLayout:
+
+            orientation: "vertical"
+
+            size_hint_x: None
+            width: dp(120)
+
+            size_hint_y: None
+            height: dp(100)
+
+
+            MDBoxLayout:
+
+                orientation: "vertical"
+
+                size_hint: None, None
+
+                width: dp(120)
+
+                height:
+                    dp(92) if root.change_badge else dp(28)
+
+                spacing: dp(4)
+
+                pos_hint: {"center_x": .5, "center_y": .5}
+
+
+                # =====================================
+                # CHANGE TYPE
+                # =====================================
+
+                MDCard:
+
+                    size_hint: None, None
+                    size: dp(120), dp(28)
+
+                    radius: [14, 14, 14, 14]
+
+                    theme_bg_color: "Custom"
+                    md_bg_color: root.badge_color
+
+
+                    MDLabel:
+
+                        text: root.badge
+
+                        halign: "center"
+                        valign: "center"
+
+                        text_size: self.size
+
+                        font_style: "Label"
+                        role: "small"
+
+                        bold: True
+
+                        theme_text_color: "Custom"
+                        text_color: 1, 1, 1, 1
+
+
+                # =====================================
+                # OLD -> NEW
+                # =====================================
+
+                MDCard:
+
+                    size_hint: None, None
+                    size: dp(120), dp(28)
+
+                    opacity: 1 if root.change_badge else 0
+
+                    radius: [14, 14, 14, 14]
+
+                    theme_bg_color: "Custom"
+                    md_bg_color: app.theme_cls.surfaceContainerHighestColor
+
+
+                    MDLabel:
+
+                        text:
+                            (root.old_value + "  ->  " + root.new_value) \
+                            if root.old_value or root.new_value else ""
+
+                        halign: "center"
+                        valign: "center"
+
+                        text_size: self.size
+
+                        font_style: "Label"
+                        role: "small"
+
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.onSurfaceColor
+
+                        shorten: True
+                        shorten_from: "right"
+
+
+                # =====================================
+                # FIELD
+                # =====================================
+
+                MDCard:
+
+                    size_hint: None, None
+                    size: dp(120), dp(28)
+
+                    opacity: 1 if root.change_badge else 0
+
+                    radius: [14, 14, 14, 14]
+
+                    theme_bg_color: "Custom"
+                    md_bg_color: app.theme_cls.surfaceContainerHighestColor
+
+
+                    MDLabel:
+
+                        text: root.change_badge
+
+                        halign: "center"
+                        valign: "center"
+
+                        text_size: self.size
+
+                        font_style: "Label"
+                        role: "small"
+
+                        bold: True
+
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.onSurfaceColor
+
+# =====================================================
+# CHANGES SCREEN
+# =====================================================
+
+<ChangesScreen>:
+
+    BoxLayout:
+
+        orientation: "vertical"
+
+
+        # =============================================
+        # CHANGE LIST
+        # =============================================
+
+        RecycleView:
+
+            id: changes_rv
+
+            viewclass: "ChangeCard"
+
+
+            RecycleBoxLayout:
+
+                default_size: None, dp(125)
+
+                default_size_hint: 1, None
+
+                size_hint_y: None
+
+                height: self.minimum_height
+
+                orientation: "vertical"
+
+
+        # =============================================
+        # NAVIGATION
+        # =============================================
+
+        NavigationBar:
+
+            selected: "changes"

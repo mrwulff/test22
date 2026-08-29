@@ -64,6 +64,16 @@
                     MDListItemLeadingIcon:
                         icon: "cloud-download"
                         pos_hint:{"center_x": 0.5, "center_y": 0.5}
+
+                MDListItem:
+                    on_release: 
+                        app.delete_changes_db()
+                    MDListItemHeadlineText:
+                        text: 'reset changes'
+
+                    MDListItemLeadingIcon:
+                        icon: "delete-circle"
+                        pos_hint:{"center_x": 0.5, "center_y": 0.5}
                 MDListItem:
                     on_release: 
                         app.menu_items()

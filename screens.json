@@ -193,6 +193,11 @@
         "import": "from libs.uix.baseclass.today2_screen import today2screen",
         "object": "today2screen()",
         "kv": "libs/uix/kv/today2_screen.kv"
+    },
+    "changes": {
+        "import": "from libs.uix.baseclass.changes_screen import ChangesScreen",
+        "object": "ChangesScreen()",
+        "kv": "libs/uix/kv/changes_screen.kv"
     }
     
 

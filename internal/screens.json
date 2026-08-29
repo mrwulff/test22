@@ -189,14 +189,14 @@
         "object": "md2screen()",
         "kv": "libs/uix/kv/md2_screen.kv"
     },
-    "menuitems": {
-        "import": "from libs.uix.baseclass.menuitems_screen import menuitemsscreen",
-        "object": "menuitemsscreen()",
-        "kv": "libs/uix/kv/menuitems_screen.kv"
-    },
     "today2": {
         "import": "from libs.uix.baseclass.today2_screen import today2screen",
         "object": "today2screen()",
         "kv": "libs/uix/kv/today2_screen.kv"
+    },
+    "changes": {
+        "import": "from libs.uix.baseclass.changes_screen import changesscreen",
+        "object": "changesscreen()",
+        "kv": "libs/uix/kv/changes_screen.kv"
     }
 }

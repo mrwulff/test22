@@ -1,10 +1,13 @@
 from dataclasses import dataclass
-
+from datetime import datetime, date
 from bs4 import BeautifulSoup
+import hashlib
+
 
 
 @dataclass
 class RhinoShow:
+
     date: str = ""
     time: str = ""
     job: str = ""
@@ -30,7 +33,23 @@ class RhinoShow:
 
     cancelled: bool = False
     old: bool = False
+
     id: str = ""
+
+    def generate_id(self):
+
+        identity = "|".join([
+            self.date,
+            self.job,
+            self.show
+
+        ])
+
+        self.id = hashlib.sha256(
+            identity.encode("utf-8")
+        ).hexdigest()
+
+        return self.id
     
 
 
@@ -45,6 +64,10 @@ class RhinoParser:
 
         self.name = ""
         self.shows = []
+        self.last_updated=None
+        self.old_shows=[]
+        self.confirmables=[]
+
 
     def parse(self):
 
@@ -79,18 +102,43 @@ class RhinoParser:
             cols = row.find_all("td")
 
             #
-            # Rhino schedule rows have 15 columns
+            # Ignore anything that isn't a schedule row
             #
 
             if len(cols) != 15:
                 continue
 
+            #
+            # A real schedule row must have a valid date
+            #
+
+            date_text = cols[1].get_text(strip=True)
+
+            if not date_text:
+                continue
+
+            try:
+                show_date = datetime.strptime(
+                    date_text,
+                    "%m/%d/%Y"
+                ).date()
+            except ValueError:
+                continue
+
+            #
+            # Create show
+            #
+
             show = RhinoShow()
 
-            show.date = cols[1].get_text(strip=True)
+            show.date = date_text
             show.time = cols[2].get_text(strip=True)
             show.job = cols[3].get_text(strip=True)
             show.show = cols[4].get_text(strip=True)
+
+            #
+            # Venue
+            #
 
             show.venue = cols[5].get_text(" ", strip=True)
 
@@ -98,6 +146,10 @@ class RhinoParser:
 
             if link and link.get("href"):
                 show.venue_pdf = link["href"]
+
+            #
+            # Remaining fields
+            #
 
             show.location = cols[6].get_text(strip=True)
             show.client = cols[7].get_text(strip=True)
@@ -135,6 +187,25 @@ class RhinoParser:
 
             if "Turned Down" in show.status:
                 show.cancelled = True
+
+            #
+            # Is this show in the past?
+            #
+
             show.old = show_date < date.today()
 
-            self.shows.append(show)
+            #
+            # Generate stable ID
+            #
+
+            show.generate_id()
+
+            #
+            # Separate current/future shows
+            # from historical shows
+            #
+
+            if show.old:
+                self.old_shows.append(show)
+            else:
+                self.shows.append(show)

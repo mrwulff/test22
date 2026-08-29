@@ -57,6 +57,7 @@ class Root(ScreenManager):
                 Builder.load_file(utils.abs_path(screen["kv"]))
             except:
                 Builder.load_file("YourApp/" + (screen["kv"]))
+            #Builder.load_file(utils.abs_path(screen["kv"]))
             # import screen class dynamically
             # (from libs.uix.baseclass.screen_py_file import ScreenObjectName)
             exec(screen["import"])

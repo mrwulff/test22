@@ -13,6 +13,7 @@ import ssl
 from libs.ios.webview import IOSWebView
 from libs.lib_rhino import RhinoClient
 from libs.lib_rhino_models import RhinoParser
+from libs.lib_rhino_db import RhinoDatabase
 
 ssl._create_default_https_context = ssl._create_unverified_context
 ### RELEASE 10.2.2023
@@ -3480,45 +3481,55 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
 
     def populate_stats(self, js):
-        shows = js["shows"]
-        update = js["updated"]
+        #print (dir(js),"JS INFOs")
+        app = App.get_running_app()
+        ad = app.user_data_dir
+        self.db = RhinoDatabase()
+        last_updated = self.db.get_last_updated()
+        shows = js.shows
+        update = last_updated
+        print (update)
+        if  update != None:
         
-        old_update = datetime.datetime.strptime(update, "%Y-%m-%d %H:%M:%S.%f")
-        now = datetime.datetime.now()
-        diff2 = self.time_since(now - old_update)
-        next_show = shows[0]["date"] + " " + shows[0]["time"]
-        next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
-        bb = 0
-        nns = now - next_show
-        # logging.info('asdfasdf',nns,type(nns),shows)
-
-        while (nns) >= timedelta(0):
-            next_show = shows[bb]["date"] + " " + shows[bb]["time"]
+            #old_update = datetime.datetime.strptime(update, "%Y-%m-%d %H:%M:%S.%f")
+            old_update=update
+            now = datetime.datetime.now()
+            diff2 = self.time_since(now - old_update)
+            next_show = shows[1].date + " " + shows[1].time
             next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
+            bb = 0
             nns = now - next_show
+            # logging.info('asdfasdf',nns,type(nns),shows)
 
-            bb = bb + 1
-        diff3 = humanize.naturaltime(now - next_show)
-        screen = self.root.get_screen("today")
-        print(screen.ids.keys(),"WHAT!!!!!")
-        print(list(screen.ids.keys()))
-        screen.ids.update_card.value = diff2[0]
-        screen.ids.update_card.title = diff2[1]
-        screen.ids.update_card.subtitle = "Tap to update"
+            while (nns) >= timedelta(0):
+                print (next_show,'111')
+                next_show = shows[bb+1].date + " " + shows[bb+1].time
+                print (next_show,'222')
+                next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
+                nns = now - next_show
+
+                bb = bb + 1
+            diff3 = humanize.naturaltime(now - next_show)
+            screen = self.root.get_screen("today")
+            print(screen.ids.keys(),"WHAT!!!!!")
+            print(list(screen.ids.keys()))
+            screen.ids.update_card.value = diff2[0]
+            screen.ids.update_card.title = diff2[1]
+            screen.ids.update_card.subtitle = "Tap to update"
 
         #print (len(shows), "len shows")
-        len_shows=str(len(shows))
-        
-        print (len(js['confirmables']),"len confirmables")
-        screen.ids.confirmed_card.subtitle= str(len(js['confirmables'])) + " Pending"
-        if (len(js['confirmables'])>0):
-            screen.ids.confirmed_card.value= str(len(js['confirmables']))
-            screen.ids.confirmed_card.title="Pending"
-            screen.ids.confirmed_card.subtitle= str("Tap to confirm")
-        if (len(js['confirmables'])==0):
-            screen.ids.confirmed_card.value= len_shows
-            screen.ids.confirmed_card.title="Confirmed"
-            screen.ids.confirmed_card.subtitle= str("0 Pending")
+            len_shows=str(len(shows))
+            
+            print (len(js.confirmables),"len confirmables")
+            screen.ids.confirmed_card.subtitle= str(len(js.confirmables)) + " Pending"
+            if (len(js.confirmables)>0):
+                screen.ids.confirmed_card.value= str(len(js.confirmables))
+                screen.ids.confirmed_card.title="Pending"
+                screen.ids.confirmed_card.subtitle= str("Tap to confirm")
+            if (len(js.confirmables)==0):
+                screen.ids.confirmed_card.value= len_shows
+                screen.ids.confirmed_card.title="Confirmed"
+                screen.ids.confirmed_card.subtitle= str("0 Pending")
 
     def parse_show(self,show):
         if show.startswith("(TMA) "):
@@ -3534,56 +3545,71 @@ Demo: If you are new to our app or would like to see how it works, click this bu
     def find_next_show(self, shows):
 
         now = datetime.datetime.now()
-        next_show = shows[0]["date"] + " " + shows[0]["time"]
+        next_show = shows[1].date + " " + shows[1].time
         next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
         bb = 0
         nns = now - next_show
         # logging.info('asdfasdf',nns,type(nns),shows)
 
         while (nns) >= timedelta(0):
-            next_show = shows[bb]["date"] + " " + shows[bb]["time"]
+            next_show = shows[bb].date + " " + shows[bb].time
             next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
             nns = now - next_show
 
             bb = bb + 1
         diff3 = humanize.naturaltime(now - next_show)
         return diff3
-    def populate_show_cards(self, js):
+    def populate_show_cards(self,parser):
+        print (parser.shows[1].date,"DATE!!")
+
+
         cards=["show_card_1","show_card_2","show_card_3"]
-        shows = js["shows"]
+        shows = parser.shows
         screen = self.root.get_screen("today")
         for x in range(3):
-            #screen.ids[cards[x]].show= shows[x]["show"]
-            show_date = datetime.datetime.strptime(shows[x]["date"], "%m/%d/%Y")
+            screen.ids[cards[x]].show= shows[x].show
+            #screen.ids[cards[x]].show= "WTF"
+
+            show_date = datetime.datetime.strptime(shows[x].date, "%m/%d/%Y")
+            #print (show_date,"SHOWDATE")
             #show_date = show_date.strftime("%A, %m/%d")
             screen.ids[cards[x]].day= show_date.strftime("%A")
             screen.ids[cards[x]].date= show_date.strftime("%B ") + str(show_date.day)
-            screen.ids[cards[x]].time= shows[x]["time"]
-            screen.ids[cards[x]].position= shows[x]["pos"]
-            #screen.ids[cards[x]].status= shows[x]["status"]
-            print("status_icon =", screen.ids[cards[x]].status_icon)
-            if shows[x]["status"]== "Confirmed":
+            screen.ids[cards[x]].time= shows[x].time
+            screen.ids[cards[x]].position= shows[x].position
+            screen.ids[cards[x]].status= shows[x].status
+            #print("status_icon =", screen.ids[cards[x]].status_icon)
+            if shows[x].status== "Confirmed":
                 screen.ids[cards[x]].status_color= "blue"
                 screen.ids[cards[x]].status_icon= "check-circle-outline"
 
 
 
-            screen.ids[cards[x]].show_class= shows[x]["type"]
-            print("after SET!status_icon =", screen.ids[cards[x]].status_icon)
+            screen.ids[cards[x]].show_class= shows[x].type
+            #print("after SET!status_icon =", screen.ids[cards[x]].status_icon)
 
 
-            badge, title = self.parse_show(shows[x]["show"])
+            badge, title = self.parse_show(shows[x].show)
 
             screen.ids[cards[x]].show = title
             screen.ids[cards[x]].venue_code = badge
 
-        next=self.find_next_show(shows)
-        screen.ids.upnext.text="UP NEXT: "+ next
+        #next=self.find_next_show(shows)
+        #screen.ids.upnext.text="UP NEXT: "+ next
 
 
+
+    def today(self,start):
+        logging.info('Starting modern today function')
+        html=self.rhino.load_cached_html()
+        parser = RhinoParser(html).parse()
+
+        #print(parser.shows)
+        self.populate_show_cards(parser)
+        self.populate_stats(parser)
 
         
-    def today(self,start):
+    def today_old_json(self,start):
         logging.info('Starting today function')
         x = self.on_start2()
 
@@ -5114,36 +5140,58 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         self.snackbarx(b)
     def make_rhino(self):
         from libs.lib_rhino import RhinoClient
+    def migrate(self):
+        print ("MIGRATE!!!2222")
+        db = RhinoDatabase()
 
+        db.migrate_userdata_json(
+            os.path.join(
+                App.get_running_app().user_data_dir,
+                "userdata.json"
+            )
+        )
     def update(self):
         print ("def update")
+        self.migrate()
+        app = App.get_running_app()
+        ad = app.user_data_dir
+        self.db = RhinoDatabase()
+        #self.last_updated = self.db.get_last_updated()
 
 
         #skip. no need to redownload every time when testing.
-        if 1==2:
+        if 1==1:
 
             self.rhino.login(self.rhino.username,self.rhino.password)
         
             html=self.rhino.download_schedule()
             self.rhino.save_schedule(ad + "/realdata.html")
+            self.last_updated = self.db.get_last_updated()
 
-        if 1==1:
+
+        if 1==2:
             html=self.rhino.load_cached_html()
+            self.last_updated = self.db.set_last_updated()
 
+
+        #html = self.rhino.download_schedule()
 
         parser = RhinoParser(html).parse()
 
-        print(parser.name)
+        shows = parser.shows + parser.old_shows
 
-        print(len(parser.shows))
+        changes = self.db.compare(shows)
 
-        print(parser.shows[1].show)
+        self.db.save_shows(shows)
 
-        print(parser.shows[1].venue)
+        self.db.save_changes(changes)
+        print (changes["modified"],'changes!!!')
 
-        print(parser.shows[1].status)
+        
 
-        print(parser.shows[0].confirm_id)
+        print(self.last_updated,"WTF")
+        parser = RhinoParser(html).parse()
+
 
 
 
@@ -5159,6 +5207,15 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         xx9 = xx
         i9 = i
+    def changes(self):
+        print ("SHOW CHANGES SCREEN!")
+        self.root.push("changes")
+
+    def delete_changes_db(self):
+
+        db = RhinoDatabase()
+        db.reset_dev()
+        db.close()
 
     def open_panel(self, xx, i, l, junk, z):
         try:
@@ -5570,7 +5627,6 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         
 
         #rhino = RhinoClient()
-        print(self.rhino.city)
 
         #print(rhino.city)
         self.rhino.username = x["username"]
@@ -5580,9 +5636,9 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         #self.rhino.build_urls()
 
-        print("Rhino loaded")
-        print (self.rhino.username)
-        print (self.rhino.password)
+        #print("Rhino loaded")
+        #print (self.rhino.username)
+        #print (self.rhino.password)
 
 
         print ("load rhino done")
@@ -5635,7 +5691,8 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         if platform =="ios":
             self.login_ios()
         if platform !="ios":
-            print ("OLD LOGIN")
+            #print ("OLD LOGIN")
+            pass
 
 
 
@@ -5692,7 +5749,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
             EMAIL,
             enc,
         )
-        print (html,'login result')
+        #print (html,'login result')
 
         schedule = self.rhino.download_schedule()
         print (schedule,'schedule result')
@@ -6785,7 +6842,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         start_time = datetime.datetime.strptime(
             show["date"] + "." + show["time"], "%m/%d/%Y.%H:%M"
         )
-        logging.info(start_time, now, type(start_time), type(now), "showdate")
+        #logging.info(start_time, now, type(start_time), type(now), "showdate")
         if start_time < now:
             self.root.push("animate")
         else:
