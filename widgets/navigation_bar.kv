@@ -24,14 +24,14 @@
                 text: "Home"
                 active: root.selected == "today"
 
-                on_touch_down: app.change_screen("today", "left") if self.collide_point(*args[1].pos) else None
+                on_touch_down: app.change_screen("today", "right") if self.collide_point(*args[1].pos) else None
 
             NavButton:
                 icon: "calendar"
-                text: "Calendar"
+                text: "Past/Future"
                 active: root.selected == "calendar"
 
-                on_touch_down: app.new_login() if self.collide_point(*args[1].pos) else None
+                on_touch_down: app.history() if self.collide_point(*args[1].pos) else None
 
             NavButton:
                 icon: "history"

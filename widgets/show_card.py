@@ -19,6 +19,8 @@ class ShowCard(MDCard):
     status = StringProperty("")
     venue_code = StringProperty("")
     status_icon = StringProperty("")   # <-- add this
+    hours = StringProperty("")
+    pay = StringProperty("")
 
 
 

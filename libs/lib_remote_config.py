@@ -2,13 +2,14 @@ import json
 import logging
 import os
 import urllib.request
+import urllib.parse
 
-from kivy.utils import platform
+from kivy.app import App
 
 
-REMOTE_CONFIG_URL = (
-    "https://raw.githubusercontent.com/mrwulff/"
-    "schedulara-config/main/config.json"
+REMOTE_CONFIG_BASE_URL = (
+    "https://raw.githubusercontent.com/"
+    "mrwulff/schedulara-config/main/"
 )
 
 DEFAULT_CONFIG = {
@@ -22,46 +23,72 @@ DEFAULT_CONFIG = {
 
 class RemoteConfig:
 
-    def __init__(self):
-        self.config = DEFAULT_CONFIG.copy()
+    def __init__(self, filename="config.json", default=None):
+        self.filename = filename
+
+        if default is None:
+            default = DEFAULT_CONFIG
+
+        self.default = default
+        self.config = default.copy()
+
         self._load_cached()
+
+    # ---------------------------------------------------------
+    # Remote URL
+    # ---------------------------------------------------------
+
+    @property
+    def remote_url(self):
+        return (
+            REMOTE_CONFIG_BASE_URL
+            + urllib.parse.quote(self.filename)
+        )
 
     # ---------------------------------------------------------
     # Cache location
     # ---------------------------------------------------------
 
     def _cache_path(self):
-       
-        from kivy.app import App
+
+        # Turn position_list.json into a safe cache filename
+        cache_name = self.filename.replace("/", "_")
+
         return os.path.join(
             App.get_running_app().user_data_dir,
-            "remote_config.json"
+            "remote_" + cache_name
         )
-
-
 
     # ---------------------------------------------------------
     # Load cached config
     # ---------------------------------------------------------
 
     def _load_cached(self):
+
         path = self._cache_path()
 
         try:
-            with open(path, "r", encoding="utf-8") as f:
+
+            with open(
+                path,
+                "r",
+                encoding="utf-8"
+            ) as f:
+
                 data = json.load(f)
 
-            if isinstance(data, dict):
-                self.config.update(data)
+            self.config = data
 
-                logging.info(
-                    "Loaded cached remote config v%s",
-                    self.config.get("version", "?")
-                )
+            logging.info(
+                "Loaded cached remote file: %s",
+                self.filename
+            )
 
         except Exception as e:
+
             logging.info(
-                "No cached remote config: %s",
+                "No cached remote file %s: %s",
+                self.filename,
                 e
             )
 
@@ -70,12 +97,16 @@ class RemoteConfig:
     # ---------------------------------------------------------
 
     def update(self):
+
         try:
-            logging.info("Checking remote config...")
-            print (REMOTE_CONFIG_URL,'url')
+
+            logging.info(
+                "Checking remote config: %s",
+                self.filename
+            )
 
             request = urllib.request.Request(
-                REMOTE_CONFIG_URL,
+                self.remote_url,
                 headers={
                     "User-Agent": "Schedulara-iOS"
                 }
@@ -90,30 +121,13 @@ class RemoteConfig:
                     response.read().decode("utf-8")
                 )
 
-            if not isinstance(data, dict):
-                raise ValueError("Remote config is not a JSON object")
-
-            # Make sure the important section exists.
-            if "show_prefixes" not in data:
-                raise ValueError(
-                    "Remote config missing show_prefixes"
-                )
-
-            if not isinstance(
-                data["show_prefixes"],
-                dict
-            ):
-                raise ValueError(
-                    "show_prefixes must be an object"
-                )
-
             self.config = data
 
             self._save_cached()
 
             logging.info(
-                "Remote config updated to v%s",
-                self.config.get("version", "?")
+                "Remote file updated: %s",
+                self.filename
             )
 
             return True
@@ -121,7 +135,8 @@ class RemoteConfig:
         except Exception as e:
 
             logging.warning(
-                "Remote config update failed: %s",
+                "Remote file update failed (%s): %s",
+                self.filename,
                 e
             )
 
@@ -132,9 +147,11 @@ class RemoteConfig:
     # ---------------------------------------------------------
 
     def _save_cached(self):
+
         path = self._cache_path()
 
         try:
+
             os.makedirs(
                 os.path.dirname(path),
                 exist_ok=True
@@ -145,6 +162,7 @@ class RemoteConfig:
                 "w",
                 encoding="utf-8"
             ) as f:
+
                 json.dump(
                     self.config,
                     f,
@@ -154,9 +172,18 @@ class RemoteConfig:
         except Exception as e:
 
             logging.warning(
-                "Could not save remote config: %s",
+                "Could not save remote file %s: %s",
+                self.filename,
                 e
             )
+
+    # ---------------------------------------------------------
+    # Generic data access
+    # ---------------------------------------------------------
+
+    @property
+    def data(self):
+        return self.config
 
     # ---------------------------------------------------------
     # Show prefixes
@@ -164,6 +191,7 @@ class RemoteConfig:
 
     @property
     def show_prefixes(self):
+
         return self.config.get(
             "show_prefixes",
             DEFAULT_CONFIG["show_prefixes"]

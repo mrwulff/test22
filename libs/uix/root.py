@@ -21,7 +21,7 @@ class Root(ScreenManager):
 
         # Load the screen registry.
         path = resource_find("screens.json")
-        """
+        
         try:
             with open(path) as f:
                 self.screens_data = json.load(f)
@@ -32,9 +32,9 @@ class Root(ScreenManager):
             except Exception:
                 with open(utils.abs_path("YourApp/screens.json")) as f:
                     self.screens_data = json.load(f)
-        """
-        with open(utils.abs_path("screens.json")) as f:
-            self.screens_data = json.load(f)
+        
+        #with open(utils.abs_path("screens.json")) as f:
+        #    self.screens_data = json.load(f)
 
         logging.info(
             "Root initialized with %d lazy-loaded screens",
@@ -67,11 +67,11 @@ class Root(ScreenManager):
         screen = self.screens_data[screen_name]
 
         # Load the KV file.
-        #try:
-        #    Builder.load_file(utils.abs_path(screen["kv"]))
-        ##except Exception:
-         #   Builder.load_file("YourApp/" + screen["kv"])
-        Builder.load_file(utils.abs_path(screen["kv"]))
+        try:
+            Builder.load_file(utils.abs_path(screen["kv"]))
+        except Exception:
+           Builder.load_file("YourApp/" + screen["kv"])
+        #Builder.load_file(utils.abs_path(screen["kv"]))
         # Import the screen class.
         exec(screen["import"])
 

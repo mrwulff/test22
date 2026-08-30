@@ -22,6 +22,7 @@ from libs.lib_rhino_models import RhinoParser
 from libs.lib_rhino_db import RhinoDatabase
 from libs.lib_remote_config import RemoteConfig
 
+
 import libs.lib_enc
 
 ###custom kv ####
@@ -71,6 +72,7 @@ class Demo3App(MDApp):
         self.root.push("today")
 
         self.theme_cls.theme_style_switch_animation = True
+        self.remote_config = RemoteConfig("config.json")
         self.rhino = RhinoClient()
         #self.load_rhino()
 
@@ -164,6 +166,19 @@ class Demo3App(MDApp):
         self.populate_show_cards(parser)
         self.populate_stats(parser)
 
+        self.db = RhinoDatabase()
+        self.last_updated = self.db.get_last_updated()
+        shows = parser.shows + parser.old_shows
+        
+        changes = self.db.compare(shows)
+
+        self.db.save_shows(shows)
+
+        self.db.save_changes(changes)
+        print (changes["modified"],'changes!!!')
+
+
+
     def populate_show_cards(self,parser):
         print (parser.shows[1].date,"DATE!!")
 
@@ -253,9 +268,178 @@ class Demo3App(MDApp):
                 screen.ids.confirmed_card.title="Confirmed"
                 screen.ids.confirmed_card.subtitle= str("0 Pending")
 
+    def history(self):
+        print ("HISTORY!@@")
+        self.root.push("history")
+    def show_archive(self):
+        self.root.push("archive")
+        z, z1, f1, f2 = self.find_pay_date(self.archive_trim)
+        listofdicks = libs.lib_archive.load("/future_shows", ad, f1, f2)
+        # ntime='wow'
+        ntime = "wow2"
+        # color='bob3'
+        # show_date='now'
+        # logging.info (len(listofdicks),'listofdicks')
+        App.get_running_app().root.current_screen.ids["dend"].text = str(z1)
+        App.get_running_app().root.current_screen.ids["dstart"].text = str(z)
+        self.root.current_screen.ids["archive"].clear_widgets()
+        tot_hours = 0
+        ot_hours = 0
+        reg_hours = 0
+        tot_money = 0
+        tottime_all = 0
+        earnings_all = 0
+        bu = ["Current", "Next", "Last", "All", "Custom"]
+        bu2 = ["date", "hours", "pay"]
+        for z in range(len(listofdicks)):
+            three = "Lunches!"
+            # logging.info (listofdicks[z],'LISTOFDICKS')
+            if listofdicks[z].get("lunches") == None:
+                three = "No Lunches"
+            else:
+                three = listofdicks[z]["lunches"]
+                three = ""
+            # try:
 
+            if listofdicks[z].get("totaltime") != None:
+                tottime_all = tottime_all + listofdicks[z].get("totaltime")
+                # logging.info(tottime_all, "tottime_all")
+            if listofdicks[z].get("earnings") != None:
+                earnings_all = earnings_all + listofdicks[z].get("earnings")
+                # logging.info(earnings_all, "earnings_all")
 
-        
+            if listofdicks[z].get("pay") == None:
+                allhours, reg, over = self.calc_time(listofdicks[z])
+                # logging.info (listofdicks[z]["show"],reg,allhours,over,'OMG')
+                money = self.calc_money(listofdicks[z], reg, over)
+                listofdicks[z]["hours"] = allhours
+                listofdicks[z]["reghours"] = reg
+                listofdicks[z]["ot"] = over
+                listofdicks[z]["pay"] = money
+
+                self.update_show_single(listofdicks[z])
+            else:
+                allhours = listofdicks[z]["hours"]
+                reg = listofdicks[z]["reghours"]
+                over = listofdicks[z]["ot"]
+                money = listofdicks[z]["pay"]
+            try:
+                tot_hours = float(tot_hours) + float(allhours)
+            except:
+                """"""
+            try:
+                ot_hours = float(ot_hours) + float(over)
+            except:
+                """"""
+            try:
+                reg_hours = float(reg_hours) + float(reg)
+            except:
+                """"""
+            try:
+                tot_money = float(tot_money) + float(money)
+            except:
+                """"""
+
+            if 1 == 2:
+                three = "Hours: " + self.only5(allhours)
+                if over != "-" and over > 0:
+                    three = (
+                        three + " Reg: " + self.only5(reg) + " OT: " + self.only5(over)
+                    )
+                # if money[0]!='0':
+                three = three + " $" + str(money)
+
+        for nan in range(len(listofdicks)):
+            # logging.info(listofdicks[nan].get(self.archive_sort))
+            if listofdicks[nan].get(self.archive_sort) == None:
+                listofdicks[nan][self.archive_sort] = 0.0
+            if listofdicks[nan][self.archive_sort] == "-":
+                listofdicks[nan][self.archive_sort] = 0.0
+        if self.archive_sort == "date":
+            listofdicks = sorted(
+                listofdicks,
+                key=lambda i: i[self.archive_sort],
+                reverse=self.archive_reverse,
+            )
+        else:
+            listofdicks = sorted(
+                listofdicks,
+                key=lambda i: i[self.archive_sort],
+                reverse=not self.archive_reverse,
+            )
+        self.root.get_screen("archive").ids.archive.add_widget(
+            MDListItem(
+                MDListItemLeadingIcon(
+                    # icon=self.find_type(i, "type"),
+                    pos_hint={"center_x": 0.5, "center_y": 0.5},
+                    icon_color=self.theme_cls.onPrimaryColor,
+                ),
+                MDListItemTrailingIcon(
+                    # icon=self.find_type(i, "pos"),
+                    icon_color=self.theme_cls.errorColor,
+                    pos_hint={"center_x": 0.5, "center_y": 0.5},
+                ),
+                MDListItemHeadlineText(text=str(len(listofdicks)) + " Shows Total"),
+                MDListItemSupportingText(
+                    text="Hours: "
+                    + str(tottime_all)
+                    + "    Earnings: "
+                    + str(earnings_all)
+                ),
+            )
+        )
+        for z in range(len(listofdicks)):
+            # text5="Show: " + str((listofdicks[z]["show"])),
+            #    secondary_text="Date: "
+            #    + str(listofdicks[z]["date"])
+            #    + " Hours: "
+            #    + realtime,
+
+            # show_date = datetime.datetime.strptime(date, "%m/%d/%Y")
+            ntime = self.ampm(listofdicks[z]["time"])
+            hours = ""
+            if listofdicks[z].get("totaltime"):
+                hours = " Hours: " + str(listofdicks[z].get("totaltime"))
+            earnings = ""
+            if listofdicks[z].get("earnings"):
+                earnings = " Earnings: " + str(listofdicks[z].get("earnings"))
+            thing = "Please Set Time"
+            if (
+                listofdicks[z].get("endtime")
+                and listofdicks[z].get("earnings")
+                and listofdicks[z].get("totaltime")
+            ):
+                thing = listofdicks[z]["time"] + "-" + hours + earnings
+            self.root.get_screen("archive").ids.archive.add_widget(
+                MDListItem(
+                    MDListItemLeadingIcon(
+                        # icon=self.find_type(i, "type"),
+                        pos_hint={"center_x": 0.5, "center_y": 0.5},
+                        icon_color=self.theme_cls.primaryColor,
+                    ),
+                    MDListItemTrailingIcon(
+                        # icon=self.find_type(i, "pos"),
+                        icon_color=self.theme_cls.errorColor,
+                        pos_hint={"center_x": 0.5, "center_y": 0.5},
+                    ),
+                    MDListItemHeadlineText(text=listofdicks[z]["show"]),
+                    MDListItemSupportingText(
+                        text=listofdicks[z]["date"]
+                        + " "
+                        + listofdicks[z]["pos"]
+                        + " "
+                        + listofdicks[z]["type"]
+                    ),
+                    MDListItemSupportingText(text=thing),
+                    # MDListItemHeadlineText(listofdicks[z]['show']),
+                    # MDListItemHeadlineText(text=str(len(listofdicks))+' Shows Total'),
+                    # MDListItemSupportingText(text=color + show_date + " " + ntime),))
+                    # on_release=self.edit_show_details()))
+                    on_release=lambda x, y=(listofdicks[z]): self.edit_show_details(y),
+                )
+            )
+
+    #main.py  
     def parse_show(self,show):
 
         
@@ -318,5 +502,17 @@ class Demo3App(MDApp):
         years = days // 365
         return str(years), "Year Ago" if years == 1 else "Years Ago"
 
+    def changes(self):
+        print ("SHOW CHANGES SCREEN!")
+        self.root.push("changes")
+
+    def delete_changes_db(self):
+
+        db = RhinoDatabase()
+        db.reset_dev()
+        db.close()
+
+    def change_screen(self, screen, direction):
+        self.root.push(screen, direction)
 
 Demo3App().run()
