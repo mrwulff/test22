@@ -5,34 +5,41 @@ import os
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager
+from kivy.resources import resource_find
 
 from libs.applibs import utils
-from kivy.resources import resource_find
 
 
 class Root(ScreenManager):
+
     history = []
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        #logging.info("cwd=%s", os.getcwd())
-        #logging.info("screens path=%s", utils.abs_path("screens.json"))
-        #logging.info("exists=%s", os.path.exists(utils.abs_path("screens.json")))
+
         Window.bind(on_keyboard=self._handle_keyboard)
-        # get screen data from screens.json
+
+        # Load the screen registry.
         path = resource_find("screens.json")
-        #print(path,"THIS IS THE FREAKING PATH")
+        """
         try:
             with open(path) as f:
                 self.screens_data = json.load(f)
-
-        except:
+        except Exception:
             try:
                 with open(utils.abs_path("screens.json")) as f:
                     self.screens_data = json.load(f)
-            except:
+            except Exception:
                 with open(utils.abs_path("YourApp/screens.json")) as f:
                     self.screens_data = json.load(f)
+        """
+        with open(utils.abs_path("screens.json")) as f:
+            self.screens_data = json.load(f)
+
+        logging.info(
+            "Root initialized with %d lazy-loaded screens",
+            len(self.screens_data)
+        )
 
     def _handle_keyboard(self, instance, key, *args):
         if key == 27:
@@ -41,62 +48,72 @@ class Root(ScreenManager):
 
     def load_screen(self, screen_name):
         """
-        This method creates an instance of the screen object and adds
-        it to the screen manager without making it the current screen.
+        Lazily create and add a screen.
 
-        It is useful in situations where certain state needs
-        to be passed to that screen.
+        The screen's Python class and KV file are only loaded when the
+        screen is actually requested.
         """
 
-        # checks if the screen is already added to the screen-manager
+        if self.has_screen(screen_name):
+            return
+
+        if screen_name not in self.screens_data:
+            raise KeyError(
+                f'Screen "{screen_name}" is not defined in screens.json'
+            )
+
+        logging.info("LAZY LOAD SCREEN: %s", screen_name)
+
+        screen = self.screens_data[screen_name]
+
+        # Load the KV file.
+        #try:
+        #    Builder.load_file(utils.abs_path(screen["kv"]))
+        ##except Exception:
+         #   Builder.load_file("YourApp/" + screen["kv"])
+        Builder.load_file(utils.abs_path(screen["kv"]))
+        # Import the screen class.
+        exec(screen["import"])
+
+        # Create the screen object.
+        screen_object = eval(screen["object"])
+
+        screen_object.name = screen_name
+
+        logging.info("ADDING SCREEN: %s", screen_name)
+
+        self.add_widget(screen_object)
+
+        logging.info("SCREEN READY: %s", screen_name)
+
+    def _ensure_screen_loaded(self, screen_name):
+        """
+        Make sure a named screen exists before ScreenManager tries
+        to switch to it.
+        """
+
         if not self.has_screen(screen_name):
-            logging.info("LOAD_SCREEN %s", screen_name)
-            screen = self.screens_data[screen_name]
-            # load the kv file (libs/uix/kv/screen_kv_file.kv)
-            try:
-                Builder.load_file(utils.abs_path(screen["kv"]))
-            except:
-                Builder.load_file("YourApp/" + (screen["kv"]))
-            #Builder.load_file(utils.abs_path(screen["kv"]))
-            # import screen class dynamically
-            # (from libs.uix.baseclass.screen_py_file import ScreenObjectName)
-            exec(screen["import"])
-            # calls the screen class to get the instance of it
-            # (ScreenObjectName())
-            screen_object = eval(screen["object"])
-
-            logging.info("CREATING %s", screen["object"])
-            screen_object = eval(screen["object"])
-            logging.info("CREATED %s", screen["object"])
-
-
-            # set the screen name using screen_name arg
-            screen_object.name = screen_name
-            # add the screen to the screen-manager
-            logging.info("ADDING %s", screen_name)
-            self.add_widget(screen_object)
+            self.load_screen(screen_name)
 
     def push(self, screen_name, side="left"):
         """
-        Appends the screen to the navigation history and
-        sets `screen_name` it as the current screen.
+        Lazy-load a screen, add it to navigation history, and switch to it.
         """
 
         if self.current != screen_name:
-            self.history.append({"name": screen_name, "side": side})
+            self.history.append({
+                "name": screen_name,
+                "side": side
+            })
 
-        self.load_screen(screen_name)
+        self._ensure_screen_loaded(screen_name)
 
-        # set transition direction
         self.transition.direction = side
-
-        # set current screen
         self.current = screen_name
 
     def push_replacement(self, screen_name, side="left"):
         """
-        Clears the navigation history and sets the
-        current screen to `screen_name`.
+        Clear navigation history and switch to a screen.
         """
 
         self.history.clear()
@@ -104,17 +121,7 @@ class Root(ScreenManager):
 
     def pop(self):
         """
-        Removes the current screen from the navigation history and
-        sets the current screen to the previous one.
-
-        To navigate back to the previous screen, use the this method.
-
-        It is automatically triggered when the user presses the back button on
-        a mobile device or the ESC button on a desktop.
-
-        Avoid using `scr_mgr_instance.push('prev_screen_name', side='right')`
-        as it will collapse the navigation history of the screen manager
-        instead use this method.
+        Return to the previous screen in navigation history.
         """
 
         if not len(self.history) > 1:
@@ -131,9 +138,8 @@ class Root(ScreenManager):
             side = "down"
         elif cur_side == "down":
             side = "up"
+        else:
+            side = "right"
 
-        # set transition direction
         self.transition.direction = side
-
-        # set current screen
         self.current = prev_screen["name"]

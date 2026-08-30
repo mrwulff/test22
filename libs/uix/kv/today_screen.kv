@@ -13,7 +13,7 @@
     theme_bg_color: "Custom"
     md_bg_color: app.theme_cls.surfaceContainerColor
 
-    on_release: app.new_login()
+    on_release: app.login()
 
     MDBoxLayout:
         orientation: "vertical"
@@ -46,7 +46,7 @@
             radius: [22]
             theme_bg_color: "Custom"
             md_bg_color: app.theme_cls.primaryColor
-            on_release: app.new_login()
+            on_release: app.login()
 
             MDLabel:
                 text: "LOG IN"
@@ -70,7 +70,7 @@
 
             Widget:
                 size_hint_y: None
-                #height: self.theme_cls.device_safe_area.top
+                height: self.theme_cls.device_safe_area.top
                 height:dp(12)
             
             

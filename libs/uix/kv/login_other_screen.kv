@@ -18,8 +18,9 @@
             self.icon = "eye" if self.icon == "eye-off" else "eye-off"
             tpassword.password = False if tpassword.password is True else True
 
-<LoginScreen>
-    name: "login"
+
+<Login_OtherScreen>
+    name: "login_other"
     #Image:
     #    source: 'images/rh.jpg'
     #    size: self.width,self.height
@@ -66,7 +67,7 @@
                     pos_hint:{"center_x": 0.5, "center_y": -0.2}
 
 
-            ClickableTextFieldRound:
+            MDTextField:
                 size_hint_x: None
                 hint_text: "Password"
                 font_size:dp(20)
@@ -78,27 +79,7 @@
                     text: "Password"
 
 
-            MDLabel:
 
-                #pos_hint: {'center_x': .5, 'center_y': .33}
-                halign: "center"
-                MDListItemSupportingText:
-                    pos_hint: {'center_x': .5, 'center_y': .33}
-                    text: "Select Your Location"
-            MDButton:
-                id: button4
-                #padding: [15, 15]
-
-                width: 50
-                text: "Select Location"
-                pos_hint: {'center_x': .5, 'center_y': .28}
-                values: app.sound_effects
-                items: app.sound_effects
-                #id: noise
-                on_release: app.open_drop_item_menu(app.locations,'city')
-                MDButtonText:
-                    id:lol
-                    text: "Select Location"
 
             MDButton:
                 text: "Login!"
@@ -107,18 +88,7 @@
                 font_size:dp(20)
                 on_release:
                     #app.check_login()
-                    app.save_login()
+                    app.save_old_login()
                     #app.today()
                 MDButtonText:
                     text: "Login"
-
-            #MDButton:#
-#
-#                id: drop_item
-#                pos_hint: {"center_x": .5, "center_y": .05}
-#                on_release: app.open_drop_item_menu(app.locations,'city')##
-#
-#                MDDropDownItemText:
-#                    id: drop_text
-#                    text: "Item"
-                    

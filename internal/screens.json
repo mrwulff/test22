@@ -44,6 +44,11 @@
         "object": "LoginScreen()",
         "kv": "libs/uix/kv/login_screen.kv"
     },
+    "login_old": {
+        "import": "from libs.uix.baseclass.login_old_screen import LoginOldScreen",
+        "object": "LoginOldScreen()",
+        "kv": "libs/uix/kv/login_old_screen.kv"
+    },
     "stats": {
         "import": "from libs.uix.baseclass.stats_screen import StatsScreen",
         "object": "StatsScreen()",
@@ -195,8 +200,13 @@
         "kv": "libs/uix/kv/today2_screen.kv"
     },
     "changes": {
-        "import": "from libs.uix.baseclass.changes_screen import changesscreen",
-        "object": "changesscreen()",
+        "import": "from libs.uix.baseclass.changes_screen import ChangesScreen",
+        "object": "ChangesScreen()",
         "kv": "libs/uix/kv/changes_screen.kv"
+    },
+    "login_other": {
+        "import": "from libs.uix.baseclass.login_other_screen import login_otherscreen",
+        "object": "login_otherscreen()",
+        "kv": "libs/uix/kv/login_other_screen.kv"
     }
 }
