@@ -44,9 +44,9 @@ app = App.get_running_app()
 
 from kivy.config import Config
 
-Config.set("kivy", "log_name", "my_file.log")
+#Config.set("kivy", "log_name", "my_file.log")
 
-Config.set("kivy", "log_level", "info")
+#Config.set("kivy", "log_level", "info")
 
 Config.write()
 #os.system('clear')
