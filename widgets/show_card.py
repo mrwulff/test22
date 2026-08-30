@@ -14,10 +14,10 @@ class ShowCard(MDCard):
     venue = StringProperty()
     address = StringProperty()
 
-    position = StringProperty("A1")
-    show_class = StringProperty("SHOW")
-    status = StringProperty("CONFIRMED")
-    venue_code = StringProperty("TMA")
+    position = StringProperty("")
+    show_class = StringProperty("")
+    status = StringProperty("")
+    venue_code = StringProperty("")
     status_icon = StringProperty("")   # <-- add this
 
 

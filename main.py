@@ -3602,11 +3602,32 @@ Demo: If you are new to our app or would like to see how it works, click this bu
     def today(self,start):
         logging.info('Starting modern today function')
         html=self.rhino.load_cached_html()
-        parser = RhinoParser(html).parse()
 
-        #print(parser.shows)
-        self.populate_show_cards(parser)
-        self.populate_stats(parser)
+        print ("NO HTML FOUND",type(html))
+        if html is not None:
+
+            parser = RhinoParser(html).parse()
+            #print(parser.shows)
+            self.populate_show_cards(parser)
+            self.populate_stats(parser)
+            today_screen = self.root.get_screen("today")
+            today_screen.ids.login_card.opacity = 0
+            today_screen.ids.login_card.disabled = True
+            today_screen.ids.login_card.height = 0
+        else:
+            ##do login##
+            print ("DOING LOGIN PART #")
+            if not self.rhino.has_credentials():
+                today_screen = self.root.get_screen("today")
+                today_screen.ids.login_card.opacity = 1
+                today_screen.ids.login_card.disabled = False
+                today_screen.ids.login_card.height = 220
+
+                logging.info("No Rhino credentials found")
+
+                #self.show_login_card()
+
+                return
 
         
     def today_old_json(self,start):
@@ -5147,12 +5168,12 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         db.migrate_userdata_json(
             os.path.join(
                 App.get_running_app().user_data_dir,
-                "userdata.json"
+                "userdata.json.txt"
             )
         )
     def update(self):
         print ("def update")
-        self.migrate()
+        #self.migrate()
         app = App.get_running_app()
         ad = app.user_data_dir
         self.db = RhinoDatabase()
@@ -5621,7 +5642,7 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         #app = App.get_running_app()
 
 
-        x = libs.lib_readuserdata.readuserdata(App, ad, ios)
+        #x = libs.lib_readuserdata.readuserdata(App, ad, ios)
 
         
         
@@ -5629,10 +5650,10 @@ Demo: If you are new to our app or would like to see how it works, click this bu
         #rhino = RhinoClient()
 
         #print(rhino.city)
-        self.rhino.username = x["username"]
-        self.rhino.password = x["password"]
-        self.rhino.city = x["city"]
-        self.rhino.name = x["name"]
+        #self.rhino.username = x["username"]
+        #self.rhino.password = x["password"]
+        #self.rhino.city = x["city"]
+        #self.rhino.name = x["name"]
 
         #self.rhino.build_urls()
 
@@ -5682,6 +5703,8 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
 
     def new_login(self):
+        print ("DOING NEW LOGIN!!!")
+        
 
 
         if not hasattr(self, "rhino"):
@@ -5690,12 +5713,14 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         if platform =="ios":
             self.login_ios()
+            #self.update()
         if platform !="ios":
             #print ("OLD LOGIN")
             pass
+        self.root.push("today")
 
 
-
+        
 
     def check_webview(self, dt):
 
@@ -5753,9 +5778,17 @@ Demo: If you are new to our app or would like to see how it works, click this bu
 
         schedule = self.rhino.download_schedule()
         print (schedule,'schedule result')
-
+        app = App.get_running_app()
+        ad = app.user_data_dir
         with open(ad + "/realdata.html", "wb") as f:
             f.write(schedule)
+
+        self.rhino.username = EMAIL
+        self.rhino.password = libs.lib_enc.make_password(PASSWORD)
+        self.rhino.login_url=data["url"]
+        return html
+
+
 
 
 

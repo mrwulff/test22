@@ -1,6 +1,8 @@
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
 from kivy.logger import Logger
+from kivymd.uix.card import MDCard
+
 
 class TodayScreen(Screen):
 
@@ -12,3 +14,5 @@ class TodayScreen(Screen):
 
     def on_kv_post(self, *args):
         Logger.info("TODAY: on_kv_post")
+class LoginCard(MDCard):
+    pass

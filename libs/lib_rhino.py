@@ -617,7 +617,7 @@ class RhinoClient:
         # ----------------------------------------------------
         # Validate credentials BEFORE encryption handling
         # ----------------------------------------------------
-
+        """
         if not username:
 
             raise ValueError(
@@ -631,7 +631,7 @@ class RhinoClient:
                 "Rhino password is missing"
             )
 
-
+        """
         logging.info(
             "Logging into Rhino"
         )
@@ -939,3 +939,10 @@ class RhinoClient:
             self.db.close()
 
             self.db = None
+
+    def has_credentials(self):
+
+        return bool(
+            self.username and
+            self.password
+        )
