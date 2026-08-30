@@ -36,3 +36,5 @@ toolchain pip install \
 toolchain pip install \
 "google-api-python-client"
 
+new 8/29/26
+pip install appdirs mechainze webcolors beautifulsoup4

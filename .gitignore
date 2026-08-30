@@ -37,6 +37,7 @@ YourApp/dist/
 *.app
 .cache/freetype-freetype-2.5.5.tar.bz2
 .cache/
+.venv311/
 .DS_Store
 main.oldtest.py
 libs/uix/__pycache__/root.cpython-312.pyc
