@@ -14,9 +14,17 @@ REMOTE_CONFIG_BASE_URL = (
 
 DEFAULT_CONFIG = {
     "version": 0,
+
     "show_prefixes": {
         "(MGM) ": "MGM",
         "(Dolby) ": "Dolby",
+    },
+
+    "pay_schedule": {
+        "pay_week_start": "wednesday",
+        "pay_period_start": "2026-09-09",
+        "pay_period_length_days": 14,
+        "payday": "2026-09-29",
     },
 }
 
@@ -43,6 +51,13 @@ class RemoteConfig:
         return (
             REMOTE_CONFIG_BASE_URL
             + urllib.parse.quote(self.filename)
+        )
+
+    @property
+    def pay_schedule(self):
+        return self.config.get(
+            "pay_schedule",
+            DEFAULT_CONFIG["pay_schedule"],
         )
 
     # ---------------------------------------------------------

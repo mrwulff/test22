@@ -1,11 +1,179 @@
+#:import dp kivy.metrics.dp
 
 
-<HistoryScreen>
-    name: 'history'
-    BoxLayout:
+<ScheduleItem>:
+    orientation: "vertical"
+    size_hint_y: None
+
+    height: dp(44) if self.is_today else (dp(60) if (self.is_pay_period or self.is_pay_week or self.is_pay_day) else dp(132))
+
+    spacing: 0
+
+    # ---------------------------------------------------------
+    # TODAY
+    # ---------------------------------------------------------
+
+    MDCard:
+        opacity: 1 if root.is_today else 0
+        disabled: not root.is_today
+        size_hint_y: None
+        height: dp(44) if root.is_today else 0
+        style: "filled"
+        radius: [12, 12, 12, 12]
+        padding: dp(16), 0
+
+        MDLabel:
+            text: "TODAY"
+            bold: True
+            font_size: "13sp"
+            theme_text_color: "Secondary"
+            valign: "center"
+
+    # ---------------------------------------------------------
+    # PAY PERIOD
+    # ---------------------------------------------------------
+
+    MDCard:
+        opacity: 1 if root.is_pay_period else 0
+        disabled: not root.is_pay_period
+        size_hint_y: None
+        height: dp(60) if root.is_pay_period else 0
+        style: "filled"
+        radius: [12, 12, 12, 12]
+        padding: dp(16), dp(8)
+
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: dp(1)
+
+            MDLabel:
+                text: root.marker_title
+                font_size: "12sp"
+                bold: True
+                theme_text_color: "Secondary"
+
+            MDLabel:
+                text: root.marker_subtitle
+                font_size: "15sp"
+
+    # ---------------------------------------------------------
+    # PAY WEEK
+    # ---------------------------------------------------------
+
+    MDCard:
+        opacity: 1 if root.is_pay_week else 0
+        disabled: not root.is_pay_week
+        size_hint_y: None
+        height: dp(60) if root.is_pay_week else 0
+        style: "filled"
+        radius: [12, 12, 12, 12]
+        padding: dp(16), dp(8)
+
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: dp(1)
+
+            MDLabel:
+                text: root.marker_title
+                font_size: "12sp"
+                bold: True
+                theme_text_color: "Secondary"
+
+            MDLabel:
+                text: root.marker_subtitle
+                font_size: "15sp"
+
+    # ---------------------------------------------------------
+    # PAY DAY
+    # ---------------------------------------------------------
+
+    MDCard:
+        opacity: 1 if root.is_pay_day else 0
+        disabled: not root.is_pay_day
+        size_hint_y: None
+        height: dp(60) if root.is_pay_day else 0
+        style: "filled"
+        radius: [12, 12, 12, 12]
+        padding: dp(16), dp(8)
+
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: dp(1)
+
+            MDLabel:
+                text: root.marker_title
+                font_size: "12sp"
+                bold: True
+                theme_text_color: "Secondary"
+
+            MDLabel:
+                text: root.marker_subtitle
+                font_size: "15sp"
+
+    # ---------------------------------------------------------
+    # SHOW
+    # ---------------------------------------------------------
+
+    ShowCard:
+        opacity: 0 if (root.is_today or root.is_pay_period or root.is_pay_week or root.is_pay_day) else 1
+
+        disabled: root.is_today or root.is_pay_period or root.is_pay_week or root.is_pay_day
+
+        size_hint_y: None
+        height: dp(132) if not (root.is_today or root.is_pay_period or root.is_pay_week or root.is_pay_day) else 0
+
+        show: root.show
+        day: root.day
+        date: root.date
+        time: root.time
+        venue: root.venue
+        address: root.address
+        position: root.position
+        show_class: root.show_class
+        status: root.status
+        venue_code: root.venue_code
+        status_icon: root.status_icon
+        cancelled: root.cancelled
 
 
+<HistoryScreen>:
+
+    name: "history"
+
+    MDBoxLayout:
+
+        orientation: "vertical"
 
 
+       
+
+        RecycleView:
+
+            id: schedule_rv
+
+            do_scroll_x: False
+
+            bar_width: dp(4)
+
+            viewclass: "ScheduleItem"
+
+
+            RecycleBoxLayout:
+
+                default_size: None, None
+
+                default_size_hint: 1, None
+
+                size_hint_y: None
+
+                height: self.minimum_height
+
+                orientation: "vertical"
+
+                spacing: dp(8)
+
+                padding:
+                    dp(12), dp(8), dp(12), dp(24)
     NavigationBar:
         selected: "calendar"
+

@@ -1,6 +1,7 @@
 from kivy.properties import StringProperty
 from kivymd.uix.card import MDCard
 from kivy.properties import ColorProperty
+from kivy.properties import BooleanProperty
 
 
 class ShowCard(MDCard):
@@ -21,7 +22,7 @@ class ShowCard(MDCard):
     status_icon = StringProperty("")   # <-- add this
     hours = StringProperty("")
     pay = StringProperty("")
-
+    is_today_marker = BooleanProperty(False)
 
 
     

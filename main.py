@@ -5,6 +5,8 @@ from kivy.core.window import Window
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.utils import platform
+from kivy.clock import Clock
+
 
 from kivy.app import App
 app = App.get_running_app()
@@ -21,6 +23,8 @@ from libs.lib_rhino import RhinoClient
 from libs.lib_rhino_models import RhinoParser
 from libs.lib_rhino_db import RhinoDatabase
 from libs.lib_remote_config import RemoteConfig
+from libs.ios.webview import IOSWebView
+
 
 
 import libs.lib_enc
@@ -74,7 +78,7 @@ class Demo3App(MDApp):
         self.theme_cls.theme_style_switch_animation = True
         self.remote_config = RemoteConfig("config.json")
         self.rhino = RhinoClient()
-        #self.load_rhino()
+        self.rhino_db = RhinoDatabase()        #self.load_rhino()
 
 
         #self.root.push("today")
@@ -151,6 +155,8 @@ class Demo3App(MDApp):
         self.rhino.db.save_user_setting("password", passw)
         self.rhino.db.save_user_setting("city", "lasvegas")
         self.update()
+    def check_att(self, text):
+        return True
 
     def update(self):
         app = App.get_running_app()
@@ -514,5 +520,151 @@ class Demo3App(MDApp):
 
     def change_screen(self, screen, direction):
         self.root.push(screen, direction)
+
+############ RHINO WEBVIEW LOGIN"""""""""
+
+    def login_ios(self):
+        if not hasattr(self, "webview"):
+            self.webview = IOSWebView()
+
+        #
+        # Show page
+        #
+
+        #self.webview.show_url(login_url)
+        
+        self.webview.show_url(self.rhino.login_url)
+
+        #
+        # Wait a bit, then inject JS
+        #
+
+        Clock.schedule_once(
+            lambda dt: self.webview.run_js_file("thinkrhino.js"),
+            2
+        )
+
+        #
+        # Don't start multiple polling timers
+        #
+
+        if not hasattr(self, "_webview_poll"):
+
+            self._webview_poll = Clock.schedule_interval(
+                self.check_webview,
+                0.2
+            )
+
+
+
+
+
+
+    def new_login(self):
+        print ("DOING NEW LOGIN!!!")
+        
+
+
+        if not hasattr(self, "rhino"):
+            self.rhino = RhinoClient("lasvegas")
+
+
+        if platform =="ios":
+            self.login_ios()
+            #self.update()
+        if platform !="ios":
+            #print ("OLD LOGIN")
+            pass
+        self.root.push("today")
+
+
+        
+
+    def check_webview(self, dt):
+
+        import json
+        from urllib.parse import unquote
+
+        if not hasattr(self, "webview"):
+            return
+
+        msg = self.webview.get_message()
+
+        if msg is None:
+            return
+
+        print("MESSAGE =", repr(msg))
+
+        #
+        # Force to python string
+        #
+
+        msg = f"{msg}"
+
+        if not msg.startswith("schedulara://login?"):
+            return
+
+        payload = msg.split("?", 1)[1]
+
+        data = json.loads(unquote(payload))
+
+        print("EMAIL =", data["email"])
+        print("PASSWORD =", data["password"])
+        print("URL =", data["url"])
+
+        #
+        # Stop polling
+        #
+
+        self._webview_poll.cancel()
+        del self._webview_poll
+
+        self.webview.hide()
+
+        import libs.lib_enc
+        EMAIL = data["email"]
+        PASSWORD = data["password"]
+
+        enc = libs.lib_enc.make_password(PASSWORD)
+        print (enc,"ENC!")
+
+        html = self.rhino.login(
+            EMAIL,
+            enc,
+        )
+        #print (html,'login result')
+
+        schedule = self.rhino.download_schedule()
+        print (schedule,'schedule result')
+        app = App.get_running_app()
+        ad = app.user_data_dir
+        with open(ad + "/realdata.html", "wb") as f:
+            f.write(schedule)
+
+        self.rhino.username = EMAIL
+        self.rhino.password = libs.lib_enc.make_password(PASSWORD)
+        self.rhino.login_url=data["url"]
+        return html
+
+
+
+
+
+
+    def on_login(
+        email,
+        password,
+        url
+    ):
+        logging.info("on_login", email, password, url)
+    def inject_login_js(self, dt):
+
+        self.webview.inject_js("""
+            document.body.style.background = "red";
+        """)
+
+        self.webview.inject_js("""
+            document.querySelectorAll("section")[1].style.display = "none";
+        """)
 
 Demo3App().run()

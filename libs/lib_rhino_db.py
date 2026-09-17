@@ -589,3 +589,14 @@ class RhinoDatabase:
         )
 
         return True
+
+    def get_all_shows(self):
+        """
+        Return all saved shows from the database.
+        """
+        rows = self.db.execute("""
+            SELECT *
+            FROM shows
+        """).fetchall()
+
+        return [dict(row) for row in rows]
