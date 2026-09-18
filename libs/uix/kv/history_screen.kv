@@ -1,52 +1,9 @@
 #:import dp kivy.metrics.dp
 
 
-<ScheduleItem>:
-    orientation: "vertical"
-    size_hint_y: None
-    height: dp(132)
-
-    ShowCard:
-        size_hint_y: None
-        height: dp(132)
-
-        show: root.show
-        day: root.day
-        date: root.date
-        time: root.time
-        venue: root.venue
-        address: root.address
-        position: root.position
-        show_class: root.show_class
-        status: root.status
-        venue_code: root.venue_code
-        status_icon: root.status_icon
-        cancelled: root.cancelled
-
-    # ---------------------------------------------------------
-    # SHOW
-    # ---------------------------------------------------------
-
-    ShowCard:
-        opacity: 0 if (root.is_today or root.is_pay_period or root.is_pay_week or root.is_pay_day) else 1
-
-        disabled: root.is_today or root.is_pay_period or root.is_pay_week or root.is_pay_day
-
-        size_hint_y: None
-        height: dp(132) if not (root.is_today or root.is_pay_period or root.is_pay_week or root.is_pay_day) else 0
-
-        show: root.show
-        day: root.day
-        date: root.date
-        time: root.time
-        venue: root.venue
-        address: root.address
-        position: root.position
-        show_class: root.show_class
-        status: root.status
-        venue_code: root.venue_code
-        status_icon: root.status_icon
-        cancelled: root.cancelled
+# ============================================================
+# SCHEDULE MARKER
+# ============================================================
 
 <ScheduleMarkerItem>:
     orientation: "vertical"
@@ -56,8 +13,10 @@
     MDCard:
         size_hint_y: None
         height: dp(60)
+
         style: "filled"
         radius: [12, 12, 12, 12]
+
         padding: dp(16), dp(8)
 
         MDBoxLayout:
@@ -75,6 +34,10 @@
                 font_size: "15sp"
 
 
+# ============================================================
+# TODAY MARKER
+# ============================================================
+
 <ScheduleTodayItem>:
     orientation: "vertical"
     size_hint_y: None
@@ -83,8 +46,10 @@
     MDCard:
         size_hint_y: None
         height: dp(44)
+
         style: "filled"
         radius: [12, 12, 12, 12]
+
         padding: dp(16), 0
 
         MDLabel:
@@ -93,6 +58,12 @@
             font_size: "13sp"
             theme_text_color: "Secondary"
             valign: "center"
+
+
+# ============================================================
+# HISTORY / SCHEDULE SCREEN
+# ============================================================
+
 <HistoryScreen>:
 
     name: "history"
@@ -101,26 +72,30 @@
 
         orientation: "vertical"
 
-
-       
-
         RecycleView:
 
             id: schedule_rv
+
             do_scroll_x: False
             bar_width: dp(4)
+
+            # Default view class for normal schedule entries.
+            # key_viewclass overrides this for:
+            #   ScheduleMarkerItem
+            #   ScheduleTodayItem
             viewclass: "ShowCard"
             key_viewclass: "key_viewclass"
 
-
             RecycleBoxLayout:
 
-                default_size: None, None
+                # The Python data supplies the exact height
+                # through the "_rv_size" key.
+                key_size: "_rv_size"
 
+                default_size: None, None
                 default_size_hint: 1, None
 
                 size_hint_y: None
-
                 height: self.minimum_height
 
                 orientation: "vertical"
@@ -129,6 +104,6 @@
 
                 padding:
                     dp(12), dp(8), dp(12), dp(24)
+
     NavigationBar:
         selected: "calendar"
-

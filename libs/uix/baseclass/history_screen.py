@@ -1,6 +1,7 @@
 from datetime import datetime, date,timedelta
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.metrics import dp
 from kivy.properties import (
     BooleanProperty,
     ListProperty,
@@ -244,6 +245,20 @@ class HistoryScreen(Screen):
                 "marker_title": "",
                 "marker_subtitle": "",
             })
+
+        # Give RecycleView the exact height for every row up front.
+        # This prevents RecycleBoxLayout from starting with its default
+        # 100px row height and then changing the geometry after the first
+        # layout pass.
+        for item in data:
+            viewclass = item.get("key_viewclass")
+
+            if viewclass == "ScheduleTodayItem":
+                item["_rv_size"] = (0, dp(44))
+            elif viewclass == "ScheduleMarkerItem":
+                item["_rv_size"] = (0, dp(60))
+            else:
+                item["_rv_size"] = (0, dp(132))
 
         self.shows = data
         self.today_index = today_index
@@ -549,43 +564,66 @@ class HistoryScreen(Screen):
 
     def _scroll_to_today(self, *args):
         rv = self.ids.schedule_rv
-        layout = rv.layout_manager
 
-        if not rv.data or layout is None:
+        if not rv.data:
             return
 
         try:
-            # Ask the RecycleView layout to bring TODAY into view.
-            layout.goto_view(self.today_index)
-
-            # Give the layout one frame to create the actual view.
-            Clock.schedule_once(self._scroll_to_today_widget, 0)
-
-        except Exception:
-            import traceback
-            traceback.print_exc()
-
-
-    def _scroll_to_today_widget(self, *args):
-        rv = self.ids.schedule_rv
-
-        try:
-            today_view = rv.view_adapter.get_visible_view(self.today_index)
-
-            if today_view is None:
-                # The view hasn't been created yet; try again next frame.
-                Clock.schedule_once(self._scroll_to_today_widget, 0.05)
+            layout = rv.layout_manager
+            if layout is None:
+                Clock.schedule_once(self._scroll_to_today, 0.1)
                 return
 
-            # Let Kivy's ScrollView handle the actual positioning.
-            rv.scroll_to(
-                today_view,
-                padding=12,
-                animate=False,
+            # The KV layout now gets exact row sizes from _rv_size, so
+            # view_opts contains the final geometry without waiting for
+            # ShowCard widgets to be measured.
+            view_opts = getattr(layout, "view_opts", None)
+
+            if not view_opts or self.today_index >= len(view_opts):
+                Clock.schedule_once(self._scroll_to_today, 0.1)
+                return
+
+            today_opts = view_opts[self.today_index]
+            pos = today_opts.get("pos")
+            size = today_opts.get("size")
+
+            if not pos or not size:
+                Clock.schedule_once(self._scroll_to_today, 0.1)
+                return
+
+            content_height = layout.minimum_size[1]
+            viewport_height = rv.height
+            max_offset = max(0, content_height - viewport_height)
+
+            if max_offset <= 0:
+                rv.scroll_y = 1
+                return
+
+            today_y = pos[1]
+            today_height = size[1]
+
+            # Distance from the top of the content to the top of TODAY.
+            today_top = content_height - (today_y + today_height)
+
+            # Put TODAY 12dp below the top of the viewport.
+            desired_offset = max(0, today_top - dp(12))
+
+            rv.scroll_y = max(
+                0,
+                min(
+                    1,
+                    1 - (desired_offset / max_offset),
+                ),
             )
 
             print(
-                f"[SCHEDULE] Scrolled to TODAY index={self.today_index}"
+                f"[SCHEDULE] TODAY index={self.today_index} "
+                f"y={today_y:.0f} "
+                f"h={today_height:.0f} "
+                f"content={content_height:.0f} "
+                f"max={max_offset:.0f} "
+                f"offset={desired_offset:.0f} "
+                f"scroll_y={rv.scroll_y:.3f}"
             )
 
         except Exception:
