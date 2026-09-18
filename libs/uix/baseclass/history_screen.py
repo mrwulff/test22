@@ -16,28 +16,13 @@ from libs.pay_schedule import PaySchedule
 
 
 
-class ScheduleItem(BoxLayout):
-    is_today = BooleanProperty(False)
-
-    is_pay_period = BooleanProperty(False)
-    is_pay_week = BooleanProperty(False)
-    is_pay_day = BooleanProperty(False)
-
+class ScheduleMarkerItem(BoxLayout):
     marker_title = StringProperty("")
     marker_subtitle = StringProperty("")
 
-    show = StringProperty("")
-    day = StringProperty("")
-    date = StringProperty("")
-    time = StringProperty("")
-    venue = StringProperty("")
-    address = StringProperty("")
-    position = StringProperty("")
-    show_class = StringProperty("")
-    status = StringProperty("")
-    venue_code = StringProperty("")
-    status_icon = StringProperty("")
-    cancelled = BooleanProperty(False)
+
+class ScheduleTodayItem(BoxLayout):
+    pass
 
 
 class HistoryScreen(Screen):
@@ -59,6 +44,7 @@ class HistoryScreen(Screen):
             period = self.pay_schedule.period_for_date(target_date)
 
             return {
+                "key_viewclass": "ScheduleMarkerItem",
                 "is_today": False,
                 "is_pay_period": True,
                 "is_pay_week": False,
@@ -74,6 +60,8 @@ class HistoryScreen(Screen):
             week = self.pay_schedule.pay_week_for_date(target_date)
 
             return {
+                "key_viewclass": "ScheduleMarkerItem",
+
                 "is_today": False,
                 "is_pay_period": False,
                 "is_pay_week": True,
@@ -87,6 +75,8 @@ class HistoryScreen(Screen):
 
         if marker_type == "pay_day":
             return {
+                "key_viewclass": "ScheduleMarkerItem",
+
                 "is_today": False,
                 "is_pay_period": False,
                 "is_pay_week": False,
@@ -134,6 +124,9 @@ class HistoryScreen(Screen):
 
 
         today = datetime.now().date()
+        print("[SCHEDULE] APP TODAY =", today)
+        print("[SCHEDULE] APP NOW   =", datetime.now())
+        
 
         # -----------------------------------------------------
         # BUILD SHOW EVENTS
@@ -218,11 +211,13 @@ class HistoryScreen(Screen):
             if (
                 not today_marker_added
                 and event_date >= today
-                and event["data"].get("is_pay_day") is False
+                and not event["data"].get("is_pay_day", False)
             ):
                 today_index = len(data)
 
                 data.append({
+                    "key_viewclass": "ScheduleTodayItem",
+
                     "is_today": True,
                     "is_pay_period": False,
                     "is_pay_week": False,
@@ -240,6 +235,8 @@ class HistoryScreen(Screen):
             today_index = len(data)
 
             data.append({
+                "key_viewclass": "ScheduleTodayItem",
+
                 "is_today": True,
                 "is_pay_period": False,
                 "is_pay_week": False,
@@ -250,7 +247,15 @@ class HistoryScreen(Screen):
 
         self.shows = data
         self.today_index = today_index
-
+        for i, item in enumerate(data):
+            print(
+                "[RV]",
+                i,
+                item.get("key_viewclass"),
+                item.get("marker_title", ""),
+                item.get("marker_subtitle", ""),
+                item.get("show", "")[:40],
+            )
         rv = self.ids.schedule_rv
         rv.data = data
 
@@ -268,51 +273,7 @@ class HistoryScreen(Screen):
 
 
 
-    def _pay_marker(self, marker_type, target_date):
-        if marker_type == "pay_period":
-            period = self.pay_schedule.period_for_date(target_date)
-
-            return {
-                "is_today": False,
-                "is_pay_period": True,
-                "is_pay_week": False,
-                "is_pay_day": False,
-                "marker_title": "PAY PERIOD",
-                "marker_subtitle": self.pay_schedule.format_range(
-                    period["start"],
-                    period["end"],
-                ),
-            }
-
-        if marker_type == "pay_week":
-            week = self.pay_schedule.pay_week_for_date(target_date)
-
-            return {
-                "is_today": False,
-                "is_pay_period": False,
-                "is_pay_week": True,
-                "is_pay_day": False,
-                "marker_title": "PAY WEEK",
-                "marker_subtitle": self.pay_schedule.format_range(
-                    week["start"],
-                    week["end"],
-                ),
-            }
-
-        if marker_type == "pay_day":
-            return {
-                "is_today": False,
-                "is_pay_period": False,
-                "is_pay_week": False,
-                "is_pay_day": True,
-                "marker_title": "PAY DAY",
-                "marker_subtitle": self.pay_schedule.format_date(
-                    target_date,
-                ),
-            }
-
-        return None
-
+    
     def _build_pay_markers(self, rows):
         dates = []
 
@@ -438,6 +399,10 @@ class HistoryScreen(Screen):
             )
 
         return {
+
+            "key_viewclass": "ShowCard",
+
+
             "is_today": False,
 
             "show": row.get(
@@ -583,85 +548,47 @@ class HistoryScreen(Screen):
         return None
 
     def _scroll_to_today(self, *args):
-
         rv = self.ids.schedule_rv
+        layout = rv.layout_manager
 
-        if not rv.data:
+        if not rv.data or layout is None:
             return
 
         try:
-            # ShowCard height + spacing
-            item_height = 132
-            spacing = 8
+            # Ask the RecycleView layout to bring TODAY into view.
+            layout.goto_view(self.today_index)
 
-            # Today marker is shorter
-            today_height = 44
+            # Give the layout one frame to create the actual view.
+            Clock.schedule_once(self._scroll_to_today_widget, 0)
 
-            # How many normal items fit on screen?
-            visible_items = rv.height / (item_height + spacing)
+        except Exception:
+            import traceback
+            traceback.print_exc()
 
-            total_items = len(rv.data)
 
-            # Distance from the top of the content to TODAY.
-            today_offset = 8
+    def _scroll_to_today_widget(self, *args):
+        rv = self.ids.schedule_rv
 
-            for i in range(self.today_index):
-                if rv.data[i].get("is_today", False):
-                    today_offset += today_height
-                else:
-                    today_offset += item_height
+        try:
+            today_view = rv.view_adapter.get_visible_view(self.today_index)
 
-                today_offset += spacing
-
-            # We want TODAY near the top.
-            desired_offset = today_offset - 12
-
-            # Calculate the actual total content height
-            # using the same item dimensions.
-            content_height = 8
-
-            for item in rv.data:
-                if item.get("is_today", False):
-                    content_height += today_height
-                else:
-                    content_height += item_height
-
-                content_height += spacing
-
-            content_height += 24
-
-            max_offset = content_height - rv.height
-
-            if max_offset <= 0:
-                rv.scroll_y = 1
+            if today_view is None:
+                # The view hasn't been created yet; try again next frame.
+                Clock.schedule_once(self._scroll_to_today_widget, 0.05)
                 return
 
-            # ScrollView uses 1 = top, 0 = bottom.
-            rv.scroll_y = 1 - (
-                desired_offset / max_offset
-            )
-
-            rv.scroll_y = max(
-                0,
-                min(
-                    1,
-                    rv.scroll_y,
-                ),
+            # Let Kivy's ScrollView handle the actual positioning.
+            rv.scroll_to(
+                today_view,
+                padding=12,
+                animate=False,
             )
 
             print(
-                f"[SCHEDULE] TODAY index={self.today_index} "
-                f"offset={desired_offset:.0f} "
-                f"max={max_offset:.0f} "
-                f"scroll_y={rv.scroll_y:.3f}"
+                f"[SCHEDULE] Scrolled to TODAY index={self.today_index}"
             )
 
         except Exception:
-
             import traceback
-
-            print(
-                "[SCHEDULE] Could not scroll to TODAY:"
-            )
-
+            print("[SCHEDULE] Could not scroll to TODAY:")
             traceback.print_exc()
