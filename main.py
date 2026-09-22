@@ -72,16 +72,25 @@ class Demo3App(MDApp):
 
     def build(self):
         print ("def BUILD")
+        
         self.root = Root()
         self.root.push("today")
 
         self.theme_cls.theme_style_switch_animation = True
         self.remote_config = RemoteConfig("config.json")
         self.rhino = RhinoClient()
-        self.rhino_db = RhinoDatabase()        #self.load_rhino()
+        self.rhino_db = RhinoDatabase()
 
+        print(
+            "[DB TEST] ACTUAL DATABASE:",
+            self.rhino_db.db_path
+        )
 
-        #self.root.push("today")
+        
+        self.dlpp()       #self.load_rhino()
+
+        self.rhino_db.debug_payroll_columns()
+        self.rhino_db.debug_insert_payroll_test()        #self.root.push("today")
 
 #       GET USER DATA         x = libs.lib_readuserdata.readuserdata(App, ad, ios)
 
@@ -184,6 +193,26 @@ class Demo3App(MDApp):
         print (changes["modified"],'changes!!!')
 
 
+    def dlpp(self):
+        import libs.lib_ppdownloader as lib_ppdownloader
+
+        app = App.get_running_app()
+        ad = app.user_data_dir
+        x={}
+        print (self.rhino.password,'this is the password')
+        x['password']=self.rhino.password 
+        x['city']=self.rhino.city
+
+
+        x['username']=self.rhino.username 
+
+
+
+        if 1==1:
+            paystubs, new = lib_ppdownloader.thinkpp(x,ad,'pp')
+
+            logging.info("Downloaded  " + str(new) + " out of  " + str(paystubs))
+            #self.snackbarx("Downloaded  " + str(new) + " out of  " + str(paystubs))
 
     def populate_show_cards(self,parser):
         print (parser.shows[1].date,"DATE!!")

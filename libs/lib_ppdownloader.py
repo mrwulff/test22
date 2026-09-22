@@ -142,6 +142,7 @@ def thinkpp(x, ad, kind):
         browser.select_form(name="ctl00")
     except:
         browser.select_form(nr=0)
+    print (x,type(x), 'this is the username')
     browser["emailaddress"] = x["username"]
     browser["mypassword"] = libs.lib_enc.r_password(x["password"])
     # logging.info (browser)
