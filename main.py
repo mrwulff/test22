@@ -87,7 +87,7 @@ class Demo3App(MDApp):
         )
 
         
-        self.dlpp()       #self.load_rhino()
+        #self.dlpp()       #self.load_rhino()
 
         self.rhino_db.debug_payroll_columns()
         self.rhino_db.debug_insert_payroll_test()        #self.root.push("today")
@@ -154,6 +154,23 @@ class Demo3App(MDApp):
         logging.info("Loading old Login Page")
         #self.root = Root()
         self.root.push("login_other")
+    def paystub(self):
+        logging.info("Loading Paystub Page")
+        #self.root = Root()
+        self.root.push("pay")
+    def paystub_item(self, payroll_item_id):
+        logging.info("Loading Paystub Item Page")
+
+        # Make sure the lazy-loaded screen exists first
+        self.root._ensure_screen_loaded("pay_item")
+
+        # Set the item ID BEFORE pushing the screen
+        screen = self.root.get_screen("pay_item")
+        screen.payroll_item_id = str(payroll_item_id)
+        print (payroll_item_id,"PAYROLL ITEM ID")
+
+        # Now navigate to it
+        self.root.push("pay_item", "down")
     def save_old_login(self):
         user=App.get_running_app().root.current_screen.ids["temail"].text
         passw = (
@@ -167,6 +184,14 @@ class Demo3App(MDApp):
     def check_att(self, text):
         return True
 
+    def open_paystub(self, paystub_id):
+        self.root._ensure_screen_loaded("pay_breakdown")
+
+        screen = self.root.get_screen("pay_breakdown")
+        screen.paystub_id = str(paystub_id)
+
+        self.root.current = "pay_breakdown"
+    
     def update(self):
         app = App.get_running_app()
         ad = app.user_data_dir

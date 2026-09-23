@@ -205,6 +205,11 @@
         "import": "from libs.uix.baseclass.changes_screen import ChangesScreen",
         "object": "ChangesScreen()",
         "kv": "libs/uix/kv/changes_screen.kv"
+    },
+    "pay_item": {
+        "import": "from libs.uix.baseclass.pay_item_screen import pay_itemscreen",
+        "object": "pay_itemscreen()",
+        "kv": "libs/uix/kv/pay_item_screen.kv"
     }
     
 

@@ -1,0 +1,288 @@
+<PaystubBreakdownScreen>:
+    name: "pay_breakdown"
+
+    FloatLayout:
+
+        MDBoxLayout:
+            orientation: "vertical"
+            padding: dp(20), dp(18), dp(20), dp(20)
+            spacing: dp(12)
+
+            # -------------------------------------------------
+            # HEADER
+            # -------------------------------------------------
+
+            MDCard:
+                size_hint: None, None
+                size: dp(44), dp(44)
+                radius: [22]
+                elevation: 0
+                theme_bg_color: "Custom"
+                md_bg_color: (.91, .90, .95, 1)
+                ripple_behavior: True
+
+                on_release:
+                    root.go_back()
+
+                MDLabel:
+                    text: "‹"
+                    font_size: dp(98)
+                    theme_text_color: "Custom"
+                    text_color: (.25, .25, .30, 1)
+                    halign: "center"
+                    valign: "center"
+                    text_size: self.size
+
+            # -------------------------------------------------
+            # SCROLLING CONTENT
+            # -------------------------------------------------
+
+            ScrollView:
+                do_scroll_x: False
+
+                MDBoxLayout:
+                    id: content
+                    orientation: "vertical"
+                    spacing: dp(12)
+                    padding: 0, 0, 0, dp(20)
+                    size_hint_y: None
+                    height: self.minimum_height
+
+                    # -----------------------------------------
+                    # PAY PERIOD
+                    # -----------------------------------------
+
+                    MDCard:
+                        orientation: "vertical"
+                        size_hint_y: None
+                        height: dp(92)
+                        padding: dp(16)
+                        radius: [22]
+                        elevation: 1
+                        theme_bg_color: "Custom"
+                        md_bg_color: (.91, .90, .95, 1)
+
+                        MDLabel:
+                            text: "PAY PERIOD"
+                            font_size: dp(12)
+                            bold: True
+                            theme_text_color: "Secondary"
+                            adaptive_height: True
+
+                        MDLabel:
+                            text: root.period
+                            font_size: dp(21)
+                            bold: True
+                            adaptive_height: True
+
+                    # -----------------------------------------
+                    # PAY SUMMARY TITLE
+                    # -----------------------------------------
+
+                    MDLabel:
+                        text: "PAY SUMMARY"
+                        font_size: dp(14)
+                        bold: True
+                        theme_text_color: "Secondary"
+                        size_hint_y: None
+                        height: dp(30)
+
+                    # -----------------------------------------
+                    # PAY SUMMARY
+                    # -----------------------------------------
+
+                    MDCard:
+                        size_hint_y: None
+                        height: root.summary_height
+                        padding: dp(16)
+                        radius: [22]
+                        elevation: 1
+                        theme_bg_color: "Custom"
+                        md_bg_color: (.96, .95, .97, 1)
+
+                        MDAnchorLayout:
+                            anchor_x: "left"
+                            anchor_y: "center"
+
+                            MDBoxLayout:
+                                id: summary_container
+                                orientation: "vertical"
+                                spacing: 0
+                                size_hint_y: None
+                                height: self.minimum_height
+
+                    # -----------------------------------------
+                    # TOTAL HOURS
+                    # -----------------------------------------
+
+                    MDCard:
+                        size_hint_y: None
+                        height: dp(82)
+                        padding: dp(16)
+                        radius: [22]
+                        elevation: 1
+                        theme_bg_color: "Custom"
+                        md_bg_color: (.84, .83, .91, 1)
+                        ####
+                        MDAnchorLayout:
+                            anchor_x: "left"
+                            anchor_y: "center"
+
+                            MDBoxLayout:
+                                size_hint_y: None
+                                height: dp(36)
+
+                                MDLabel:
+                                    text: "TOTAL HOURS"
+                                    font_size: dp(15)
+                                    bold: True
+                                    theme_text_color: "Secondary"
+                                    valign: "center"
+                                    text_size: self.size
+
+                                MDLabel:
+                                    text: root.total_hours
+                                    font_size: dp(25)
+                                    bold: True
+                                    halign: "right"
+                                    valign: "center"
+                                    text_size: self.size
+                    # -----------------------------------------
+                    # PAY
+                    # -----------------------------------------
+
+                    MDCard:
+                        size_hint_y: None
+                        height: dp(82)
+                        padding: dp(16)
+                        radius: [22]
+                        elevation: 1
+                        theme_bg_color: "Custom"
+                        md_bg_color: (.91, .90, .95, 1)
+                        #####
+                        MDAnchorLayout:
+                            anchor_x: "left"
+                            anchor_y: "center"
+
+                            MDBoxLayout:
+                                size_hint_y: None
+                                height: dp(36)
+
+                                MDLabel:
+                                    text: "PAY"
+                                    font_size: dp(15)
+                                    bold: True
+                                    theme_text_color: "Secondary"
+                                    valign: "center"
+                                    text_size: self.size
+
+                                MDLabel:
+                                    text: root.total_pay
+                                    font_size: dp(25)
+                                    bold: True
+                                    halign: "right"
+                                    valign: "center"
+                                    text_size: self.size
+                    # -----------------------------------------
+                    # SHIFTS TITLE
+                    # -----------------------------------------
+
+                    MDLabel:
+                        text: "SHIFTS"
+                        font_size: dp(14)
+                        bold: True
+                        theme_text_color: "Secondary"
+                        size_hint_y: None
+                        height: dp(30)
+
+                    # -----------------------------------------
+                    # SHIFTS
+                    # -----------------------------------------
+
+                    MDBoxLayout:
+                        id: shift_container
+                        orientation: "vertical"
+                        spacing: dp(10)
+                        size_hint_y: None
+                        height: self.minimum_height
+
+
+# =============================================================
+# SHIFT CARD
+# =============================================================
+<PaystubShiftCard>:
+
+    orientation: "vertical"
+
+    size_hint_y: None
+    height: dp(100)
+
+    padding: dp(14)
+
+    radius: [20]
+
+    elevation: 1
+
+    ripple_behavior: True
+
+    theme_bg_color: "Custom"
+    md_bg_color: (.96, .95, .97, 1)
+
+    on_release:
+        app.paystub_item(root.payroll_item_id)
+
+    # SHOW NAME
+    MDBoxLayout:
+        size_hint_y: None
+        height: dp(28)
+
+        MDLabel:
+            text: root.show_name
+            font_size: dp(16)
+            bold: True
+            shorten: True
+            shorten_from: "right"
+            valign: "center"
+            text_size: self.size
+
+        MDBoxLayout:
+            size_hint_x: None
+            width: dp(36)
+
+            MDLabel:
+                text: "›"
+                font_size: dp(32)
+                theme_text_color: "Secondary"
+                halign: "center"
+                valign: "center"
+                text_size: self.size
+
+    # DATE + START/END TIME + HOURS
+    MDBoxLayout:
+        size_hint_y: None
+        height: dp(24)
+
+        MDLabel:
+            text: root.shift_date.split(" · ")[0] + " · " + root.shift_time
+            font_size: dp(13)
+            theme_text_color: "Secondary"
+            valign: "center"
+            text_size: self.size
+
+        MDLabel:
+            text: root.hours
+            font_size: dp(13)
+            theme_text_color: "Secondary"
+            halign: "right"
+            valign: "center"
+            text_size: self.size
+
+    # PAY
+    MDLabel:
+        text: root.pay
+        font_size: dp(13)
+        theme_text_color: "Secondary"
+        size_hint_y: None
+        height: dp(20)
+        valign: "center"
+        text_size: self.size

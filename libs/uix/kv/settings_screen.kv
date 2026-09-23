@@ -46,13 +46,13 @@
                                 text: "Rhino Login"
 
                         MDListItem:
-                            #on_release: app.show_theme_picker()
+                            on_release: app.paystub()
 
                             MDListItemLeadingIcon:
-                                icon: "palette"
+                                icon: "money-check"
 
                             MDListItemHeadlineText:
-                                text: "Theme"
+                                text: "Paystub"
 
                 # -------------------------------------------------
                 # DATA
@@ -192,6 +192,22 @@
                             MDSwitch:
                                 widget_style: "ios"
                                 id: hidden
+                        MDListItem:
+                            MDListItemHeadlineText:
+                                text: "Show Pay Amounts"
+
+                            MDSwitch:
+                                widget_style: "ios"
+                                id: show_pay_amounts
+                                active: app.db.get_user_setting("show_pay_amounts", "True") == "True"
+                                on_active:
+                                    app.db.save_user_setting("show_pay_amounts", str(self.active))
+
+                            MDListItemLeadingIcon:
+                                icon: "cash"
+                                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+
+                        
 
                         MDListItem:
 

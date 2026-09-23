@@ -77,6 +77,42 @@ class RhinoDatabase:
         """)
 
         self.db.execute("""
+            CREATE TABLE IF NOT EXISTS payroll_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                paystub_id TEXT NOT NULL,
+                show_id TEXT,
+                job_number TEXT,
+                class TEXT,
+                position TEXT,
+                client TEXT,
+                show TEXT,
+                time_in TEXT,
+                time_out TEXT,
+                reg_hours REAL,
+                ot_hours REAL,
+                dt_hours REAL,
+                weekly_ot_hours REAL,
+                meal_penalty_hours REAL,
+                rest_break_penalty_hours REAL,
+                base_rate REAL,
+                blended_rate REAL,
+                pay REAL,
+                imported_at TEXT,
+                UNIQUE (paystub_id, job_number, position, time_in, time_out)
+            )
+        """)
+
+        self.db.execute("""
+            CREATE INDEX IF NOT EXISTS idx_payroll_items_show_id
+            ON payroll_items(show_id)
+        """)
+
+        self.db.execute("""
+            CREATE INDEX IF NOT EXISTS idx_payroll_items_paystub_id
+            ON payroll_items(paystub_id)
+        """)
+
+        self.db.execute("""
             CREATE TABLE IF NOT EXISTS metadata (
                 key TEXT PRIMARY KEY,
                 value TEXT
@@ -896,6 +932,253 @@ class RhinoDatabase:
 
 
 
+    # --------------------------------------------------
+    # Payroll Import
+    # --------------------------------------------------
+
+    def import_paystub(self, paystub, shows):
+        """
+        Import every payroll line from a paystub.
+
+        Every line is permanently stored in payroll_items.
+        Exact matches also get show_id and update the payroll
+        convenience fields on the matching show.
+
+        The entire import is atomic.
+        """
+
+        from libs.paystub_matcher import match_paystub_to_shows
+
+        try:
+            self.db.execute("BEGIN")
+
+            paystub_record = self.get_or_create_paystub(paystub)
+            paystub_id = paystub_record["paystub_key"]
+
+            results = match_paystub_to_shows(paystub, shows)
+
+            counts = {
+                "paystub_id": paystub_id,
+                "is_new_paystub": paystub_record["is_new"],
+                "exact": 0,
+                "possible": 0,
+                "unmatched": 0,
+                "imported": 0,
+            }
+
+            now = datetime.now().isoformat()
+
+            for result in results:
+                payroll_item = result["paystub"]
+                status = result["status"]
+                show_id = None
+
+                if status == "EXACT":
+                    matches = result.get("matches") or []
+                    if not matches:
+                        raise RuntimeError(
+                            "Matcher returned EXACT without a matching show."
+                        )
+
+                    show_id = matches[0]["id"]
+                    counts["exact"] += 1
+
+                    self._update_show_payroll_no_commit(
+                        show_id,
+                        payroll_item,
+                        paystub_id,
+                        now,
+                    )
+
+                elif status == "POSSIBLE":
+                    counts["possible"] += 1
+
+                else:
+                    counts["unmatched"] += 1
+
+                self.db.execute("""
+                    INSERT INTO payroll_items (
+                        paystub_id, show_id,
+                        job_number, class, position, client, show,
+                        time_in, time_out,
+                        reg_hours, ot_hours, dt_hours, weekly_ot_hours,
+                        meal_penalty_hours, rest_break_penalty_hours,
+                        base_rate, blended_rate, pay, imported_at
+                    )
+                    VALUES (
+                        ?, ?,
+                        ?, ?, ?, ?, ?,
+                        ?, ?,
+                        ?, ?, ?, ?,
+                        ?, ?,
+                        ?, ?, ?, ?
+                    )
+                    ON CONFLICT(
+                        paystub_id, job_number, position, time_in, time_out
+                    )
+                    DO UPDATE SET
+                        show_id = excluded.show_id,
+                        class = excluded.class,
+                        client = excluded.client,
+                        show = excluded.show,
+                        reg_hours = excluded.reg_hours,
+                        ot_hours = excluded.ot_hours,
+                        dt_hours = excluded.dt_hours,
+                        weekly_ot_hours = excluded.weekly_ot_hours,
+                        meal_penalty_hours = excluded.meal_penalty_hours,
+                        rest_break_penalty_hours = excluded.rest_break_penalty_hours,
+                        base_rate = excluded.base_rate,
+                        blended_rate = excluded.blended_rate,
+                        pay = excluded.pay,
+                        imported_at = excluded.imported_at
+                """, (
+                    paystub_id, show_id,
+                    payroll_item.get("job_number"),
+                    payroll_item.get("class"),
+                    payroll_item.get("position"),
+                    payroll_item.get("client"),
+                    payroll_item.get("show"),
+                    payroll_item.get("time_in"),
+                    payroll_item.get("time_out"),
+                    payroll_item.get("reg_hours"),
+                    payroll_item.get("ot_hours"),
+                    payroll_item.get("dt_hours"),
+                    payroll_item.get("weekly_ot_hours"),
+                    payroll_item.get("meal_penalty_hours"),
+                    payroll_item.get("rest_break_penalty_hours"),
+                    payroll_item.get("base_rate"),
+                    payroll_item.get("blended_rate"),
+                    payroll_item.get("total"),
+                    now,
+                ))
+
+                counts["imported"] += 1
+
+            self.db.commit()
+            return counts
+
+        except Exception:
+            self.db.rollback()
+            raise
+
+    def rematch_unlinked_payroll(self, shows):
+        """
+        Try to link previously unmatched payroll items to current Rhino shows.
+
+        Only strict EXACT matches are linked (job + date + position).
+        Payroll rows are never deleted or recreated.
+
+        Returns:
+            {
+                "checked": int,
+                "rematched": int,
+                "still_unmatched": int,
+            }
+        """
+
+        from libs.paystub_matcher import match_paystub_to_shows
+
+        rows = self.db.execute("""
+            SELECT *
+            FROM payroll_items
+            WHERE show_id IS NULL
+            ORDER BY id
+        """).fetchall()
+
+        counts = {
+            "checked": len(rows),
+            "rematched": 0,
+            "still_unmatched": 0,
+        }
+
+        if not rows:
+            return counts
+
+        # Convert sqlite rows back into the matcher format.
+        items = [dict(row) for row in rows]
+
+        try:
+            self.db.execute("BEGIN")
+
+            results = match_paystub_to_shows({"items": items}, shows)
+
+            for row, result in zip(rows, results):
+                if result["status"] != "EXACT":
+                    counts["still_unmatched"] += 1
+                    continue
+
+                matches = result.get("matches") or []
+                if not matches:
+                    counts["still_unmatched"] += 1
+                    continue
+
+                show_id = matches[0]["id"]
+
+                # Link the permanent payroll ledger row.
+                self.db.execute("""
+                    UPDATE payroll_items
+                    SET show_id = ?
+                    WHERE id = ?
+                """, (show_id, row["id"]))
+
+                # Populate the convenience/cache payroll fields on the show.
+                self._update_show_payroll_no_commit(
+                    show_id,
+                    dict(row),
+                    row["paystub_id"],
+                    row["imported_at"],
+                )
+
+                counts["rematched"] += 1
+
+            self.db.commit()
+            return counts
+
+        except Exception:
+            self.db.rollback()
+            raise
+
+    def _update_show_payroll_no_commit(
+        self,
+        show_id,
+        payroll_item,
+        paystub_id,
+        imported_at,
+    ):
+        self.db.execute("""
+            UPDATE shows
+            SET
+                paystub_id = ?,
+                paystub_imported_at = ?,
+                time_in = ?,
+                time_out = ?,
+                reg_hours = ?,
+                ot_hours = ?,
+                dt_hours = ?,
+                weekly_ot_hours = ?,
+                meal_penalty_hours = ?,
+                rest_break_penalty_hours = ?,
+                base_rate = ?,
+                blended_rate = ?,
+                pay = ?
+            WHERE id = ?
+        """, (
+            paystub_id,
+            imported_at,
+            payroll_item.get("time_in"),
+            payroll_item.get("time_out"),
+            payroll_item.get("reg_hours"),
+            payroll_item.get("ot_hours"),
+            payroll_item.get("dt_hours"),
+            payroll_item.get("weekly_ot_hours"),
+            payroll_item.get("meal_penalty_hours"),
+            payroll_item.get("rest_break_penalty_hours"),
+            payroll_item.get("base_rate"),
+            payroll_item.get("blended_rate"),
+            payroll_item.get("total"),
+            show_id,
+        ))
+
     def debug_payroll_columns(self):
 
         print("\n========== PAYROLL DB DEBUG ==========")
@@ -1036,7 +1319,54 @@ class RhinoDatabase:
 
         print("[PAYROLL TEST] Updated successfully")
 
+    def get_paystubs(self):
+        """
+        Return all imported paystubs, newest first.
 
+        Each row also includes summary information calculated
+        from the permanent payroll_items ledger.
+        """
+
+        rows = self.db.execute("""
+            SELECT
+                p.id,
+                p.paystub_key,
+                p.pay_period_start,
+                p.pay_period_end,
+                p.pay_date,
+                p.employee_name,
+                p.employee_number,
+                p.imported_at,
+                p.updated_at,
+
+                COUNT(pi.id) AS item_count,
+
+                COALESCE(SUM(pi.reg_hours), 0) AS reg_hours,
+                COALESCE(SUM(pi.ot_hours), 0) AS ot_hours,
+                COALESCE(SUM(pi.weekly_ot_hours), 0) AS weekly_ot_hours,
+                COALESCE(SUM(pi.dt_hours), 0) AS dt_hours,
+
+                COALESCE(SUM(pi.meal_penalty_hours), 0)
+                    AS meal_penalty_hours,
+
+                COALESCE(SUM(pi.rest_break_penalty_hours), 0)
+                    AS rest_break_penalty_hours,
+
+                COALESCE(SUM(pi.pay), 0) AS payroll_total
+
+            FROM paystubs p
+
+            LEFT JOIN payroll_items pi
+                ON pi.paystub_id = p.paystub_key
+
+            GROUP BY p.id
+
+            ORDER BY
+                p.pay_date DESC,
+                p.id DESC
+        """).fetchall()
+
+        return [dict(row) for row in rows]
     def get_or_create_paystub(self, paystub):
         """
         Get an existing paystub record or create it.

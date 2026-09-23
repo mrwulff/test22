@@ -1,167 +1,178 @@
-<PayScreen>
-    name: "Pay"
-    FitImage:
-        #source: 'images/rh.jpg'
-        id: pic
-        source: app.get_wall("today")
-        size: self.width,self.height
-    
+<PayScreen>:
+    name: "pay"
 
-    BoxLayout:
-        #id:lolz
-        orientation: "vertical"
-        MDTopAppBar:
-#            type: app.mtype
-#           title: "Login"
-            #height: app.mheight
-#            left_action_items: [['chevron-left', lambda screen: app.change_screen('settings', 'left'),'login']]
-            MDTopAppBarLeadingButtonContainer:
-    
-                MDActionTopAppBarButton:
-                    icon: "chevron-left"
-                    on_release: app.root.pop()
-                    
-            MDTopAppBarTrailingButtonContainer:
-    
-                MDActionTopAppBarButton:
-                    icon: "chevron-down"
-                    on_release: app.root.pop()
+    FloatLayout:
+
+        # --------------------------------------------------
+        # Main content
+        # --------------------------------------------------
+
         MDBoxLayout:
-            #orientation: 'horizontal'
-            size_hint: 1,None
-            height:dp(42)
-            MDSegmentedButton:
-                pos_hint: {"center_x": .5, "center_y": .5}
-                #md_bg_color: app.theme_cls.primary_light
-                md_bg_color: self.theme_cls.onSecondaryColor
-                size_hint_x: .3
-                MDSegmentedButtonItem:
-                    text: 'Date'
-                    id: paydate
+            orientation: "vertical"
+            padding: dp(20), dp(18), dp(20), dp(90)
+            spacing: dp(8)
 
-                    on_press:(app.do_payperiod_trim('paydate',"pp"))
-                    MDSegmentButtonLabel:
-                        text: "Date"
-                    
-                MDSegmentedButtonItem:
-                    text: '$$$'
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(58)
 
-                    id: moneytotal
-                    on_press:app.do_payperiod_trim('moneytotal','pp')
-                    MDSegmentButtonLabel:
-                        text: "$$$"
-                MDSegmentedButtonItem:
-                    text: 'Hours'
+                MDBoxLayout:
+                    orientation: "vertical"
 
-                    id: totalhours
-                    on_press:
-                        app.spinner_toggle()
-                        app.do_payperiod_trim('totalhours','pp')
-                        app.spinner_toggle()
-                        #(app.set_pp('custom'))
-                    MDSegmentButtonLabel:
-                        text: "Hours"
-                MDIconButton:
-                    text: app.check_var(app.rreverse)
-                    id: sall
-                    #on_press:
-                        #app.do_payperiod_trim(app.sort_pp)
-                    MDSegmentButtonLabel:
-                        text: "Rev"
+                    MDLabel:
+                        text: "Pay"
+                        font_size: dp(32)
+                        bold: True
+                        adaptive_height: True
 
+                    MDLabel:
+                        text: "Your payroll history"
+                        theme_text_color: "Secondary"
+                        font_size: dp(16)
+                        adaptive_height: True
 
-        
-        
+            # --------------------------------------------------
+            # Paystub list
+            # --------------------------------------------------
 
-            
-        MDSegmentedButton:
-            size_hint: 1,None
-            #size:50,50
-            default_size:10,10
-            md_bg_color: self.theme_cls.onSecondaryColor
-            #radius:0
-            MDSegmentedButtonItem:
-                text: 'ytd'
-                id: YTD
+            RecycleView:
+                id: paystub_list
+                viewclass: "PaystubCard"
 
-                on_press:(app.do_payperiod_f('YTD'))
-                size_hint_x: .51
-                MDSegmentButtonLabel:
-                    text:'YTD'
-            MDSegmentedButtonItem:
-                text: 'Year'
-                id: Year
+                RecycleBoxLayout:
+                    default_size: None, dp(108)
+                    default_size_hint: 1, None
+                    size_hint_y: None
+                    height: self.minimum_height
+                    orientation: "vertical"
+                    spacing: dp(10)
 
-                on_press:(app.do_payperiod_f('Year'))
-                size_hint_x: .51
-                MDSegmentButtonLabel:
-                    text:"Year"
-            MDSegmentedButtonItem:
-                text: 'Last'
-                id: button4
-                values: app.custom_range
+        # --------------------------------------------------
+        # Import FAB
+        # --------------------------------------------------
 
-                on_release: 
-                    app.choose_drop(app.custom_range,'range')
-                    app.send_dates(button4.text)
-                size_hint_x: .41
-                MDSegmentButtonLabel:
-                    text:"Preset"
-            MDSegmentedButtonItem:
-                text: 'All'
-                id: All
+        MDFabButton:
+            icon: "sort"
+            style: "small"
+            pos_hint: {"right": .94, "y": .21}
+            on_release:
+                root.show_sort_menu(self)
 
-                on_press:(app.do_payperiod_f('All'))
-                size_hint_x: .41
-                MDSegmentButtonLabel:
-                    text:"All"
-            MDSegmentedButtonItem:
-                text: 'Custom'
-                id: Custom
+        MDFabButton:
+            icon: "plus"
+            style: "small"
+            pos_hint: {"right": .94, "y": .12}
+            on_release:
+                root.import_paystub()
+
+    NavigationBar:
+        selected: "pay"
+
+# ==========================================================
+# Individual paystub card
+# ==========================================================
+
+<PaystubCard@MDCard>:
+
+    orientation: "horizontal"
+
+    size_hint_y: None
+    height: dp(108)
+
+    padding: dp(16)
+
+    radius: [22]
+
+    elevation: 1
+
+    ripple_behavior: True
+
+    theme_bg_color: "Custom"
+    md_bg_color: (.91, .90, .95, 1)
+
+    on_release:
+        app.open_paystub(root.paystub_id)
+
+    MDBoxLayout:
+
+        orientation: "horizontal"
+        spacing: dp(12)
+
+        # --------------------------------------------------
+        # Calendar icon
+        # --------------------------------------------------
+
+        MDCard:
+            size_hint: None, None
+            size: dp(52), dp(52)
+
+            pos_hint: {"center_x": .5, "center_y": .5}
+            #size_hint: 1, None
+            #radius: [22]
+
+            radius: [26]
+
+            theme_bg_color: "Custom"
+            md_bg_color: (.84, .83, .91, 1)
+
+            MDIcon:
+                icon: "calendar-month"
+                theme_text_color: "Custom"
+                text_color: (.30, .30, .38, 1)
+
+        # --------------------------------------------------
+        # Paystub information
+        # --------------------------------------------------
+
+        MDBoxLayout:
+
+            orientation: "vertical"
+
+            spacing: dp(2)
+
+            MDLabel:
+                text: root.pay_date
+                font_size: dp(19)
+                bold: True
+                adaptive_height: True
+
+            MDLabel:
+                text: root.period
+                font_size: dp(15)
+                theme_text_color: "Secondary"
+                adaptive_height: True
+
+            MDLabel:
+                text: root.summary
+                font_size: dp(13)
+                theme_text_color: "Secondary"
+                adaptive_height: True
+
+        # --------------------------------------------------
+        # Amount
+        # --------------------------------------------------
+
+        MDBoxLayout:
+
+            orientation: "horizontal"
+
+            size_hint_x: None
+            width: dp(145)
+
+            spacing: dp(4)
+
+            MDLabel:
+                text: root.total
+                font_size: dp(21)
+                bold: True
+                halign: "right"
+                valign: "center"
+                text_size: self.size
+
+            MDIcon:
+                icon: "chevron-right"
+                theme_text_color: "Custom"
+                text_color: (.35, .35, .40, 1)
                 size_hint_x: None
+                width: dp(24)
 
-                #size_hint:1,None
-                size_hint_y:1
-                #default_size: None, dp(10)
-                on_press:
-                    (app.show_date_picker())
-                MDSegmentButtonLabel:
-                    text:"Range"
-
-
-        MDBoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1,None
-            height:dp(42)
-            MDButton:
-                text: 'All'
-                MDButtonText:
-                    id: dstart
-                #size_hint: .5,None
-                #height: app.mheight
-
-                #md_bg_color: app.theme_cls.primary_light
-                #padding:10
-                #on_press:(app.show_date_picker())
-            MDButton:
-                text: 'All'
-                #size_hint: .5,None
-                #height: app.mheight
-                #md_bg_color: app.theme_cls.primary_light
-                #padding:10
-                #spacing:10,10
-                MDButtonText
-                    id: dend
-                #on_press:(app.show_date_picker())
-            
-        ScrollView:
-            #id: history_view
-
-            
-            MDList:
-            
-                
-                spacing: app.cspacing/2
-                padding: app.cpadding/2,app.cpadding/2
-                #bg_color:app.theme_cls.primary_light
-                id: payperiod_list
