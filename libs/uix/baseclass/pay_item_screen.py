@@ -1,12 +1,16 @@
 from datetime import datetime
 
 from kivy.app import App
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, NumericProperty, BooleanProperty
 from kivy.uix.screenmanager import Screen
 
 
 class PaystubItemScreen(Screen):
     payroll_item_id = StringProperty("")
+
+    # ---------------------------------------------------------
+    # SHIFT INFORMATION
+    # ---------------------------------------------------------
 
     show_name = StringProperty("")
     job_number = StringProperty("")
@@ -16,16 +20,38 @@ class PaystubItemScreen(Screen):
     shift_date = StringProperty("")
     shift_time = StringProperty("")
 
-    reg_hours = StringProperty("")
-    ot_hours = StringProperty("")
-    dt_hours = StringProperty("")
-    weekly_ot_hours = StringProperty("")
-    meal_penalty_hours = StringProperty("")
-    rest_break_penalty_hours = StringProperty("")
+    # ---------------------------------------------------------
+    # PAYROLL HOURS
+    # ---------------------------------------------------------
 
-    base_rate = StringProperty("")
-    blended_rate = StringProperty("")
-    total_pay = StringProperty("")
+    reg_hours = StringProperty("0")
+    ot_hours = StringProperty("0")
+    dt_hours = StringProperty("0")
+    weekly_ot_hours = StringProperty("0")
+
+    meal_penalty_hours = StringProperty("0")
+    rest_break_penalty_hours = StringProperty("0")
+
+    # ---------------------------------------------------------
+    # PAYROLL VALUES
+    # ---------------------------------------------------------
+
+    base_rate = StringProperty("$0.00")
+    blended_rate = StringProperty("$0.00")
+    total_pay = StringProperty("$0.00")
+
+    # ---------------------------------------------------------
+    # PAYROLL TABLE DISPLAY
+    # ---------------------------------------------------------
+
+    regular_earnings = StringProperty("")
+    overtime_earnings = StringProperty("")
+    weekly_ot_earnings = StringProperty("")
+    double_time_earnings = StringProperty("")
+
+    # ---------------------------------------------------------
+    # SCHEDULE MATCH INFORMATION
+    # ---------------------------------------------------------
 
     schedule_status = StringProperty("")
     schedule_date = StringProperty("")
@@ -33,11 +59,41 @@ class PaystubItemScreen(Screen):
     schedule_job = StringProperty("")
     schedule_position = StringProperty("")
 
+    # ---------------------------------------------------------
+    # PRIVACY / LAYOUT
+    # ---------------------------------------------------------
+
+    show_calculations = BooleanProperty(True)
+
+    payroll_card_height = NumericProperty(300)
+
+
+    regular_calc = StringProperty("")
+    overtime_calc = StringProperty("")
+    weekly_ot_calc = StringProperty("")
+    double_time_calc = StringProperty("")
+
+    # ---------------------------------------------------------
+    # SCREEN ENTRY
+    # ---------------------------------------------------------
+
+    regular_rate_display = StringProperty("")
+    overtime_rate_display = StringProperty("")
+    weekly_ot_rate_display = StringProperty("")
+    weekly_ot_rate = StringProperty("")
+    double_time_rate_display = StringProperty("")
+
+
+
     def on_pre_enter(self):
         print("[PAY ITEM] on_pre_enter")
         print("[PAY ITEM] payroll_item_id =", self.payroll_item_id)
 
         self.load_item()
+
+    # ---------------------------------------------------------
+    # LOAD PAYROLL ITEM
+    # ---------------------------------------------------------
 
     def load_item(self):
         app = App.get_running_app()
@@ -51,208 +107,83 @@ class PaystubItemScreen(Screen):
 
         row = app.db.db.execute(
             """
-            SELECT *
+            SELECT
+                id,
+                show_id,
+                job_number,
+                class,
+                position,
+                client,
+                show,
+                time_in,
+                time_out,
+                reg_hours,
+                ot_hours,
+                dt_hours,
+                weekly_ot_hours,
+                meal_penalty_hours,
+                rest_break_penalty_hours,
+                base_rate,
+                blended_rate,
+                pay
             FROM payroll_items
             WHERE id = ?
-            LIMIT 1
             """,
             (self.payroll_item_id,),
         ).fetchone()
 
-        if row is None:
-            print(
-                "[PAY ITEM] Payroll item not found:",
-                self.payroll_item_id,
-            )
+        if not row:
+            print("[PAY ITEM] No payroll item found")
             return
 
-        self.show_name = str(row["show"] or "Unknown Show")
-        self.job_number = str(row["job_number"] or "")
-        self.position = str(row["position"] or "")
-        self.client = str(row["client"] or "")
+        print("[PAY ITEM] row =", dict(row))
 
-        self.shift_date = self._format_date(row["time_in"])
-        self.shift_time = self._format_shift_time(
+        # -----------------------------------------------------
+        # BASIC SHIFT INFORMATION
+        # -----------------------------------------------------
+
+        self.show_name = row["show"] or ""
+        self.job_number = row["job_number"] or ""
+        self.position = row["position"] or ""
+        self.client = row["client"] or ""
+
+        # -----------------------------------------------------
+        # HOURS
+        # -----------------------------------------------------
+
+        self.reg_hours = self._hours(row["reg_hours"])
+        self.ot_hours = self._hours(row["ot_hours"])
+        self.dt_hours = self._hours(row["dt_hours"])
+        self.weekly_ot_hours = self._hours(row["weekly_ot_hours"])
+
+        self.meal_penalty_hours = self._hours(
+            row["meal_penalty_hours"]
+        )
+
+        self.rest_break_penalty_hours = self._hours(
+            row["rest_break_penalty_hours"]
+        )
+
+        # -----------------------------------------------------
+        # RAW RATES
+        # -----------------------------------------------------
+
+        raw_base_rate = float(row["base_rate"] or 0)
+        raw_blended_rate = float(row["blended_rate"] or 0)
+        raw_pay = float(row["pay"] or 0)
+
+        # -----------------------------------------------------
+        # SHIFT TIME
+        # -----------------------------------------------------
+
+        self._format_shift_times(
             row["time_in"],
             row["time_out"],
         )
 
-        self.reg_hours = self._format_hours(row["reg_hours"])
-        self.ot_hours = self._format_hours(row["ot_hours"])
-        self.dt_hours = self._format_hours(row["dt_hours"])
-        self.weekly_ot_hours = self._format_hours(
-            row["weekly_ot_hours"]
-        )
-        self.meal_penalty_hours = self._format_hours(
-            row["meal_penalty_hours"]
-        )
-        self.rest_break_penalty_hours = self._format_hours(
-            row["rest_break_penalty_hours"]
-        )
-
-        self.base_rate = self._format_money(
-            row["base_rate"]
-        )
-        self.blended_rate = self._format_money(
-            row["blended_rate"]
-        )
-        self.total_pay = self._format_pay(
-            row["pay"]
-        )
-
-        self.load_schedule(row)
-
-    def load_schedule(self, payroll_row):
-        app = App.get_running_app()
-
-        show_id = payroll_row["show_id"]
-
-        if not show_id:
-            self.schedule_status = "No Rhino schedule match"
-            self.schedule_date = ""
-            self.schedule_time = ""
-            self.schedule_job = ""
-            self.schedule_position = ""
-
-            print("[PAY ITEM] No Rhino show linked")
-            return
-
-        show = app.db.db.execute(
-            """
-            SELECT *
-            FROM shows
-            WHERE id = ?
-            LIMIT 1
-            """,
-            (show_id,),
-        ).fetchone()
-
-        if show is None:
-            self.schedule_status = "Rhino schedule entry not found"
-            return
-
-        self.schedule_status = "Matched Rhino schedule"
-
-        self.schedule_date = str(
-            show["date"] or ""
-        )
-
-        self.schedule_job = str(
-            show["job"] or ""
-        )
-
-        self.schedule_position = str(
-            show["position"] or ""
-        )
-
-        # Try the common time fields without assuming
-        # exactly which version of the shows schema is present.
-        start = self._first_value(
-            show,
-            "time_in",
-            "start_time",
-            "start",
-            "time",
-        )
-
-        end = self._first_value(
-            show,
-            "time_out",
-            "end_time",
-            "end",
-        )
-
-        if start and end:
-            self.schedule_time = f"{start} – {end}"
-        elif start:
-            self.schedule_time = str(start)
-        else:
-            self.schedule_time = ""
-
-        print("[PAY ITEM] Rhino show matched:", show_id)
-
-    def _first_value(self, row, *names):
-        for name in names:
-            try:
-                value = row[name]
-            except (KeyError, IndexError):
-                continue
-
-            if value not in (None, ""):
-                return value
-
-        return ""
-
-    def _format_date(self, value):
-        if not value:
-            return ""
-
-        try:
-            dt = datetime.strptime(
-                value,
-                "%m/%d/%Y %I:%M:%S %p",
-            )
-
-            return dt.strftime("%b %-d, %Y")
-
-        except ValueError:
-            return str(value)
-
-    def _format_shift_time(self, time_in, time_out):
-        if not time_in:
-            return ""
-
-        try:
-            start = datetime.strptime(
-                time_in,
-                "%m/%d/%Y %I:%M:%S %p",
-            )
-
-            if not time_out:
-                return start.strftime("%-I:%M %p")
-
-            end = datetime.strptime(
-                time_out,
-                "%m/%d/%Y %I:%M:%S %p",
-            )
-
-            result = (
-                f"{start.strftime('%-I:%M %p')} – "
-                f"{end.strftime('%-I:%M %p')}"
-            )
-
-            if end.date() > start.date():
-                result += " (+1 day)"
-
-            return result
-
-        except ValueError:
-            return ""
-
-    def _format_hours(self, value):
-        if value in (None, ""):
-            return "—"
-
-        value = float(value)
-
-        if value == 0:
-            return "—"
-
-        return f"{value:g} hrs"
-
-    def _format_money(self, value):
-        if value in (None, ""):
-            return "—"
-
-        value = float(value)
-
-        if value == 0:
-            return "—"
-
-        return f"${value:,.2f}"
-
-    def _format_pay(self, value):
-        app = App.get_running_app()
+        # -----------------------------------------------------
+        # PRIVACY SETTING
+        # -----------------------------------------------------
 
         show_money = (
             str(
@@ -264,23 +195,303 @@ class PaystubItemScreen(Screen):
             == "true"
         )
 
-        if not show_money:
-            return "••••••"
+        self.show_calculations = show_money
 
-        return f"${float(value or 0):,.2f}"
+        # -----------------------------------------------------
+        # PAYROLL DISPLAY
+        # -----------------------------------------------------
+
+        if show_money:
+
+            self.base_rate = self._money(raw_base_rate)
+            self.blended_rate = self._money(row["blended_rate"])
+            self.weekly_ot_rate = self.blended_rate
+            self.total_pay = self._money(raw_pay)
+
+            self._build_calculations(
+                row["reg_hours"],
+                row["ot_hours"],
+                row["dt_hours"],
+                row["weekly_ot_hours"],
+                raw_base_rate,
+                raw_blended_rate,
+            )
+
+        else:
+
+            self.base_rate = "••••••"
+            self.blended_rate = "••••••"
+            self.total_pay = "••••••"
+
+            self.regular_earnings = ""
+            self.overtime_earnings = ""
+            self.weekly_ot_earnings = ""
+            self.double_time_earnings = ""
+
+        # -----------------------------------------------------
+        # DYNAMIC PAYROLL CARD HEIGHT
+        # -----------------------------------------------------
+
+        visible_rows = 1  # Regular
+
+        if float(row["ot_hours"] or 0):
+            visible_rows += 1
+
+        if float(row["weekly_ot_hours"] or 0):
+            visible_rows += 1
+
+        if float(row["dt_hours"] or 0):
+            visible_rows += 1
+
+        # Compact card:
+        #
+        # header
+        # rows
+        # payroll total
+        #
+        self.payroll_card_height = (
+            150
+            + (visible_rows * 68)
+        )
+
+        print("[PAY ITEM] loaded:", self.show_name)
+        print("[PAY ITEM] position:", self.position)
+        print("[PAY ITEM] job:", self.job_number)
+        print("[PAY ITEM] client:", self.client)
+        print("[PAY ITEM] total:", self.total_pay)
+
+    # ---------------------------------------------------------
+    # SHIFT TIME FORMATTING
+    # ---------------------------------------------------------
+
+    def _format_shift_times(self, time_in, time_out):
+        """
+        Display:
+
+            8:00 AM – 6:00 PM
+
+        or:
+
+            8:00 AM – 1:00 AM (+1 day)
+        """
+
+        if not time_in:
+            self.shift_date = ""
+            self.shift_time = ""
+            return
+
+        try:
+            start = datetime.strptime(
+                time_in,
+                "%m/%d/%Y %I:%M:%S %p",
+            )
+
+            end = None
+
+            if time_out:
+                end = datetime.strptime(
+                    time_out,
+                    "%m/%d/%Y %I:%M:%S %p",
+                )
+
+            self.shift_date = start.strftime(
+                "%b %-d, %Y"
+            )
+
+            start_text = start.strftime(
+                "%-I:%M %p"
+            )
+
+            if end:
+                end_text = end.strftime(
+                    "%-I:%M %p"
+                )
+
+                if end.date() > start.date():
+                    self.shift_time = (
+                        f"{start_text} – "
+                        f"{end_text} (+1 day)"
+                    )
+                else:
+                    self.shift_time = (
+                        f"{start_text} – "
+                        f"{end_text}"
+                    )
+
+            else:
+                self.shift_time = start_text
+
+        except Exception as exc:
+            print(
+                "[PAY ITEM] time format error:",
+                exc,
+            )
+
+            self.shift_date = str(
+                time_in or ""
+            )
+
+            self.shift_time = str(
+                time_in or ""
+            )
+
+    # ---------------------------------------------------------
+    # EARNINGS CALCULATIONS
+    # ---------------------------------------------------------
+    def _build_calculations(
+        self,
+        reg_hours,
+        ot_hours,
+        dt_hours,
+        weekly_ot_hours,
+        base_rate,
+        blended_rate,
+    ):
+        reg = float(reg_hours or 0)
+        ot = float(ot_hours or 0)
+        dt = float(dt_hours or 0)
+        weekly = float(weekly_ot_hours or 0)
+
+        base = float(base_rate or 0)
+        blended = float(blended_rate or 0)
+
+        # Regular
+        if reg:
+            amount = reg * base
+
+            self.regular_rate_display = f"${base:.2f}"
+            self.regular_earnings = f"${amount:,.2f}"
+            self.regular_calc = (
+                f"{self._hour_text(reg)} × "
+                f"${base:.2f} = "
+                f"${amount:,.2f}"
+            )
+        else:
+            self.regular_rate_display = ""
+            self.regular_earnings = ""
+            self.regular_calc = ""
+
+        # Daily OT = 1.5 × base rate
+        if ot:
+            ot_rate = base * 1.5
+            amount = ot * ot_rate
+
+            self.overtime_rate_display = f"${ot_rate:.2f}"
+            self.overtime_earnings = f"${amount:,.2f}"
+            self.overtime_calc = (
+                f"{self._hour_text(ot)} × "
+                f"${base:.2f} × 1.5 = "
+                f"${amount:,.2f}"
+            )
+        else:
+            self.overtime_rate_display = ""
+            self.overtime_earnings = ""
+            self.overtime_calc = ""
+
+        # Weekly OT = 1.5 × blended rate
+        if weekly:
+            weekly_rate = blended if blended else base
+            weekly_ot_rate = weekly_rate * 1.5
+            amount = weekly * weekly_ot_rate
+
+            self.weekly_ot_rate_display = f"${weekly_ot_rate:.4f}"
+            self.weekly_ot_earnings = f"${amount:,.2f}"
+            self.weekly_ot_calc = (
+                f"{self._hour_text(weekly)} × "
+                f"${weekly_rate:.4f} × 1.5 = "
+                f"${amount:,.2f}"
+            )
+        else:
+            self.weekly_ot_rate_display = ""
+            self.weekly_ot_earnings = ""
+            self.weekly_ot_calc = ""
+
+        # Double time = 2 × base rate
+        if dt:
+            dt_rate = base * 2
+            amount = dt * dt_rate
+
+            self.double_time_rate_display = f"${dt_rate:.2f}"
+            self.double_time_earnings = f"${amount:,.2f}"
+            self.double_time_calc = (
+                f"{self._hour_text(dt)} × "
+                f"${base:.2f} × 2 = "
+                f"${amount:,.2f}"
+            )
+        else:
+            self.double_time_rate_display = ""
+            self.double_time_earnings = ""
+            self.double_time_calc = ""
+
+    @staticmethod
+    def _hour_text(value):
+        value = float(value)
+
+        if value.is_integer():
+            number = str(int(value))
+        else:
+            number = f"{value:g}"
+
+        return (
+            f"{number} hr"
+            if value == 1
+            else f"{number} hrs"
+        )
+
+    @staticmethod
+    def _money(value):
+        if value is None:
+            return "$0.00"
+
+        #return  "534"
+        return f"${float(value):,.1f}"
+
+    # ---------------------------------------------------------
+    # NAVIGATION
+    # ---------------------------------------------------------
 
     def go_back(self):
         app = App.get_running_app()
 
-        print("[PAY ITEM] Going back to pay breakdown")
+        print("[PAY ITEM] Going back to pay")
 
         if hasattr(app, "change_screen"):
             app.change_screen(
-                "pay_breakdown",
+                "pay",
                 "right",
             )
-        else:
-            self.manager.current = "pay_breakdown"
+        elif self.manager:
+            self.manager.transition.direction = "right"
+            self.manager.current = "pay"
 
+
+    @staticmethod
+    def _hours(value):
+        if value is None:
+            return "0"
+
+        value = float(value)
+
+        if value.is_integer():
+            return f"{int(value)}"
+
+        return f"{value:.2f}".rstrip("0").rstrip(".")
+
+    @staticmethod
+    def _hour_text(value):
+        value = float(value)
+
+        if value.is_integer():
+            return f"{int(value)} hr" if value == 1 else f"{int(value)} hrs"
+
+        return f"{value:g} hrs"
+
+
+
+    
+
+# -------------------------------------------------------------
+# LAZY LOADER COMPATIBILITY
+# -------------------------------------------------------------
 
 pay_itemscreen = PaystubItemScreen

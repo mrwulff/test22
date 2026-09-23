@@ -1,428 +1,405 @@
 <PaystubItemScreen>:
-
     name: "pay_item"
 
-    FloatLayout:
+    ScrollView:
+        do_scroll_x: False
+        bar_width: dp(3)
 
-        ScrollView:
-            do_scroll_x: False
-            do_scroll_y: True
+        MDBoxLayout:
+            orientation: "vertical"
+            padding: dp(30), dp(28), dp(30), dp(40)
+            spacing: dp(18)
+            size_hint_y: None
+            height: self.minimum_height
+
+            # =================================================
+            # SHIFT HEADER
+            # =================================================
 
             MDBoxLayout:
-                orientation: "vertical"
+                size_hint_y: None
+                height: dp(72)
                 spacing: dp(14)
 
-                padding: dp(22), dp(22), dp(22), dp(40)
-
-                size_hint_y: None
-                height: self.minimum_height
-
-                # -------------------------------------------------
-                # HEADER
-                # -------------------------------------------------
+                MDIconButton:
+                    icon: "chevron-left"
+                    theme_text_color: "Custom"
+                    text_color: (.55, .53, .75, 1)
+                    size_hint: None, None
+                    size: dp(52), dp(52)
+                    pos_hint: {"center_y": .5}
+                    on_release: root.go_back()
 
                 MDBoxLayout:
-                    size_hint_y: None
-                    height: dp(68)
+                    orientation: "vertical"
+                    spacing: dp(1)
+                    pos_hint: {"center_y": .5}
 
-                    MDCard:
-                        size_hint: None, None
-                        size: dp(56), dp(56)
+                    MDLabel:
+                        text: "Shift"
+                        font_size: dp(28)
+                        bold: True
+                        adaptive_height: True
 
-                        radius: [16]
+                    MDLabel:
+                        text: root.show_name
+                        font_size: dp(20)
+                        theme_text_color: "Secondary"
+                        adaptive_height: True
 
-                        elevation: 0
+            # =================================================
+            # SHIFT
+            # =================================================
 
-                        theme_bg_color: "Custom"
-                        md_bg_color: (.88, .87, .94, 1)
+            MDLabel:
+                text: "SHIFT"
+                font_size: dp(22)
+                bold: True
+                adaptive_height: True
 
-                        MDIcon:
-                            icon: "chevron-left"
-                            font_size: dp(34)
-                            theme_text_color: "Custom"
-                            text_color: (.25, .25, .32, 1)
-                            halign: "center"
-                            valign: "center"
-                            text_size: self.size
+            MDCard:
+                size_hint_y: None
+                height: dp(245)
+                padding: dp(22)
+                radius: [22]
+                elevation: 0
+                theme_bg_color: "Custom"
+                md_bg_color: (.86, .86, .94, 1)
 
-                        #on_release:
-                            #root.go_back()
+                MDBoxLayout:
+                    orientation: "vertical"
+                    spacing: dp(5)
+                    size_hint_y: 1
+
+                    MDLabel:
+                        text: root.show_name
+                        font_size: dp(24)
+                        bold: True
+                        adaptive_height: True
+
+                    MDLabel:
+                        text: root.position
+                        font_size: dp(20)
+                        bold: True
+                        theme_text_color: "Custom"
+                        text_color: (.34, .31, .58, 1)
+                        adaptive_height: True
+
+                    MDLabel:
+                        text: root.shift_date
+                        font_size: dp(18)
+                        adaptive_height: True
+
+                    MDLabel:
+                        text: root.shift_time
+                        font_size: dp(22)
+                        bold: True
+                        adaptive_height: True
+
+                    MDLabel:
+                        text: "Job #" + root.job_number + "  ·  " + root.client
+                        font_size: dp(18)
+                        theme_text_color: "Secondary"
+                        adaptive_height: True
+
+            # =================================================
+            # PAYROLL
+            # =================================================
+
+            MDLabel:
+                text: "PAYROLL"
+                font_size: dp(22)
+                bold: True
+                adaptive_height: True
+
+            MDCard:
+                size_hint_y: None
+                height: root.payroll_card_height
+                padding: dp(22)
+                radius: [22]
+                elevation: 0
+                theme_bg_color: "Custom"
+                md_bg_color: (.91, .90, .94, 1)
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    spacing: dp(0)
+
+                    # -----------------------------------------
+                    # TABLE HEADER
+                    # -----------------------------------------
 
                     MDBoxLayout:
-                        orientation: "vertical"
-
-                        padding: dp(14), dp(0), dp(0), dp(0)
-
-                        MDLabel:
-                            text: "Shift"
-                            font_size: dp(22)
-                            bold: True
-                            adaptive_height: True
+                        size_hint_y: None
+                        height: dp(38)
 
                         MDLabel:
-                            text: root.show_name
-                            font_size: dp(15)
-                            theme_text_color: "Secondary"
-                            adaptive_height: True
-                            shorten: True
-                            shorten_from: "right"
-
-
-                # -------------------------------------------------
-                # SHIFT
-                # -------------------------------------------------
-
-                MDLabel:
-                    text: "SHIFT"
-                    font_size: dp(15)
-                    bold: True
-                    theme_text_color: "Secondary"
-
-                    size_hint_y: None
-                    height: dp(24)
-
-
-                MDCard:
-                    size_hint_y: None
-                    height: dp(150)
-
-                    padding: dp(18)
-
-                    radius: [20]
-
-                    elevation: 1
-
-                    theme_bg_color: "Custom"
-                    md_bg_color: (.88, .87, .94, 1)
-
-                    MDBoxLayout:
-                        orientation: "vertical"
-                        spacing: dp(3)
-
-                        MDLabel:
-                            text: root.position
-                            font_size: dp(24)
-                            bold: True
-
-                            adaptive_height: True
-
-                        MDLabel:
-                            text: root.show_name
+                            text: "TYPE"
                             font_size: dp(18)
                             bold: True
-
-                            adaptive_height: True
-                            shorten: True
-                            shorten_from: "right"
+                            size_hint_x: .34
 
                         MDLabel:
-                            text: root.shift_date
-                            font_size: dp(15)
-                            theme_text_color: "Secondary"
-
-                            adaptive_height: True
-
-                        MDLabel:
-                            text: root.shift_time
-                            font_size: dp(17)
+                            text: "HOURS"
+                            font_size: dp(18)
                             bold: True
-
-                            adaptive_height: True
-
-
-                # -------------------------------------------------
-                # PAYROLL
-                # -------------------------------------------------
-
-                MDLabel:
-                    text: "PAYROLL"
-                    font_size: dp(15)
-                    bold: True
-                    theme_text_color: "Secondary"
-
-                    size_hint_y: None
-                    height: dp(24)
-
-
-                MDCard:
-                    size_hint_y: None
-                    height: dp(230)
-
-                    padding: dp(18)
-
-                    radius: [20]
-
-                    elevation: 1
-
-                    theme_bg_color: "Custom"
-                    md_bg_color: (.96, .95, .97, 1)
-
-                    MDBoxLayout:
-                        orientation: "vertical"
-                        spacing: dp(2)
-
-                        MDBoxLayout:
-                            size_hint_y: None
-                            height: dp(30)
-
-                            MDLabel:
-                                text: "Regular"
-
-                            MDLabel:
-                                text: root.reg_hours
-                                halign: "right"
-                                text_size: self.size
-
-                        MDBoxLayout:
-                            size_hint_y: None
-                            height: dp(30)
-
-                            MDLabel:
-                                text: "Overtime"
-
-                            MDLabel:
-                                text: root.ot_hours
-                                halign: "right"
-                                text_size: self.size
-
-                        MDBoxLayout:
-                            size_hint_y: None
-                            height: dp(30)
-
-                            MDLabel:
-                                text: "Double Time"
-
-                            MDLabel:
-                                text: root.dt_hours
-                                halign: "right"
-                                text_size: self.size
-
-                        MDBoxLayout:
-                            size_hint_y: None
-                            height: dp(30)
-
-                            MDLabel:
-                                text: "Weekly OT"
-
-                            MDLabel:
-                                text: root.weekly_ot_hours
-                                halign: "right"
-                                text_size: self.size
-
-                        MDBoxLayout:
-                            size_hint_y: None
-                            height: dp(30)
-
-                            MDLabel:
-                                text: "Meal Penalty"
-
-                            MDLabel:
-                                text: root.meal_penalty_hours
-                                halign: "right"
-                                text_size: self.size
-
-                        MDBoxLayout:
-                            size_hint_y: None
-                            height: dp(30)
-
-                            MDLabel:
-                                text: "Rest Break"
-
-                            MDLabel:
-                                text: root.rest_break_penalty_hours
-                                halign: "right"
-                                text_size: self.size
-
-
-                # -------------------------------------------------
-                # EARNINGS MATH
-                # -------------------------------------------------
-
-                MDLabel:
-                    text: "EARNINGS"
-                    font_size: dp(15)
-                    bold: True
-                    theme_text_color: "Secondary"
-
-                    size_hint_y: None
-                    height: dp(24)
-
-
-                MDCard:
-                    size_hint_y: None
-                    height: dp(190)
-
-                    padding: dp(18)
-
-                    radius: [20]
-
-                    elevation: 1
-
-                    theme_bg_color: "Custom"
-                    md_bg_color: (.96, .95, .97, 1)
-
-                    MDBoxLayout:
-                        orientation: "vertical"
-                        spacing: dp(5)
+                            halign: "right"
+                            size_hint_x: .20
 
                         MDLabel:
-                            text: root.reg_hours + " × " + root.base_rate
-                            font_size: dp(15)
-
-                            adaptive_height: True
-
-                        MDLabel:
-                            text: root.ot_hours + " × 1.5 × " + root.base_rate
-                            font_size: dp(15)
-
-                            adaptive_height: True
-
-                        MDLabel:
-                            text: "Weekly OT: " + root.weekly_ot_hours
-                            font_size: dp(14)
-
-                            theme_text_color: "Secondary"
-
-                            adaptive_height: True
-
-                        Widget:
-                            size_hint_y: None
-                            height: dp(6)
-
-                        MDBoxLayout:
-                            size_hint_y: None
-                            height: dp(1)
-
-                            md_bg_color: (.75, .74, .80, 1)
-
-                        Widget:
-                            size_hint_y: None
-                            height: dp(6)
-
-                        MDBoxLayout:
-                            size_hint_y: None
-                            height: dp(34)
-
-                            MDLabel:
-                                text: "Payroll"
-                                font_size: dp(17)
-                                bold: True
-
-                            MDLabel:
-                                text: root.total_pay
-                                font_size: dp(19)
-                                bold: True
-
-                                halign: "right"
-                                valign: "center"
-                                text_size: self.size
-
-
-                # -------------------------------------------------
-                # RATES
-                # -------------------------------------------------
-
-                MDLabel:
-                    text: "RATES"
-                    font_size: dp(15)
-                    bold: True
-                    theme_text_color: "Secondary"
-
-                    size_hint_y: None
-                    height: dp(24)
-
-
-                MDCard:
-                    size_hint_y: None
-                    height: dp(82)
-
-                    padding: dp(18)
-
-                    radius: [20]
-
-                    elevation: 1
-
-                    theme_bg_color: "Custom"
-                    md_bg_color: (.88, .87, .94, 1)
-
-                    MDBoxLayout:
-                        orientation: "vertical"
-
-                        MDBoxLayout:
-                            size_hint_y: None
-                            height: dp(30)
-
-                            MDLabel:
-                                text: "Base Rate"
-
-                            MDLabel:
-                                text: root.base_rate
-                                halign: "right"
-                                text_size: self.size
-
-                        MDBoxLayout:
-                            size_hint_y: None
-                            height: dp(30)
-
-                            MDLabel:
-                                text: "Blended Rate"
-
-                            MDLabel:
-                                text: root.blended_rate
-                                halign: "right"
-                                text_size: self.size
-
-
-                # -------------------------------------------------
-                # JOB INFO
-                # -------------------------------------------------
-
-                MDLabel:
-                    text: "JOB"
-                    font_size: dp(15)
-                    bold: True
-                    theme_text_color: "Secondary"
-
-                    size_hint_y: None
-                    height: dp(24)
-
-
-                MDCard:
-                    size_hint_y: None
-                    height: dp(112)
-
-                    padding: dp(18)
-
-                    radius: [20]
-
-                    elevation: 1
-
-                    theme_bg_color: "Custom"
-                    md_bg_color: (.96, .95, .97, 1)
-
-                    MDBoxLayout:
-                        orientation: "vertical"
-                        spacing: dp(3)
-
-                        MDLabel:
-                            text: "Job " + root.job_number
-                            font_size: dp(16)
+                            text: "RATE"
+                            font_size: dp(18)
                             bold: True
-
-                            adaptive_height: True
-
-                        MDLabel:
-                            text: root.client
-                            font_size: dp(15)
-                            theme_text_color: "Secondary"
-
-                            adaptive_height: True
-                            shorten: True
-                            shorten_from: "right"
+                            halign: "right"
+                            size_hint_x: .21
 
                         MDLabel:
-                            text: root.position
-                            font_size: dp(15)
-                            theme_text_color: "Secondary"
+                            text: "EARNINGS"
+                            font_size: dp(18)
+                            bold: True
+                            halign: "right"
+                            size_hint_x: .25
 
-                            adaptive_height: True
+                    # -----------------------------------------
+                    # REGULAR
+                    # -----------------------------------------
+
+                    MDBoxLayout:
+                        size_hint_y: None
+                        height: dp(54) if root.reg_hours != "0" else 0
+                        opacity: 1 if root.reg_hours != "0" else 0
+
+                        MDLabel:
+                            text: "Regular"
+                            font_size: dp(18)
+                            size_hint_x: .34
+
+                        MDLabel:
+                            text: root.reg_hours + " " + ("hr" if root.reg_hours == "1" else "hrs")
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .20
+
+                        MDLabel:
+                            text: root.regular_rate_display if root.show_calculations else "••••••"
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .21
+
+                        MDLabel:
+                            text: root.regular_earnings if root.show_calculations else "••••••"
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .25
+
+                    # -----------------------------------------
+                    # REGULAR / OT SEPARATOR
+                    # -----------------------------------------
+
+                    Widget:
+                        size_hint_y: None
+                        height: dp(1) if root.ot_hours != "0" and root.reg_hours != "0" else 0
+                        opacity: 1 if root.ot_hours != "0" and root.reg_hours != "0" else 0
+
+                        canvas:
+                            Color:
+                                rgba: (.76, .75, .80, 1)
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+
+                    # -----------------------------------------
+                    # OVERTIME
+                    # -----------------------------------------
+
+                    MDBoxLayout:
+                        size_hint_y: None
+                        height: dp(54) if root.ot_hours != "0" else 0
+                        opacity: 1 if root.ot_hours != "0" else 0
+
+                        MDLabel:
+                            text: "Overtime"
+                            font_size: dp(18)
+                            size_hint_x: .34
+
+                        MDLabel:
+                            text: root.ot_hours + " " + ("hr" if root.ot_hours == "1" else "hrs")
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .20
+
+                        MDLabel:
+                            text: root.overtime_rate_display if root.show_calculations else "••••••"
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .21
+
+                        MDLabel:
+                            text: root.overtime_earnings if root.show_calculations else "••••••"
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .25
+
+                    # -----------------------------------------
+                    # OT / WEEKLY OT SEPARATOR
+                    # -----------------------------------------
+
+                    Widget:
+                        size_hint_y: None
+                        height: dp(1) if root.weekly_ot_hours != "0" and root.ot_hours != "0" else 0
+                        opacity: 1 if root.weekly_ot_hours != "0" and root.ot_hours != "0" else 0
+
+                        canvas:
+                            Color:
+                                rgba: (.76, .75, .80, 1)
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+
+                    # -----------------------------------------
+                    # WEEKLY OT
+                    # -----------------------------------------
+
+                    MDBoxLayout:
+                        size_hint_y: None
+                        height: dp(54) if root.weekly_ot_hours != "0" else 0
+                        opacity: 1 if root.weekly_ot_hours != "0" else 0
+
+                        MDLabel:
+                            text: "Weekly OT"
+                            font_size: dp(18)
+                            size_hint_x: .34
+
+                        MDLabel:
+                            text: root.weekly_ot_hours + " " + ("hr" if root.weekly_ot_hours == "1" else "hrs")
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .20
+
+                        MDLabel:
+                            text: root.weekly_ot_rate_display if root.show_calculations else "••••••"
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .21
+
+                        MDLabel:
+                            text: root.weekly_ot_earnings if root.show_calculations else "••••••"
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .25
+
+                    # -----------------------------------------
+                    # WEEKLY OT / DOUBLE TIME SEPARATOR
+                    # -----------------------------------------
+
+                    Widget:
+                        size_hint_y: None
+                        height: dp(1) if root.dt_hours != "0" and root.weekly_ot_hours != "0" else 0
+                        opacity: 1 if root.dt_hours != "0" and root.weekly_ot_hours != "0" else 0
+
+                        canvas:
+                            Color:
+                                rgba: (.76, .75, .80, 1)
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+
+                    # -----------------------------------------
+                    # DOUBLE TIME
+                    # -----------------------------------------
+
+                    MDBoxLayout:
+                        size_hint_y: None
+                        height: dp(54) if root.dt_hours != "0" else 0
+                        opacity: 1 if root.dt_hours != "0" else 0
+
+                        MDLabel:
+                            text: "Double Time"
+                            font_size: dp(18)
+                            size_hint_x: .34
+
+                        MDLabel:
+                            text: root.dt_hours + " " + ("hr" if root.dt_hours == "1" else "hrs")
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .20
+
+                        MDLabel:
+                            text: root.double_time_rate_display if root.show_calculations else "••••••"
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .21
+
+                        MDLabel:
+                            text: root.double_time_earnings if root.show_calculations else "••••••"
+                            font_size: dp(18)
+                            halign: "right"
+                            size_hint_x: .25
+
+                    # -----------------------------------------
+                    # SPACE BEFORE TOTAL
+                    # -----------------------------------------
+
+                    Widget:
+                        size_hint_y: None
+                        height: dp(14)
+
+                    # -----------------------------------------
+                    # PAYROLL TOTAL
+                    # -----------------------------------------
+
+                    MDBoxLayout:
+                        size_hint_y: None
+                        height: dp(48)
+
+                        MDLabel:
+                            text: "Payroll"
+                            font_size: dp(21)
+                            bold: True
+                            size_hint_x: .55
+
+                        MDLabel:
+                            text: root.total_pay
+                            font_size: dp(21)
+                            bold: True
+                            halign: "right"
+                            size_hint_x: .45
+
+            # =================================================
+            # PAYROLL DETAILS
+            # =================================================
+
+            MDLabel:
+                text: "PAYROLL DETAILS"
+                font_size: dp(22)
+                bold: True
+                adaptive_height: True
+                opacity: 1 if root.show_calculations else 0
+
+            MDCard:
+                size_hint_y: None
+                height: dp(105)
+                padding: dp(22)
+                radius: [22]
+                elevation: 0
+                theme_bg_color: "Custom"
+                md_bg_color: (.91, .90, .94, 1)
+                opacity: 1 if root.show_calculations else 0
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    spacing: dp(4)
+
+                    MDLabel:
+                        text: "Base rate"
+                        font_size: dp(16)
+
+                    MDLabel:
+                        text: root.base_rate
+                        font_size: dp(20)
+                        bold: True
+
+                    MDLabel:
+                        text: "Blended rate: " + root.blended_rate
+                        font_size: dp(15)
+                        theme_text_color: "Secondary"
