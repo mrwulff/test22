@@ -51,6 +51,10 @@
         # Import FAB
         # --------------------------------------------------
 
+        # --------------------------------------------------
+        # Sort button
+        # --------------------------------------------------
+
         MDFabButton:
             icon: "sort"
             style: "small"
@@ -58,12 +62,126 @@
             on_release:
                 root.show_sort_menu(self)
 
+
+        # --------------------------------------------------
+        # Import button
+        # --------------------------------------------------
+
         MDFabButton:
             icon: "plus"
             style: "small"
             pos_hint: {"right": .94, "y": .12}
             on_release:
                 root.import_paystubs()
+
+
+        # --------------------------------------------------
+        # Custom sort panel
+        # --------------------------------------------------
+
+        MDCard:
+            id: sort_panel
+
+            size_hint: None, None
+            size: dp(220), dp(330)
+
+            pos_hint: {"right": .94, "y": .30}
+
+            radius: [22]
+
+            elevation: 8
+
+            theme_bg_color: "Custom"
+            md_bg_color: (.96, .95, .98, 1)
+
+            opacity: 0
+            disabled: True
+
+            padding: dp(12)
+
+            MDBoxLayout:
+
+                orientation: "vertical"
+
+                spacing: dp(4)
+
+
+                MDLabel:
+                    text: "Sort by"
+                    font_size: dp(20)
+                    bold: True
+
+                    size_hint_y: None
+                    height: dp(42)
+
+                    padding_x: dp(8)
+
+
+                MDButton:
+                    style: "text"
+                    size_hint_y: None
+                    height: dp(46)
+
+                    on_release:
+                        root.sort_paystubs("date")
+                        root.show_sort_menu(self)
+
+                    MDButtonText:
+                        text: "Date"
+
+
+                MDButton:
+                    style: "text"
+                    size_hint_y: None
+                    height: dp(46)
+
+                    on_release:
+                        root.sort_paystubs("pay")
+                        root.show_sort_menu(self)
+
+                    MDButtonText:
+                        text: "Pay"
+
+
+                MDButton:
+                    style: "text"
+                    size_hint_y: None
+                    height: dp(46)
+
+                    on_release:
+                        root.sort_paystubs("hours")
+                        root.show_sort_menu(self)
+
+                    MDButtonText:
+                        text: "Hours"
+
+
+                MDButton:
+                    style: "text"
+                    size_hint_y: None
+                    height: dp(46)
+
+                    on_release:
+                        root.sort_paystubs("shows")
+                        root.show_sort_menu(self)
+
+                    MDButtonText:
+                        text: "Shows"
+
+
+                MDButton:
+                    style: "text"
+                    size_hint_y: None
+                    height: dp(46)
+
+                    on_release:
+                        root.sort_paystubs("shifts")
+                        root.show_sort_menu(self)
+
+                    MDButtonText:
+                        text: "Shifts"
+
+        #### END FAB######
 
     NavigationBar:
         selected: "pay"

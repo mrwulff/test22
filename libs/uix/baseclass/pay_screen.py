@@ -2,7 +2,7 @@ from kivy.properties import StringProperty
 from kivy.uix.screenmanager import Screen
 from kivymd.uix.card import MDCard
 from kivy.app import App
-from kivymd.uix.menu import MDDropdownMenu
+#from kivymd.uix.menu import MDDropdownMenu
 
 
 class PaystubCard(MDCard):
@@ -100,45 +100,17 @@ class PayScreen(Screen):
             )
 
     def show_sort_menu(self, caller):
-
-        sort_options = [
-            ("date", "Date"),
-            ("pay", "Pay"),
-            ("hours", "Hours"),
-            ("shows", "Shows"),
-            ("shifts", "Shifts"),
-        ]
-
-        items = []
-
-        for sort_key, label in sort_options:
-
-            selected = sort_key == self.sort_by
-
-            if selected:
-                check = "✓ "
-                direction = "↓" if self.sort_reverse else "↑"
-                text = f"{check}{label} {direction}"
-            else:
-                text = f"    {label}"
-
-            items.append(
-                {
-                    "text": text,
-                    "on_release": (
-                        lambda key=sort_key:
-                        self.sort_paystubs(key)
-                    ),
-                }
-            )
-
-        self.sort_menu = MDDropdownMenu(
-            caller=caller,
-            items=items,
+        self.sort_panel_open = not getattr(
+            self,
+            "sort_panel_open",
+            False,
         )
 
-        self.sort_menu.open()
+        self.ids.sort_panel.opacity = (
+            1 if self.sort_panel_open else 0
+        )
 
+        self.ids.sort_panel.disabled = not self.sort_panel_open
 
     def sort_paystubs(self, sort_by):
 
