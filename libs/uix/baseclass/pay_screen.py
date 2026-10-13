@@ -14,6 +14,8 @@ class PaystubCard(MDCard):
 
 
 class PayScreen(Screen):
+    sort_by = StringProperty("date")
+    sort_reverse = True
 
     def on_pre_enter(self):
         self.load_paystubs()
@@ -40,26 +42,44 @@ class PayScreen(Screen):
 
 
     def _display_paystubs(self, rows):
-        self.ids.paystub_list.data = [
-            {
-                "paystub_id": str(row["id"]),
-                "pay_date": str(row["pay_date"] or ""),
-                "period": (
-                    f"{row['pay_period_start']} – "
-                    f"{row['pay_period_end']}"
-                ),
-                "summary": (
-                    f"{row['item_count']} entries · "
-                    f"{sum(float(row[k] or 0) for k in ('reg_hours', 'ot_hours', 'dt_hours', 'weekly_ot_hours', 'meal_penalty_hours', 'rest_break_penalty_hours')):.1f} hrs"
-                ),
-                "total": (
-                    f"${float(row['payroll_total'] or 0):,.2f}"
-                    if self.show_money
-                    else "••••••"
-                ),
-            }
-            for row in rows
-        ]
+
+        self.ids.paystub_list.data = []
+
+        data = []
+
+        for row in rows:
+
+            total_hours = (
+                float(row["reg_hours"] or 0)
+                + float(row["ot_hours"] or 0)
+                + float(row["dt_hours"] or 0)
+                + float(row["weekly_ot_hours"] or 0)
+                + float(row["meal_penalty_hours"] or 0)
+                + float(row["rest_break_penalty_hours"] or 0)
+            )
+
+            data.append(
+                {
+                    "paystub_id": str(row["id"]),
+                    "pay_date": str(row["pay_date"] or ""),
+                    "period": (
+                        f"{row['pay_period_start']} – "
+                        f"{row['pay_period_end']}"
+                    ),
+                    "summary": (
+                        f"{row['item_count']} shifts · "
+                        f"{row['show_count']} shows · "
+                        f"{total_hours:.1f} hrs"
+                    ),
+                    "total": (
+                        f"${float(row['payroll_total'] or 0):,.2f}"
+                        if self.show_money
+                        else "••••••"
+                    ),
+                }
+            )
+
+        self.ids.paystub_list.data = data
     def import_paystubs(self):
         app = App.get_running_app()
 
@@ -80,26 +100,37 @@ class PayScreen(Screen):
             )
 
     def show_sort_menu(self, caller):
-        items = [
-            {
-                "text": "Date",
-                "on_release": lambda: self.sort_paystubs("date"),
-            },
-            {
-                "text": "Pay",
-                "on_release": lambda: self.sort_paystubs("pay"),
-            },
-            {
-                "text": "Hours",
-                "on_release": lambda: self.sort_paystubs("hours"),
-            },
-            {
-                "text": "Shows",
-                "on_release": lambda: self.sort_paystubs("shows"),
-            },
 
-
+        sort_options = [
+            ("date", "Date"),
+            ("pay", "Pay"),
+            ("hours", "Hours"),
+            ("shows", "Shows"),
+            ("shifts", "Shifts"),
         ]
+
+        items = []
+
+        for sort_key, label in sort_options:
+
+            selected = sort_key == self.sort_by
+
+            if selected:
+                check = "✓ "
+                direction = "↓" if self.sort_reverse else "↑"
+                text = f"{check}{label} {direction}"
+            else:
+                text = f"    {label}"
+
+            items.append(
+                {
+                    "text": text,
+                    "on_release": (
+                        lambda key=sort_key:
+                        self.sort_paystubs(key)
+                    ),
+                }
+            )
 
         self.sort_menu = MDDropdownMenu(
             caller=caller,
@@ -110,8 +141,18 @@ class PayScreen(Screen):
 
 
     def sort_paystubs(self, sort_by):
+
         if hasattr(self, "sort_menu"):
             self.sort_menu.dismiss()
+
+        # Same sort = reverse direction.
+        if sort_by == self.sort_by:
+            self.sort_reverse = not self.sort_reverse
+
+        # New sort = start descending.
+        else:
+            self.sort_by = sort_by
+            self.sort_reverse = True
 
         if not hasattr(self, "paystub_rows"):
             return
@@ -119,22 +160,25 @@ class PayScreen(Screen):
         rows = list(self.paystub_rows)
 
         if sort_by == "date":
+
             rows.sort(
                 key=lambda row: str(
                     row.get("pay_date") or ""
                 ),
-                reverse=True,
+                reverse=self.sort_reverse,
             )
 
         elif sort_by == "pay":
+
             rows.sort(
                 key=lambda row: float(
                     row.get("payroll_total") or 0
                 ),
-                reverse=True,
+                reverse=self.sort_reverse,
             )
 
         elif sort_by == "hours":
+
             rows.sort(
                 key=lambda row: (
                     float(row.get("reg_hours") or 0)
@@ -144,14 +188,25 @@ class PayScreen(Screen):
                     + float(row.get("meal_penalty_hours") or 0)
                     + float(row.get("rest_break_penalty_hours") or 0)
                 ),
-                reverse=True,
+                reverse=self.sort_reverse,
             )
+
         elif sort_by == "shows":
+
             rows.sort(
                 key=lambda row: int(
                     row.get("show_count") or 0
                 ),
-                reverse=True,
+                reverse=self.sort_reverse,
+            )
+
+        elif sort_by == "shifts":
+
+            rows.sort(
+                key=lambda row: int(
+                    row.get("item_count") or 0
+                ),
+                reverse=self.sort_reverse,
             )
 
         self._display_paystubs(rows)
