@@ -13,9 +13,29 @@ class PaystubCard(MDCard):
     total = StringProperty("")
 
 
+
 class PayScreen(Screen):
     sort_by = StringProperty("date")
     sort_reverse = True
+    sort_panel_open = False
+
+    sort_labels = {
+        "date": "Date",
+        "pay": "Pay",
+        "hours": "Hours",
+        "shows": "Shows",
+        "shifts": "Shifts",
+    }
+
+    def get_sort_text(self):
+        label = self.sort_labels.get(
+            self.sort_by,
+            "Date",
+        )
+
+        direction = "↓" if self.sort_reverse else "↑"
+
+        return f"Sorted by {label} {direction}"
 
     def on_pre_enter(self):
         self.load_paystubs()
