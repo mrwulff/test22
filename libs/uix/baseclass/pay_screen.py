@@ -3,6 +3,8 @@ from kivy.uix.screenmanager import Screen
 from kivymd.uix.card import MDCard
 from kivy.app import App
 #from kivymd.uix.menu import MDDropdownMenu
+from kivy.properties import StringProperty, BooleanProperty
+
 
 
 class PaystubCard(MDCard):
@@ -15,9 +17,10 @@ class PaystubCard(MDCard):
 
 
 class PayScreen(Screen):
+    #sort_by = StringProperty("date")
     sort_by = StringProperty("date")
-    sort_reverse = True
-    sort_panel_open = False
+    sort_reverse = BooleanProperty(True)
+    sort_panel_open = BooleanProperty(False)
 
     sort_labels = {
         "date": "Date",
@@ -27,15 +30,62 @@ class PayScreen(Screen):
         "shifts": "Shifts",
     }
 
+    sort_display_text = StringProperty(
+        "Sorted by Date · Newest"
+    )
+
+
+    def update_sort_display(self):
+        label = self.sort_labels.get(
+            self.sort_by,
+            "Date",
+        )
+
+        if self.sort_by == "date":
+            direction = (
+                "Newest"
+                if self.sort_reverse
+                else "Oldest"
+            )
+
+        elif self.sort_by == "pay":
+            direction = (
+                "Highest"
+                if self.sort_reverse
+                else "Lowest"
+            )
+
+        else:
+            direction = (
+                "Most"
+                if self.sort_reverse
+                else "Least"
+            )
+
+        self.sort_display_text = (
+            f"Sorted by {label} · {direction}"
+        )
     def get_sort_text(self):
         label = self.sort_labels.get(
             self.sort_by,
             "Date",
         )
 
-        direction = "↓" if self.sort_reverse else "↑"
+        if self.sort_reverse:
+            direction = "Highest"
+        else:
+            direction = "Lowest"
 
-        return f"Sorted by {label} {direction}"
+        if self.sort_by == "date":
+            direction = "Newest" if self.sort_reverse else "Oldest"
+        elif self.sort_by == "hours":
+            direction = "Most" if self.sort_reverse else "Least"
+        elif self.sort_by == "shows":
+            direction = "Most" if self.sort_reverse else "Least"
+        elif self.sort_by == "shifts":
+            direction = "Most" if self.sort_reverse else "Least"
+
+        return f"Sorted by {label} · {direction}"
 
     def on_pre_enter(self):
         self.load_paystubs()
@@ -202,3 +252,4 @@ class PayScreen(Screen):
             )
 
         self._display_paystubs(rows)
+        self.update_sort_display()

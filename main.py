@@ -25,6 +25,7 @@ from libs.lib_rhino_db import RhinoDatabase
 from libs.lib_remote_config import RemoteConfig
 from libs.ios.webview import IOSWebView
 
+from libs.ios.share_sheet import share_file, pick_backup_file
 
 
 import libs.lib_enc
@@ -68,6 +69,98 @@ import logging
 
 class Demo3App(MDApp):
 
+    def import_backup(self):
+        from libs.ios.share_sheet import pick_backup_file
+        pick_backup_file()
+
+    def on_backup_file_picked(self, path):
+        print("[IMPORT] Backup file ready:", path)
+
+        # Next step:
+        # Validate the ZIP and restore using the selected
+        # Replace/Merge preference.
+    def get_backup_setting(self, key):
+        db = getattr(self, "rhino_db", None)
+
+        if db is None:
+            return False
+
+        return (
+            db.get_user_setting(key, "False") == "True"
+        )
+
+
+    def set_backup_setting(self, key, value):
+        db = getattr(self, "rhino_db", None)
+
+        if db is None:
+            print("[BACKUP] Database is not ready.")
+            return
+
+        db.save_user_setting(
+            key,
+            str(bool(value)),
+        )
+
+
+    def export_backup(self):
+        import os
+        import logging
+
+        from kivy.utils import platform
+        from kivy.metrics import dp
+        from kivymd.uix.snackbar import (
+            MDSnackbar,
+            MDSnackbarText,
+        )
+
+        from libs.lib_backup import create_backup_archive
+        from libs.ios.share_sheet import share_file
+
+        try:
+            include_credentials = self.get_backup_setting(
+                "backup_login_credentials"
+            )
+
+            output_dir = os.path.join(
+                self.user_data_dir,
+                "exports",
+            )
+
+            backup_path = create_backup_archive(
+                self.rhino_db.db,
+                output_dir,
+                include_credentials=include_credentials,
+            )
+
+            self.last_backup_path = backup_path
+
+            if platform == "ios":
+                share_file(backup_path)
+
+                message = "Backup ready to share"
+            else:
+                message = "Backup created. Check the app log for its path."
+                print("[BACKUP] File:", backup_path)
+
+            MDSnackbar(
+                MDSnackbarText(text=message),
+                y=dp(24),
+                pos_hint={"center_x": 0.5},
+                size_hint_x=0.9,
+            ).open()
+
+        except Exception as exc:
+            logging.exception("[BACKUP] Export failed")
+
+            MDSnackbar(
+                MDSnackbarText(
+                    text="Backup failed: " + str(exc)
+                ),
+                y=dp(24),
+                pos_hint={"center_x": 0.5},
+                size_hint_x=0.9,
+            ).open()
 
 
     def build(self):
