@@ -1341,6 +1341,11 @@ class RhinoDatabase:
 
                 COUNT(pi.id) AS item_count,
 
+                COUNT(DISTINCT CASE
+                    WHEN pi.show IS NOT NULL AND pi.show != ''
+                    THEN pi.show
+                END) AS show_count,
+
                 COALESCE(SUM(pi.reg_hours), 0) AS reg_hours,
                 COALESCE(SUM(pi.ot_hours), 0) AS ot_hours,
                 COALESCE(SUM(pi.weekly_ot_hours), 0) AS weekly_ot_hours,

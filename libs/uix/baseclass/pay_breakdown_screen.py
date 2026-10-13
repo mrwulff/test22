@@ -97,7 +97,7 @@ class PaystubBreakdownScreen(Screen):
             paystub["rest_break_penalty_hours"] or 0
         )
 
-        total_hours = reg + ot + dt
+        total_hours = reg + ot + dt +weekly_ot + meal + rest
 
         self.reg_hours = f"{reg:.1f} hrs"
         self.ot_hours = f"{ot:.1f} hrs"

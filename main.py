@@ -100,39 +100,58 @@ class Demo3App(MDApp):
         return self.root
 
     def today(self):
-        logging.info('Starting modern today function')
+        logging.info("Starting modern today function")
 
         self.remote_config = RemoteConfig()
-        
-        
         self.remote_config.update()
-        html=self.rhino.load_cached_html()
 
-        if html is not None:
+        html = self.rhino.load_cached_html()
 
-            parser = RhinoParser(html).parse()
-            print(len(parser.shows))
-            self.populate_show_cards(parser)
-            self.populate_stats(parser)
-            today_screen = self.root.get_screen("today")
-            today_screen.ids.login_card.opacity = 0
-            today_screen.ids.login_card.disabled = True
-            today_screen.ids.login_card.height = 0
-        else:
-            ##do login##
-            logging.info ("DOING LOGIN PART #")
+        if html is None:
+            logging.info("[SCHEDULE] No cached Rhino schedule found")
+
             if not self.rhino.has_credentials():
                 today_screen = self.root.get_screen("today")
                 today_screen.ids.login_card.opacity = 1
                 today_screen.ids.login_card.disabled = False
                 today_screen.ids.login_card.height = 250
-
-                logging.info("No Rhino credentials found")
-
-                #self.show_login_card()
-
+                logging.info("[SCHEDULE] No Rhino credentials found")
                 return
 
+            logging.info("[SCHEDULE] Credentials exist; attempting fresh schedule update")
+            try:
+                self.update()
+            except Exception as exc:
+                logging.exception("[SCHEDULE] Automatic refresh failed: %s", exc)
+            return
+
+        parser = RhinoParser(html).parse()
+        print("[SCHEDULE] Parsed shows:", len(parser.shows))
+
+        # A cached schedule can exist but contain no upcoming shows when
+        # the app has not been opened for several days. Refresh it before
+        # allowing the UI to assume there are shows.
+        if not parser.shows:
+            logging.warning("[SCHEDULE] Cached schedule has no upcoming shows")
+
+            if self.rhino.has_credentials():
+                logging.info("[SCHEDULE] Attempting automatic Rhino refresh")
+                try:
+                    parser = self.update()
+                except Exception as exc:
+                    logging.exception("[SCHEDULE] Automatic refresh failed: %s", exc)
+
+            if parser is None:
+                logging.warning("[SCHEDULE] No schedule available after refresh attempt")
+                parser = RhinoParser(html).parse()
+
+        self.populate_show_cards(parser)
+        self.populate_stats(parser)
+
+        today_screen = self.root.get_screen("today")
+        today_screen.ids.login_card.opacity = 0
+        today_screen.ids.login_card.disabled = True
+        today_screen.ids.login_card.height = 0
     def login(self):
         print ("DOING NEW LOGIN!!!")
         
@@ -195,139 +214,400 @@ class Demo3App(MDApp):
     def update(self):
         app = App.get_running_app()
         ad = app.user_data_dir
-        logging.info("UPDATE FUNCTION!")
-        print((self.rhino.username,self.rhino.password))
-        html=self.rhino.login(self.rhino.username,self.rhino.password)
+
+        logging.info("[SCHEDULE] UPDATE FUNCTION")
+        print((self.rhino.username, self.rhino.password))
+
+        html = self.rhino.login(
+            self.rhino.username,
+            self.rhino.password,
+        )
+
         self.rhino.save_schedule(ad + "/realdata.html")
-        #print (html,'HTML+++')
-        html=self.rhino.load_cached_html()
+
+        html = self.rhino.load_cached_html()
+
+        if html is None:
+            raise RuntimeError("[SCHEDULE] Rhino refresh produced no cached HTML")
+
         parser = RhinoParser(html).parse()
-        print(len(parser.shows))
+        print("[SCHEDULE] Fresh schedule contains:", len(parser.shows), "upcoming shows")
+
+        # These functions are safe with 0, 1, 2, or 3+ upcoming shows.
         self.populate_show_cards(parser)
         self.populate_stats(parser)
 
         self.db = RhinoDatabase()
         self.last_updated = self.db.get_last_updated()
+
         shows = parser.shows + parser.old_shows
-        
+
         changes = self.db.compare(shows)
 
         self.db.save_shows(shows)
-
         self.db.save_changes(changes)
-        print (changes["modified"],'changes!!!')
 
+        print(changes["modified"], "changes!!!")
 
+        return parser
     def dlpp(self):
+        import os
+        import glob
+        import logging
+
         import libs.lib_ppdownloader as lib_ppdownloader
+        from libs.paystub_parser import parse_paystub
 
         app = App.get_running_app()
         ad = app.user_data_dir
-        x={}
-        print (self.rhino.password,'this is the password')
-        x['password']=self.rhino.password 
-        x['city']=self.rhino.city
 
+        print("[PAY] Starting paystub download")
 
-        x['username']=self.rhino.username 
+        credentials = {
+            "username": self.rhino.username,
+            "password": self.rhino.password,
+            "city": self.rhino.city,
+        }
 
+        try:
+            # --------------------------------------------------
+            # DOWNLOAD PAYSTUB HTML FROM RHINO
+            # --------------------------------------------------
 
+            paystubs, new = lib_ppdownloader.thinkpp(
+                credentials,
+                ad,
+                "pp",
+            )
 
-        if 1==1:
-            paystubs, new = lib_ppdownloader.thinkpp(x,ad,'pp')
+            logging.info(
+                "Downloaded %s new paystubs out of %s",
+                new,
+                paystubs,
+            )
 
-            logging.info("Downloaded  " + str(new) + " out of  " + str(paystubs))
-            #self.snackbarx("Downloaded  " + str(new) + " out of  " + str(paystubs))
+            print(
+                f"[PAY] Rhino reports {new} new paystubs "
+                f"out of {paystubs}"
+            )
 
-    def populate_show_cards(self,parser):
-        print (parser.shows[1].date,"DATE!!")
+            # --------------------------------------------------
+            # FIND DOWNLOADED PAYSTUB FILES
+            # --------------------------------------------------
 
+            pp_dir = os.path.join(ad, "pp")
 
-        cards=["show_card_1","show_card_2","show_card_3"]
-        shows = parser.shows
+            if not os.path.isdir(pp_dir):
+                print("[PAY] Paystub directory does not exist:", pp_dir)
+                return
+
+            files = sorted(
+                glob.glob(
+                    os.path.join(pp_dir, "*.html")
+                )
+            )
+
+            print(
+                f"[PAY] Found {len(files)} paystub HTML files"
+            )
+
+            if not files:
+                print("[PAY] No paystub files found")
+                return
+
+            # --------------------------------------------------
+            # LOAD CURRENT RHINO SHOWS
+            # --------------------------------------------------
+
+            shows = self.db.get_all_shows()
+
+            print(
+                f"[PAY] Matching payroll against "
+                f"{len(shows)} stored Rhino shows"
+            )
+
+            # --------------------------------------------------
+            # PARSE + IMPORT
+            # --------------------------------------------------
+
+            imported = 0
+            new_paystubs = 0
+            payroll_lines = 0
+            exact = 0
+            possible = 0
+            unmatched = 0
+
+            for filename in files:
+
+                print(
+                    f"[PAY] Processing: "
+                    f"{os.path.basename(filename)}"
+                )
+
+                try:
+                    with open(
+                        filename,
+                        "r",
+                        encoding="utf-8",
+                        errors="replace",
+                    ) as f:
+                        html = f.read()
+
+                    if len(html) < 100:
+                        print(
+                            "[PAY] Skipping empty/invalid file:",
+                            filename,
+                        )
+                        continue
+
+                    # Parse the HTML into our standard paystub dict.
+                    paystub = parse_paystub(html)
+
+                    if not paystub:
+                        print(
+                            "[PAY] Parser returned nothing:",
+                            filename,
+                        )
+                        continue
+
+                    if not paystub.get("pay_period_start"):
+                        print(
+                            "[PAY] No pay period found:",
+                            filename,
+                        )
+                        continue
+
+                    if not paystub.get("pay_date"):
+                        print(
+                            "[PAY] No pay date found:",
+                            filename,
+                        )
+                        continue
+
+                    print(
+                        "[PAY] Parsed:",
+                        paystub.get("pay_period_start"),
+                        "->",
+                        paystub.get("pay_period_end"),
+                        "| Pay date:",
+                        paystub.get("pay_date"),
+                    )
+
+                    # --------------------------------------------------
+                    # IMPORT INTO PERMANENT DATABASE
+                    # --------------------------------------------------
+
+                    result = self.db.import_paystub(
+                        paystub,
+                        shows,
+                    )
+
+                    imported += 1
+
+                    if result["is_new_paystub"]:
+                        new_paystubs += 1
+
+                    payroll_lines += result["imported"]
+                    exact += result["exact"]
+                    possible += result["possible"]
+                    unmatched += result["unmatched"]
+
+                    print(
+                        "[PAY] Imported:",
+                        result["paystub_id"],
+                        "| lines:",
+                        result["imported"],
+                        "| exact:",
+                        result["exact"],
+                        "| possible:",
+                        result["possible"],
+                        "| unmatched:",
+                        result["unmatched"],
+                    )
+
+                except Exception as exc:
+                    logging.exception(
+                        "[PAY] Failed to import %s",
+                        filename,
+                    )
+
+            # --------------------------------------------------
+            # SUMMARY
+            # --------------------------------------------------
+
+            print("")
+            print("========== PAY IMPORT COMPLETE ==========")
+            print("[PAY] Files processed:", imported)
+            print("[PAY] New paystubs:", new_paystubs)
+            print("[PAY] Payroll lines:", payroll_lines)
+            print("[PAY] Exact matches:", exact)
+            print("[PAY] Possible matches:", possible)
+            print("[PAY] Unmatched:", unmatched)
+            print("=========================================")
+
+            logging.info(
+                "Pay import complete: "
+                "%s files, %s new paystubs, %s payroll lines",
+                imported,
+                new_paystubs,
+                payroll_lines,
+            )
+
+        except Exception as exc:
+            logging.exception(
+                "[PAY] Paystub download/import failed"
+            )
+
+            print(
+                "[PAY] ERROR:",
+                exc,
+            )
+
+    def populate_show_cards(self, parser):
+        cards = [
+            "show_card_1",
+            "show_card_2",
+            "show_card_3",
+        ]
+
+        shows = list(parser.shows or [])
         screen = self.root.get_screen("today")
-        for x in range(3):
-            screen.ids[cards[x]].show= shows[x].show
-            #screen.ids[cards[x]].show= "WTF"
 
-            show_date = datetime.strptime(shows[x].date, "%m/%d/%Y")
-            #print (show_date,"SHOWDATE")
-            #show_date = show_date.strftime("%A, %m/%d")
-            screen.ids[cards[x]].day= show_date.strftime("%A")
-            screen.ids[cards[x]].date= show_date.strftime("%B ") + str(show_date.day)
-            screen.ids[cards[x]].time= shows[x].time
-            screen.ids[cards[x]].position= shows[x].position
-            screen.ids[cards[x]].status= shows[x].status
-            #print("status_icon =", screen.ids[cards[x]].status_icon)
-            if shows[x].status== "Confirmed":
-                screen.ids[cards[x]].status_color= "blue"
-                screen.ids[cards[x]].status_icon= "check-circle-outline"
+        print("[SCHEDULE] populate_show_cards:", len(shows), "shows")
 
+        # First hide every card. This makes 0/1/2-show schedules safe.
+        for card_id in cards:
+            card = screen.ids[card_id]
+            card.opacity = 0
+            card.disabled = True
 
+        if not shows:
+            print("[SCHEDULE] No upcoming shows to display")
+            return
 
-            screen.ids[cards[x]].show_class= shows[x].type
-            #print("after SET!status_icon =", screen.ids[cards[x]].status_icon)
+        for x, show in enumerate(shows[:len(cards)]):
+            card = screen.ids[cards[x]]
 
+            card.opacity = 1
+            card.disabled = False
 
-            badge, title = self.parse_show(shows[x].show)
+            card.show = show.show
 
-            screen.ids[cards[x]].show = title
-            screen.ids[cards[x]].venue_code = badge
+            try:
+                show_date = datetime.strptime(
+                    show.date,
+                    "%m/%d/%Y",
+                )
+                card.day = show_date.strftime("%A")
+                card.date = (
+                    show_date.strftime("%B ")
+                    + str(show_date.day)
+                )
+            except Exception as exc:
+                print("[SCHEDULE] Date formatting error:", exc)
+                card.day = ""
+                card.date = show.date or ""
 
-            screen.ids[cards[x]].venue = shows[x].location
-            screen.ids[cards[x]].address = shows[x].venue
+            card.time = show.time
+            card.position = show.position
+            card.status = show.status
 
+            if show.status == "Confirmed":
+                card.status_color = "blue"
+                card.status_icon = "check-circle-outline"
+
+            card.show_class = show.type
+
+            badge, title = self.parse_show(show.show)
+            card.show = title
+            card.venue_code = badge
+
+            card.venue = show.location
+            card.address = show.venue
     def populate_stats(self, js):
-        #print (dir(js),"JS INFOs")
         app = App.get_running_app()
         ad = app.user_data_dir
+
         self.db = RhinoDatabase()
         last_updated = self.db.get_last_updated()
-        shows = js.shows
-        update = last_updated
-        print (update)
-        if  update != None:
-        
-            #old_update = datetime.datetime.strptime(update, "%Y-%m-%d %H:%M:%S.%f")
-            old_update=update
+
+        shows = list(js.shows or [])
+        screen = self.root.get_screen("today")
+
+        print("[SCHEDULE] populate_stats:", len(shows), "shows")
+
+        # Zero upcoming shows is a valid state.
+        if not shows:
+            print("[SCHEDULE] No upcoming shows; skipping next-show stats")
+
+            try:
+                screen.ids.update_card.value = "—"
+                screen.ids.update_card.title = "No Upcoming Shows"
+                screen.ids.update_card.subtitle = "Tap to update"
+            except Exception as exc:
+                print("[SCHEDULE] update_card error:", exc)
+
+            try:
+                screen.ids.confirmed_card.value = "0"
+                screen.ids.confirmed_card.title = "Confirmed"
+                screen.ids.confirmed_card.subtitle = "0 Pending"
+            except Exception as exc:
+                print("[SCHEDULE] confirmed_card error:", exc)
+
+            return
+
+        if last_updated is not None:
             now = datetime.now()
-            diff2 = self.time_since(now - old_update)
-            next_show = shows[1].date + " " + shows[1].time
-            next_show = datetime.strptime(next_show, "%m/%d/%Y %H:%M")
-            bb = 0
-            nns = now - next_show
-            # logging.info('asdfasdf',nns,type(nns),shows)
+            diff2 = self.time_since(now - last_updated)
 
-            while (nns) >= timedelta(0):
-                print (next_show,'111')
-                next_show = shows[bb+1].date + " " + shows[bb+1].time
-                print (next_show,'222')
-                next_show = datetime.datetime.strptime(next_show, "%m/%d/%Y %H:%M")
-                nns = now - next_show
+            # Find the first upcoming show instead of assuming shows[1] exists.
+            next_show = None
 
-                bb = bb + 1
-            diff3 = humanize.naturaltime(now - next_show)
-            screen = self.root.get_screen("today")
-            print(screen.ids.keys(),"WHAT!!!!!")
-            print(list(screen.ids.keys()))
-            screen.ids.update_card.value = diff2[0]
-            screen.ids.update_card.title = diff2[1]
-            screen.ids.update_card.subtitle = "Tap to update"
+            for show in shows:
+                try:
+                    show_dt = datetime.strptime(
+                        show.date + " " + show.time,
+                        "%m/%d/%Y %H:%M",
+                    )
 
-        #print (len(shows), "len shows")
-            len_shows=str(len(shows))
-            
-            print (len(js.confirmables),"len confirmables")
-            screen.ids.confirmed_card.subtitle= str(len(js.confirmables)) + " Pending"
-            if (len(js.confirmables)>0):
-                screen.ids.confirmed_card.value= str(len(js.confirmables))
-                screen.ids.confirmed_card.title="Pending"
-                screen.ids.confirmed_card.subtitle= str("Tap to confirm")
-            if (len(js.confirmables)==0):
-                screen.ids.confirmed_card.value= len_shows
-                screen.ids.confirmed_card.title="Confirmed"
-                screen.ids.confirmed_card.subtitle= str("0 Pending")
+                    if show_dt >= now:
+                        next_show = show_dt
+                        break
+                except Exception as exc:
+                    print("[SCHEDULE] Next-show date error:", exc)
 
+            if next_show is not None:
+                print("[SCHEDULE] Next show:", next_show)
+            else:
+                print("[SCHEDULE] No upcoming show found after parsing")
+
+            try:
+                screen.ids.update_card.value = diff2[0]
+                screen.ids.update_card.title = diff2[1]
+                screen.ids.update_card.subtitle = "Tap to update"
+            except Exception as exc:
+                print("[SCHEDULE] update_card error:", exc)
+
+        len_shows = str(len(shows))
+
+        try:
+            confirmables = js.confirmables or []
+        except Exception:
+            confirmables = []
+
+        print(len(confirmables), "len confirmables")
+
+        try:
+            if len(confirmables) > 0:
+                screen.ids.confirmed_card.value = str(len(confirmables))
+                screen.ids.confirmed_card.title = "Pending"
+                screen.ids.confirmed_card.subtitle = "Tap to confirm"
+            else:
+                screen.ids.confirmed_card.value = len_shows
+                screen.ids.confirmed_card.title = "Confirmed"
+                screen.ids.confirmed_card.subtitle = "0 Pending"
+        except Exception as exc:
+            print("[SCHEDULE] confirmed_card error:", exc)
     def history(self):
         print ("HISTORY!@@")
         self.root.push("history")

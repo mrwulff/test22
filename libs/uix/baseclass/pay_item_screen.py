@@ -204,8 +204,7 @@ class PaystubItemScreen(Screen):
         if show_money:
 
             self.base_rate = self._money(raw_base_rate)
-            self.blended_rate = self._money(row["blended_rate"])
-            self.weekly_ot_rate = self.blended_rate
+            self.blended_rate = self._money(raw_blended_rate)
             self.total_pay = self._money(raw_pay)
 
             self._build_calculations(
@@ -222,6 +221,11 @@ class PaystubItemScreen(Screen):
             self.base_rate = "••••••"
             self.blended_rate = "••••••"
             self.total_pay = "••••••"
+
+            self.regular_rate_display = ""
+            self.overtime_rate_display = ""
+            self.weekly_ot_rate_display = ""
+            self.double_time_rate_display = ""
 
             self.regular_earnings = ""
             self.overtime_earnings = ""
@@ -249,9 +253,24 @@ class PaystubItemScreen(Screen):
         # rows
         # payroll total
         #
+        # Card height = vertical padding + header + rows + separators
+        # + small gap before the total + total row.
+        #
+        # 44  = top/bottom padding (22 each)
+        # 38  = table header
+        # 54  = each payroll row
+        # 1   = separator between visible rows
+        # 14  = gap before total
+        # 48  = total row
+        separators = max(0, visible_rows - 1)
+
         self.payroll_card_height = (
-            150
-            + (visible_rows * 68)
+            44
+            + 34
+            + (visible_rows * 50)
+            + (separators * 1)
+            + 14
+            + 48
         )
 
         print("[PAY ITEM] loaded:", self.show_name)
@@ -394,11 +413,11 @@ class PaystubItemScreen(Screen):
             weekly_ot_rate = weekly_rate * 1.5
             amount = weekly * weekly_ot_rate
 
-            self.weekly_ot_rate_display = f"${weekly_ot_rate:.4f}"
+            self.weekly_ot_rate_display = f"${weekly_ot_rate:,.2f}"
             self.weekly_ot_earnings = f"${amount:,.2f}"
             self.weekly_ot_calc = (
                 f"{self._hour_text(weekly)} × "
-                f"${weekly_rate:.4f} × 1.5 = "
+                f"${weekly_rate:,.2f} × 1.5 = "
                 f"${amount:,.2f}"
             )
         else:
@@ -443,8 +462,7 @@ class PaystubItemScreen(Screen):
         if value is None:
             return "$0.00"
 
-        #return  "534"
-        return f"${float(value):,.1f}"
+        return f"${float(value):,.2f}"
 
     # ---------------------------------------------------------
     # NAVIGATION

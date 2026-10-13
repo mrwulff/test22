@@ -7,8 +7,8 @@
 
         MDBoxLayout:
             orientation: "vertical"
-            padding: dp(30), dp(28), dp(30), dp(40)
-            spacing: dp(18)
+            padding: dp(30), dp(24), dp(30), dp(36)
+            spacing: dp(14)
             size_hint_y: None
             height: self.minimum_height
 
@@ -59,7 +59,7 @@
 
             MDCard:
                 size_hint_y: None
-                height: dp(245)
+                height: dp(220)
                 padding: dp(22)
                 radius: [22]
                 elevation: 0
@@ -123,6 +123,7 @@
 
                 MDBoxLayout:
                     orientation: "vertical"
+                    size_hint_y: 1
                     spacing: dp(0)
 
                     # -----------------------------------------
@@ -131,7 +132,7 @@
 
                     MDBoxLayout:
                         size_hint_y: None
-                        height: dp(38)
+                        height: dp(34)
 
                         MDLabel:
                             text: "TYPE"
@@ -166,7 +167,7 @@
 
                     MDBoxLayout:
                         size_hint_y: None
-                        height: dp(54) if root.reg_hours != "0" else 0
+                        height: dp(50) if root.reg_hours != "0" else 0
                         opacity: 1 if root.reg_hours != "0" else 0
 
                         MDLabel:
@@ -214,7 +215,7 @@
 
                     MDBoxLayout:
                         size_hint_y: None
-                        height: dp(54) if root.ot_hours != "0" else 0
+                        height: dp(50) if root.ot_hours != "0" else 0
                         opacity: 1 if root.ot_hours != "0" else 0
 
                         MDLabel:
@@ -262,7 +263,7 @@
 
                     MDBoxLayout:
                         size_hint_y: None
-                        height: dp(54) if root.weekly_ot_hours != "0" else 0
+                        height: dp(50) if root.weekly_ot_hours != "0" else 0
                         opacity: 1 if root.weekly_ot_hours != "0" else 0
 
                         MDLabel:
@@ -310,7 +311,7 @@
 
                     MDBoxLayout:
                         size_hint_y: None
-                        height: dp(54) if root.dt_hours != "0" else 0
+                        height: dp(50) if root.dt_hours != "0" else 0
                         opacity: 1 if root.dt_hours != "0" else 0
 
                         MDLabel:

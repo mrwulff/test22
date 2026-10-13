@@ -50,7 +50,7 @@ class PayScreen(Screen):
                 ),
                 "summary": (
                     f"{row['item_count']} entries · "
-                    f"{float(row['reg_hours'] or 0) + float(row['ot_hours'] or 0) + float(row['dt_hours'] or 0):.1f} hrs"
+                    f"{sum(float(row[k] or 0) for k in ('reg_hours', 'ot_hours', 'dt_hours', 'weekly_ot_hours', 'meal_penalty_hours', 'rest_break_penalty_hours')):.1f} hrs"
                 ),
                 "total": (
                     f"${float(row['payroll_total'] or 0):,.2f}"
@@ -60,8 +60,24 @@ class PayScreen(Screen):
             }
             for row in rows
         ]
-    def import_paystub(self):
-        print("[PAY] Import paystub pressed")
+    def import_paystubs(self):
+        app = App.get_running_app()
+
+        print("[PAY SCREEN] Downloading new paystubs")
+
+        try:
+            app.dlpp()
+
+            # Reload the list from SQLite.
+            self.load_paystubs()
+
+            print("[PAY SCREEN] Paystub list refreshed")
+
+        except Exception as exc:
+            print(
+                "[PAY SCREEN] Paystub import failed:",
+                exc,
+            )
 
     def show_sort_menu(self, caller):
         items = [
@@ -77,6 +93,12 @@ class PayScreen(Screen):
                 "text": "Hours",
                 "on_release": lambda: self.sort_paystubs("hours"),
             },
+            {
+                "text": "Shows",
+                "on_release": lambda: self.sort_paystubs("shows"),
+            },
+
+
         ]
 
         self.sort_menu = MDDropdownMenu(
@@ -118,6 +140,16 @@ class PayScreen(Screen):
                     float(row.get("reg_hours") or 0)
                     + float(row.get("ot_hours") or 0)
                     + float(row.get("dt_hours") or 0)
+                    + float(row.get("weekly_ot_hours") or 0)
+                    + float(row.get("meal_penalty_hours") or 0)
+                    + float(row.get("rest_break_penalty_hours") or 0)
+                ),
+                reverse=True,
+            )
+        elif sort_by == "shows":
+            rows.sort(
+                key=lambda row: int(
+                    row.get("show_count") or 0
                 ),
                 reverse=True,
             )
