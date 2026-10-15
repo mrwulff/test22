@@ -1,4 +1,4 @@
-# libs/rhino.py
+# libs/lib_rhino.py
 
 import logging
 import os
@@ -599,7 +599,7 @@ class RhinoClient:
         username=None,
         encrypted_password=None,
     ):
-        print (username,encrypted_password,' check things')
+        #print (username,encrypted_password,' check things')
         # ----------------------------------------------------
         # Default to credentials loaded from DB
         # ----------------------------------------------------

@@ -1,4 +1,4 @@
-
+#main.py
 
 ##KIVY IMPORTS###
 from kivy.core.window import Window
@@ -457,7 +457,7 @@ class Demo3App(MDApp):
                 exc,
             )
     def build(self):
-        print ("def BUILD")
+        logging.info("Building application")
         
         self.root = Root()
         self.root.push("today")
@@ -469,16 +469,16 @@ class Demo3App(MDApp):
         self.db = self.rhino_db
 
 
-        print(
-            "[DB TEST] ACTUAL DATABASE:",
-            self.rhino_db.db_path
-        )
+        #print(
+        #    "[DB TEST] ACTUAL DATABASE:",
+        #    self.rhino_db.db_path
+        #)
 
         
         #self.dlpp()       #self.load_rhino()
 
-        self.rhino_db.debug_payroll_columns()
-        self.rhino_db.debug_insert_payroll_test()        #self.root.push("today")
+        #self.rhino_db.debug_payroll_columns()
+        #self.rhino_db.debug_insert_payroll_test()        #self.root.push("today")
 
 #       GET USER DATA         x = libs.lib_readuserdata.readuserdata(App, ad, ios)
 
@@ -604,7 +604,7 @@ class Demo3App(MDApp):
         ad = app.user_data_dir
 
         logging.info("[SCHEDULE] UPDATE FUNCTION")
-        print((self.rhino.username, self.rhino.password))
+        #print((self.rhino.username, self.rhino.password))
 
         html = self.rhino.login(
             self.rhino.username,
@@ -1331,14 +1331,13 @@ class Demo3App(MDApp):
 
         data = json.loads(unquote(payload))
 
-        print("EMAIL =", data["email"])
-        print("PASSWORD =", data["password"])
+        #print("EMAIL =", data["email"])
+        ##print("PASSWORD =", data["password"])
         print("URL =", data["url"])
 
         #
         # Stop polling
-        #
-
+        
         self._webview_poll.cancel()
         del self._webview_poll
 
@@ -1349,7 +1348,7 @@ class Demo3App(MDApp):
         PASSWORD = data["password"]
 
         enc = libs.lib_enc.make_password(PASSWORD)
-        print(enc, "ENC!")
+        #print(enc, "ENC!")
 
         # Save credentials permanently to SQLite.
         self.rhino.db.save_user_setting(
@@ -1376,7 +1375,8 @@ class Demo3App(MDApp):
         #print (html,'login result')
 
         schedule = self.rhino.download_schedule()
-        print (schedule,'schedule result')
+        #print (schedule,'schedule result')
+        logging.info("Rhino schedule downloaded")
         app = App.get_running_app()
         ad = app.user_data_dir
         with open(ad + "/realdata.html", "wb") as f:
@@ -1384,8 +1384,29 @@ class Demo3App(MDApp):
 
         self.rhino.username = EMAIL
         self.rhino.password = libs.lib_enc.make_password(PASSWORD)
-        self.rhino.login_url=data["url"]
+        self.rhino.login_url = data["url"]
+
+        # Load the newly downloaded schedule
+        html = self.rhino.load_cached_html()
+        parser = RhinoParser(html).parse()
+
+        logging.info("Loaded %d shows from Rhino", len(parser.shows))
+
+        self.populate_show_cards(parser)
+        self.populate_stats(parser)
+
+        # Hide the login card now that login succeeded
+        today_screen = self.root.get_screen("today")
+        today_screen.ids.login_card.opacity = 0
+        today_screen.ids.login_card.disabled = True
+        today_screen.ids.login_card.height = 0
+
+        logging.info("Login complete — Today screen updated")
+
         return html
+
+
+
 
 
 
