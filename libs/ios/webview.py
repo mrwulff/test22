@@ -129,11 +129,27 @@ class IOSWebView:
 
     def show_url(self, url):
 
-        self.show()
+        print("[WEBVIEW] Scheduling WebView:", url)
 
-        self.load_url(url)
-        
+        Clock.schedule_once(
+            lambda dt: self._show_url_now(url),
+            0
+        )
 
+
+    def _show_url_now(self, url):
+
+        print("[WEBVIEW] Presenting WebView:", url)
+
+        try:
+            self.show()
+            self.load_url(url)
+
+        except Exception as exc:
+            print(
+                "[WEBVIEW] Failed to present:",
+                exc,
+            )
     # --------------------------------------------------------
     # HTML
     # --------------------------------------------------------

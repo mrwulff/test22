@@ -271,10 +271,9 @@
                             MDSwitch:
                                 widget_style: "ios"
                                 id: show_pay_amounts
-                                active: app.db.get_user_setting("show_pay_amounts", "True") == "True"
-                                on_active:
-                                    app.db.save_user_setting("show_pay_amounts", str(self.active))
+                                active: app.get_app_setting("show_pay_amounts", "True") == "True"
 
+                                on_active: app.save_app_setting("show_pay_amounts", str(self.active))
                             MDListItemLeadingIcon:
                                 icon: "cash"
                                 pos_hint: {"center_x": 0.5, "center_y": 0.5}

@@ -106,3 +106,67 @@ def create_backup_archive(
 
         if os.path.exists(snapshot_path):
             os.remove(snapshot_path)
+
+def validate_backup_archive(archive_path):
+    import json
+    import os
+    import sqlite3
+    import tempfile
+    import zipfile
+
+    if not os.path.isfile(archive_path):
+        raise RuntimeError("Backup file does not exist.")
+
+    if not zipfile.is_zipfile(archive_path):
+        raise RuntimeError("The selected file is not a valid Schedulara backup.")
+
+    temp_dir = tempfile.mkdtemp(prefix="schedulara_import_")
+
+    try:
+        with zipfile.ZipFile(archive_path, "r") as archive:
+            names = archive.namelist()
+
+            if "manifest.json" not in names:
+                raise RuntimeError("Backup is missing manifest.json.")
+
+            if "rhino.db" not in names:
+                raise RuntimeError("Backup is missing rhino.db.")
+
+            with archive.open("manifest.json") as f:
+                manifest = json.load(f)
+
+            if manifest.get("format") != "schedulara-backup":
+                raise RuntimeError("This is not a Schedulara backup.")
+
+            if manifest.get("version") != 1:
+                raise RuntimeError(
+                    "Unsupported backup version: "
+                    + str(manifest.get("version"))
+                )
+
+            database_path = os.path.join(temp_dir, "rhino.db")
+            archive.extract("rhino.db", temp_dir)
+
+        db = sqlite3.connect(database_path)
+
+        try:
+            result = db.execute("PRAGMA integrity_check").fetchone()[0]
+
+            if result != "ok":
+                raise RuntimeError(
+                    "The backup database failed its integrity check: "
+                    + str(result)
+                )
+        finally:
+            db.close()
+
+        return {
+            "manifest": manifest,
+            "database_path": database_path,
+            "temp_dir": temp_dir,
+        }
+
+    except Exception:
+        import shutil
+        shutil.rmtree(temp_dir, ignore_errors=True)
+        raise

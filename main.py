@@ -69,6 +69,220 @@ import logging
 
 class Demo3App(MDApp):
 
+    def _begin_backup_restore(self):
+        self.restore_dialog.dismiss()
+
+        merge_mode = self.get_backup_setting("backup_merge_mode")
+
+        if merge_mode:
+            print("[IMPORT] Restore mode: MERGE")
+            print("[IMPORT] Merge is not implemented yet.")
+            return
+
+        print("[IMPORT] Restore mode: REPLACE")
+        print("[IMPORT] Starting restore...")
+
+        try:
+            import os
+            import shutil
+            from datetime import datetime
+
+            from libs.lib_backup import create_backup_archive
+
+            backup_info = self.pending_backup
+            imported_db = backup_info["database_path"]
+
+            live_db_path = self.rhino_db.db_path
+
+            # --------------------------------------------------
+            # 1. SAFETY BACKUP OF CURRENT DATABASE
+            # --------------------------------------------------
+
+            safety_dir = os.path.join(
+                self.user_data_dir,
+                "restore-safety"
+            )
+
+            os.makedirs(safety_dir, exist_ok=True)
+
+            safety_backup = create_backup_archive(
+                self.rhino_db.db,
+                safety_dir,
+                include_credentials=True,
+            )
+
+            print("[IMPORT] Safety backup created:")
+            print("[IMPORT]", safety_backup)
+
+            # --------------------------------------------------
+            # 2. CLOSE ALL KNOWN DATABASE CONNECTIONS
+            # --------------------------------------------------
+
+            connections = []
+
+            for owner_name in ("rhino_db", "db"):
+                owner = getattr(self, owner_name, None)
+
+                if owner is not None:
+                    connection = getattr(owner, "db", None)
+
+                    if connection is not None:
+                        connections.append(connection)
+
+            rhino = getattr(self, "rhino", None)
+
+            if rhino is not None:
+                connection = getattr(rhino, "db", None)
+
+                if connection is not None:
+                    connections.append(connection)
+
+            closed = set()
+
+            for connection in connections:
+                connection_id = id(connection)
+
+                if connection_id in closed:
+                    continue
+
+                try:
+                    connection.close()
+                    closed.add(connection_id)
+                    print("[IMPORT] Closed database connection.")
+                except Exception as exc:
+                    print(
+                        "[IMPORT] Could not close database connection:",
+                        exc,
+                    )
+
+            # --------------------------------------------------
+            # 3. REPLACE LIVE DATABASE
+            # --------------------------------------------------
+
+            shutil.copy2(
+                imported_db,
+                live_db_path,
+            )
+
+            print("[IMPORT] Database replaced:")
+            print("[IMPORT]", live_db_path)
+
+            # --------------------------------------------------
+            # 4. REOPEN DATABASE CONNECTIONS
+            # --------------------------------------------------
+
+            self.rhino_db = RhinoDatabase(live_db_path)
+
+            self.db = RhinoDatabase(live_db_path)
+
+            self.rhino._load_settings()
+
+            print(
+                "[IMPORT] Restored Rhino user:",
+                self.rhino.username,
+            )
+
+            print(
+                "[IMPORT] Restored Rhino password:",
+                "present" if self.rhino.password else "EMPTY",
+            )
+
+            if rhino is not None:
+                rhino.db = RhinoDatabase(live_db_path)
+
+            print("[IMPORT] Database connections reopened.")
+
+            # --------------------------------------------------
+            # 5. VERIFY RESTORED DATABASE
+            # --------------------------------------------------
+
+            result = self.rhino_db.db.execute(
+                "PRAGMA integrity_check"
+            ).fetchone()[0]
+
+            if result != "ok":
+                raise RuntimeError(
+                    "Restored database failed integrity check: "
+                    + str(result)
+                )
+
+            print("[IMPORT] Restored database integrity: OK")
+
+            # --------------------------------------------------
+            # 6. CLEAN UP
+            # --------------------------------------------------
+
+            import shutil as _shutil
+
+            temp_dir = backup_info.get("temp_dir")
+
+            if temp_dir:
+                _shutil.rmtree(
+                    temp_dir,
+                    ignore_errors=True,
+                )
+
+            del self.pending_backup
+
+            print("[IMPORT] RESTORE COMPLETE")
+
+        except Exception as exc:
+            import logging
+
+            logging.exception(
+                "[IMPORT] Restore failed"
+            )
+
+            print(
+                "[IMPORT] RESTORE FAILED:",
+                exc,
+            )
+
+
+    def confirm_backup_restore(self):
+        from kivymd.uix.dialog import MDDialog
+        from kivymd.uix.button import MDButton, MDButtonText
+        from kivymd.uix.label import MDLabel
+
+        if not hasattr(self, "pending_backup"):
+            print("[IMPORT] No validated backup is pending.")
+            return
+
+        merge_mode = self.get_backup_setting("backup_merge_mode")
+
+        if merge_mode:
+            mode_text = "MERGE"
+            description = (
+                "The backup data will be merged with your existing data."
+            )
+        else:
+            mode_text = "REPLACE"
+            description = (
+                "Your existing data will be replaced by the backup."
+            )
+
+        self.restore_dialog = MDDialog(
+            MDLabel(
+                text=(
+                    "Restore Backup?\n\n"
+                    + description
+                    + "\n\n"
+                    "A safety backup of your current data "
+                    "will be created first."
+                ),
+                adaptive_height=True,
+            ),
+            MDButton(
+                MDButtonText(text="Cancel"),
+                on_release=lambda *args: self.restore_dialog.dismiss(),
+            ),
+            MDButton(
+                MDButtonText(text="Restore " + mode_text),
+                on_release=lambda *args: self._begin_backup_restore(),
+            ),
+        )
+
+        self.restore_dialog.open()
     def import_backup(self):
         from libs.ios.share_sheet import pick_backup_file
         pick_backup_file()
@@ -76,9 +290,44 @@ class Demo3App(MDApp):
     def on_backup_file_picked(self, path):
         print("[IMPORT] Backup file ready:", path)
 
-        # Next step:
-        # Validate the ZIP and restore using the selected
-        # Replace/Merge preference.
+        try:
+            from libs.lib_backup import validate_backup_archive
+
+            result = validate_backup_archive(path)
+
+            manifest = result["manifest"]
+
+            print("[IMPORT] Backup validated successfully.")
+            print(
+                "[IMPORT] Backup created:",
+                manifest.get("created_at")
+            )
+            print(
+                "[IMPORT] Includes login credentials:",
+                manifest.get("includes_login_credentials")
+            )
+
+            self.pending_backup = result
+
+            print("[IMPORT] Ready for restore.")
+            self.confirm_backup_restore()
+
+        except Exception as exc:
+            import logging
+            logging.exception("[IMPORT] Backup validation failed")
+
+            from kivy.metrics import dp
+            from kivymd.uix.snackbar import MDSnackbar
+            from kivymd.uix.snackbar import MDSnackbarText
+
+            MDSnackbar(
+                MDSnackbarText(
+                    text="Invalid backup: " + str(exc)
+                ),
+                y=dp(24),
+                pos_hint={"center_x": 0.5},
+                size_hint_x=0.9,
+            ).open()
     def get_backup_setting(self, key):
         db = getattr(self, "rhino_db", None)
 
@@ -162,7 +411,51 @@ class Demo3App(MDApp):
                 size_hint_x=0.9,
             ).open()
 
+    def get_app_setting(self, key, default=None):
+        db = getattr(self, "db", None)
 
+        if db is None:
+            db = getattr(self, "rhino_db", None)
+
+        if db is None:
+            return default
+
+        try:
+            return db.get_user_setting(key, default)
+        except Exception as exc:
+            print(
+                "[SETTINGS] Could not read setting:",
+                key,
+                exc,
+            )
+            return default
+
+
+    def save_app_setting(self, key, value):
+        db = getattr(self, "db", None)
+
+        if db is None:
+            db = getattr(self, "rhino_db", None)
+
+        if db is None:
+            print(
+                "[SETTINGS] Database not ready; "
+                "could not save:",
+                key,
+            )
+            return
+
+        try:
+            db.save_user_setting(
+                key,
+                value,
+            )
+        except Exception as exc:
+            print(
+                "[SETTINGS] Could not save setting:",
+                key,
+                exc,
+            )
     def build(self):
         print ("def BUILD")
         
@@ -173,6 +466,8 @@ class Demo3App(MDApp):
         self.remote_config = RemoteConfig("config.json")
         self.rhino = RhinoClient()
         self.rhino_db = RhinoDatabase()
+        self.db = self.rhino_db
+
 
         print(
             "[DB TEST] ACTUAL DATABASE:",
@@ -951,39 +1246,40 @@ class Demo3App(MDApp):
 ############ RHINO WEBVIEW LOGIN"""""""""
 
     def login_ios(self):
+
+        if getattr(self, "_login_webview_opening", False):
+            print("[LOGIN] WebView already opening.")
+            return
+
+        self._login_webview_opening = True
+
         if not hasattr(self, "webview"):
             self.webview = IOSWebView()
 
-        #
-        # Show page
-        #
-
-        #self.webview.show_url(login_url)
-        
-        self.webview.show_url(self.rhino.login_url)
-
-        #
-        # Wait a bit, then inject JS
-        #
+        self.webview.show_url(
+            self.rhino.login_url
+        )
 
         Clock.schedule_once(
             lambda dt: self.webview.run_js_file("thinkrhino.js"),
-            2
+            2,
         )
 
-        #
-        # Don't start multiple polling timers
-        #
+        Clock.schedule_once(
+            lambda dt: setattr(
+                self,
+                "_login_webview_opening",
+                False,
+            ),
+            1,
+        )
 
         if not hasattr(self, "_webview_poll"):
 
             self._webview_poll = Clock.schedule_interval(
                 self.check_webview,
-                0.2
+                0.2,
             )
-
-
-
 
 
 
@@ -1053,7 +1349,25 @@ class Demo3App(MDApp):
         PASSWORD = data["password"]
 
         enc = libs.lib_enc.make_password(PASSWORD)
-        print (enc,"ENC!")
+        print(enc, "ENC!")
+
+        # Save credentials permanently to SQLite.
+        self.rhino.db.save_user_setting(
+            "username",
+            EMAIL,
+        )
+
+        self.rhino.db.save_user_setting(
+            "password",
+            enc,
+        )
+
+        self.rhino.db.save_user_setting(
+            "city",
+            self.rhino.city or "lasvegas",
+        )
+
+        print("[LOGIN] Credentials saved to rhino.db.")
 
         html = self.rhino.login(
             EMAIL,
