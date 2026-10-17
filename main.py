@@ -632,7 +632,7 @@ class Demo3App(MDApp):
 
         changes = self.db.compare(shows)
 
-        self.db.save_shows(shows)
+        self.db.save_shows(shows, changes)
         self.db.save_changes(changes)
 
         print(changes["modified"], "changes!!!")

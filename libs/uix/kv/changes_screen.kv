@@ -1,6 +1,94 @@
-##changes_screen.kv
-
 #:import dp kivy.metrics.dp
+
+
+# =====================================================
+# PENDING CONFIRMATION CARD
+# =====================================================
+
+<PendingConfirmCard>:
+
+    orientation: "horizontal"
+
+    size_hint_y: None
+    height: dp(90)
+
+    padding: dp(16), dp(10)
+    spacing: dp(12)
+
+    style: "filled"
+
+    radius: [18, 18, 18, 18]
+
+    theme_bg_color: "Custom"
+    md_bg_color: app.theme_cls.surfaceContainerColor
+
+
+    # =================================================
+    # SHOW INFORMATION
+    # =================================================
+
+    MDBoxLayout:
+
+        orientation: "vertical"
+
+        spacing: dp(2)
+
+
+        MDLabel:
+
+            text: root.show_name
+
+            font_style: "Title"
+            role: "medium"
+
+            bold: True
+
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.onSurfaceColor
+
+            shorten: True
+            shorten_from: "right"
+
+
+        MDLabel:
+
+            text:
+                root.show_date + " • " + root.show_time \
+                if root.show_date and root.show_time \
+                else root.show_date \
+                if root.show_date \
+                else root.show_time
+
+            font_style: "Body"
+            role: "large"
+
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.onSurfaceVariantColor
+
+            shorten: True
+            shorten_from: "right"
+
+
+    # =================================================
+    # CONFIRM BUTTON
+    # =================================================
+
+    MDButton:
+
+        style: "filled"
+
+        size_hint: None, None
+        width: dp(105)
+        height: dp(44)
+
+        pos_hint: {"center_y": .5}
+
+        on_release:
+            app.root.get_screen("changes").confirm_one(root.confirm_id)
+
+        MDButtonText:
+
+            text: "CONFIRM"
 
 
 # =====================================================
@@ -24,10 +112,6 @@
     theme_bg_color: "Custom"
     md_bg_color: app.theme_cls.surfaceContainerColor
 
-
-    # =================================================
-    # MAIN CONTENT ROW
-    # =================================================
 
     MDBoxLayout:
 
@@ -55,16 +139,13 @@
             spacing: dp(4)
 
 
-            # -----------------------------------------
-            # SHOW NAME
-            # -----------------------------------------
-
             MDLabel:
 
                 text: root.show_name
 
                 font_style: "Title"
                 role: "medium"
+
                 bold: True
 
                 theme_text_color: "Custom"
@@ -76,10 +157,6 @@
                 shorten: True
                 shorten_from: "right"
 
-
-            # -----------------------------------------
-            # SHOW DATE + TIME
-            # -----------------------------------------
 
             MDLabel:
 
@@ -103,14 +180,6 @@
                 shorten_from: "right"
 
 
-            # -----------------------------------------
-            # CHANGE DETECTED TIMESTAMP
-            # -----------------------------------------
-            #
-            # Keep this here but subtle. This is when
-            # Rhino detected the change, NOT the show time.
-            #
-
             MDLabel:
 
                 text: root.timestamp
@@ -127,11 +196,8 @@
                 shorten: True
                 shorten_from: "right"
 
-        # =============================================
-        # RIGHT SIDE — BADGES
-        # =============================================
 
-                # =============================================
+        # =============================================
         # RIGHT SIDE — BADGES
         # =============================================
 
@@ -159,7 +225,8 @@
 
                 spacing: dp(4)
 
-                pos_hint: {"center_x": .5, "center_y": .5}
+                pos_hint:
+                    {"center_x": .5, "center_y": .5}
 
 
                 # =====================================
@@ -267,6 +334,7 @@
                         theme_text_color: "Custom"
                         text_color: app.theme_cls.onSurfaceColor
 
+
 # =====================================================
 # CHANGES SCREEN
 # =====================================================
@@ -278,33 +346,164 @@
         orientation: "vertical"
 
 
-        # =============================================
-        # CHANGE LIST
-        # =============================================
+        # =================================================
+        # SCROLLABLE CONTENT
+        # =================================================
 
-        RecycleView:
+        ScrollView:
 
-            id: changes_rv
-
-            viewclass: "ChangeCard"
+            do_scroll_x: False
 
 
-            RecycleBoxLayout:
-
-                default_size: None, dp(125)
-
-                default_size_hint: 1, None
-
-                size_hint_y: None
-
-                height: self.minimum_height
+            MDBoxLayout:
 
                 orientation: "vertical"
 
+                adaptive_height: True
 
-        # =============================================
+                padding: dp(12)
+                spacing: dp(10)
+
+
+                # =========================================
+                # PENDING CONFIRMATIONS
+                # =========================================
+
+                MDBoxLayout:
+
+                    id: pending_section
+
+                    orientation: "vertical"
+
+                    adaptive_height: True
+
+                    spacing: dp(8)
+
+
+                    # -------------------------------------
+                    # HEADER
+                    # -------------------------------------
+
+                    MDBoxLayout:
+
+                        size_hint_y: None
+                        height: dp(48)
+
+                        spacing: dp(8)
+
+
+                        MDLabel:
+
+                            text: "PENDING CONFIRMATIONS"
+
+                            font_style: "Title"
+                            role: "large"
+
+                            bold: True
+
+                            theme_text_color: "Custom"
+                            text_color: app.theme_cls.onSurfaceColor
+
+
+                        MDButton:
+
+                            style: "filled"
+
+                            size_hint: None, None
+                            width: dp(125)
+                            height: dp(40)
+
+                            on_release:
+                                app.root.get_screen("changes").confirm_all()
+
+                            MDButtonText:
+
+                                text: "CONFIRM ALL"
+
+
+                    # -------------------------------------
+                    # PENDING CARDS
+                    # -------------------------------------
+
+                    RecycleView:
+
+                        id: pending_rv
+
+                        size_hint_y: None
+
+                        height: self.layout_manager.minimum_height
+
+                        viewclass: "PendingConfirmCard"
+
+
+                        RecycleBoxLayout:
+
+                            default_size: None, dp(90)
+
+                            default_size_hint: 1, None
+
+                            size_hint_y: None
+
+                            height: self.minimum_height
+
+                            orientation: "vertical"
+
+                            spacing: dp(8)
+
+
+                # =========================================
+                # SCHEDULE CHANGES HEADER
+                # =========================================
+
+                MDLabel:
+
+                    text: "SCHEDULE CHANGES"
+
+                    font_style: "Title"
+                    role: "large"
+
+                    bold: True
+
+                    theme_text_color: "Custom"
+                    text_color: app.theme_cls.onSurfaceColor
+
+                    size_hint_y: None
+                    height: dp(48)
+
+
+                # =========================================
+                # CHANGE LIST
+                # =========================================
+
+                RecycleView:
+
+                    id: changes_rv
+
+                    size_hint_y: None
+
+                    height: self.layout_manager.minimum_height
+
+                    viewclass: "ChangeCard"
+
+
+                    RecycleBoxLayout:
+
+                        default_size: None, dp(125)
+
+                        default_size_hint: 1, None
+
+                        size_hint_y: None
+
+                        height: self.minimum_height
+
+                        orientation: "vertical"
+
+                        spacing: dp(8)
+
+
+        # =================================================
         # NAVIGATION
-        # =============================================
+        # =================================================
 
         NavigationBar:
 
