@@ -422,7 +422,41 @@ class RhinoDatabase:
             row["id"]: row
             for row in rows
         }
+        print()
+        print("========== CHANGE DEBUG ==========")
+        print("[CHANGE] CURRENT SHOWS:", len(current))
+        print("[CHANGE] PREVIOUS SHOWS:", len(previous))
 
+        for show in shows:
+
+            if "MICROSOFT POWER PLATFORM" in str(show.show).upper():
+
+                print(
+                    "[CHANGE] CURRENT MICROSOFT:",
+                    "id=", show.id,
+                    "job=", repr(show.job),
+                    "show=", repr(show.show),
+                    "venue=", repr(show.venue),
+                    "date=", repr(show.date),
+                    "time=", repr(show.time),
+                )
+
+        for row in rows:
+
+            if "MICROSOFT POWER PLATFORM" in str(row["show"]).upper():
+
+                print(
+                    "[CHANGE] DATABASE MICROSOFT:",
+                    "id=", row["id"],
+                    "job=", repr(row["job"]),
+                    "show=", repr(row["show"]),
+                    "venue=", repr(row["venue"]),
+                    "date=", repr(row["date"]),
+                    "time=", repr(row["time"]),
+                )
+
+        print("========== END CHANGE DEBUG ==========")
+        print()
         result = {
             "new": [],
             "modified": [],
@@ -476,23 +510,36 @@ class RhinoDatabase:
         # instead of relying on the Rhino ID.
         # --------------------------------------------------
 
+        # --------------------------------------------------
+        # SECOND PASS
+        #
+        # Find old database rows that are actually an older
+        # version of a current show.
+        #
+        # IMPORTANT:
+        # The current show may ALREADY have an exact ID match.
+        # That is exactly what happens when Rhino generated a
+        # new ID for a changed show and the previous row was
+        # left behind.
+        # --------------------------------------------------
+
         unmatched_old = [
             row
             for show_id, row in previous.items()
             if show_id not in matched_old_ids
         ]
 
-        unmatched_new = [
-            show
-            for show_id, show in current.items()
-            if show_id not in matched_new_ids
-        ]
-
         for old in unmatched_old:
 
             candidates = []
 
-            for new in unmatched_new:
+            # --------------------------------------------------
+            # Look through ALL current shows.
+            #
+            # Do NOT restrict this to unmatched_new.
+            # --------------------------------------------------
+
+            for new in current.values():
 
                 old_job = str(
                     old["job"] or ""
@@ -510,7 +557,7 @@ class RhinoDatabase:
                     new.show or ""
                 ).strip().lower()
 
-                # Job + show is our primary identity.
+                # Job + show identifies the underlying show.
                 if old_job != new_job:
                     continue
 
@@ -523,33 +570,27 @@ class RhinoDatabase:
                 continue
 
             # --------------------------------------------------
-            # If there are several identical jobs/shows,
-            # prefer the one with the same venue.
+            # Prefer the same venue.
             # --------------------------------------------------
-
-            same_venue = []
 
             old_venue = str(
                 old["venue"] or ""
             ).strip().lower()
 
-            if old_venue:
-
-                for candidate in candidates:
-
-                    new_venue = str(
-                        candidate.venue or ""
-                    ).strip().lower()
-
-                    if new_venue == old_venue:
-                        same_venue.append(candidate)
+            same_venue = [
+                candidate
+                for candidate in candidates
+                if str(
+                    candidate.venue or ""
+                ).strip().lower() == old_venue
+            ]
 
             if same_venue:
                 candidates = same_venue
 
             # --------------------------------------------------
-            # If there are still multiple possibilities,
-            # choose the one closest in date/time.
+            # If there are multiple candidates, choose the
+            # one closest in date/time.
             # --------------------------------------------------
 
             if len(candidates) > 1:
@@ -557,11 +598,14 @@ class RhinoDatabase:
                 old_datetime = None
 
                 try:
+
                     old_datetime = datetime.strptime(
                         f"{old['date']} {old['time']}",
                         "%m/%d/%Y %H:%M",
                     )
+
                 except (ValueError, TypeError):
+
                     pass
 
                 if old_datetime is not None:
@@ -569,6 +613,7 @@ class RhinoDatabase:
                     def distance(candidate):
 
                         try:
+
                             candidate_datetime = datetime.strptime(
                                 f"{candidate.date} {candidate.time}",
                                 "%m/%d/%Y %H:%M",
@@ -587,10 +632,15 @@ class RhinoDatabase:
                     )
 
             # --------------------------------------------------
-            # We now have our best candidate.
+            # Best candidate.
             # --------------------------------------------------
 
             new = candidates[0]
+
+            # If this old row already has the same ID, it would
+            # have been caught by the first pass.
+            if old["id"] == new.id:
+                continue
 
             changes = self._compare_show(
                 old,
@@ -600,10 +650,8 @@ class RhinoDatabase:
             if not changes:
                 continue
 
-            print(
-                "[CHANGE] SAME SHOW, NEW RHINO ID"
-            )
-
+            print()
+            print("[CHANGE] SAME SHOW, OLD DATABASE VERSION")
             print(
                 "[CHANGE] OLD:",
                 old["id"],
@@ -611,7 +659,6 @@ class RhinoDatabase:
                 old["time"],
                 old["show"],
             )
-
             print(
                 "[CHANGE] NEW:",
                 new.id,
@@ -619,6 +666,14 @@ class RhinoDatabase:
                 new.time,
                 new.show,
             )
+            print(
+                "[CHANGE] FIELDS:",
+                list(changes.keys()),
+            )
+
+            # --------------------------------------------------
+            # Treat this as the old version of the current show.
+            # --------------------------------------------------
 
             result["modified"].append({
                 "show": new,
@@ -630,24 +685,10 @@ class RhinoDatabase:
                 old["id"]
             )
 
-            matched_new_ids.add(
-                new.id
-            )
-
             result["replaced"].append({
                 "old_id": old["id"],
                 "new_id": new.id,
             })
-
-            # VERY IMPORTANT:
-            # Don't let another old row match this same
-            # new show.
-            unmatched_new = [
-                candidate
-                for candidate in unmatched_new
-                if candidate.id != new.id
-            ]
-
         # --------------------------------------------------
         # THIRD PASS
         # Anything still unmatched is genuinely NEW.
@@ -958,15 +999,13 @@ class RhinoDatabase:
 
         print("DEV DATABASE RESET")
         
-    def get_changes(self, limit=100):
+        def get_changes(self, limit=100):
         """
-        Return schedule changes.
+        Return recent schedule changes grouped by show,
+        timestamp, and change type.
 
-        Removed shows are only displayed if the show was
-        removed BEFORE its scheduled date/time.
-
-        A show disappearing from Rhino after it happened is
-        treated as normal schedule aging and is not shown.
+        Individual field changes remain separate in the
+        database, but are combined for display.
         """
 
         from datetime import datetime
@@ -992,59 +1031,71 @@ class RhinoDatabase:
                 ON c.show_id = s.id
 
             ORDER BY c.id DESC
-        """).fetchall()
 
-        data = []
+            LIMIT ?
+        """, (limit,)).fetchall()
+
+        grouped = {}
 
         for row in rows:
 
             change = dict(row)
 
-            # ----------------------------------------------
-            # OLD "REMOVED" RECORDS
-            #
-            # If the show is already in the past, it simply
-            # fell off the Rhino schedule normally.
-            # Do not display it as a change.
-            # ----------------------------------------------
+            key = (
+                change["show_id"],
+                change["timestamp"],
+                change["change_type"],
+            )
 
-            if change["change_type"] == "removed":
+            if key not in grouped:
 
-                show_date = change["date"]
-                show_time = change["time"]
+                grouped[key] = {
+                    "id": change["id"],
+                    "timestamp": change["timestamp"],
+                    "show_id": change["show_id"],
+                    "change_type": change["change_type"],
+                    "show": change["show"],
+                    "venue": change["venue"],
+                    "date": change["date"],
+                    "time": change["time"],
+                    "fields": [],
+                }
+
+            if change["field"]:
+
+                grouped[key]["fields"].append({
+                    "field": change["field"],
+                    "old_value": change["old_value"],
+                    "new_value": change["new_value"],
+                })
+
+        results = list(grouped.values())
+
+        # A removed show that has naturally fallen into the
+        # past should not appear as a schedule-change card.
+        now = datetime.now()
+
+        filtered = []
+
+        for item in results:
+
+            if item["change_type"] == "removed":
 
                 try:
-
                     show_datetime = datetime.strptime(
-                        f"{show_date} {show_time}",
+                        f'{item["date"]} {item["time"]}',
                         "%m/%d/%Y %H:%M",
                     )
 
-                    if show_datetime <= datetime.now():
-
+                    if show_datetime <= now:
                         continue
 
                 except (ValueError, TypeError):
+                    pass
 
-                    print(
-                        "[CHANGES] Could not determine "
-                        "past/future for removed show:",
-                        change["show"],
-                        show_date,
-                        show_time,
-                    )
+            filtered.append(item)
 
-            data.append(change)
-
-            # ----------------------------------------------
-            # Don't let this grow without bound.
-            # ----------------------------------------------
-
-            if len(data) >= limit:
-
-                break
-
-        return data
+        return filtered
 
     def migrate_userdata_json(self, json_path):
 

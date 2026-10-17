@@ -1,13 +1,16 @@
-from kivy.uix.screenmanager import Screen
-from kivy.properties import StringProperty, ColorProperty
-from kivymd.uix.card import MDCard
-from libs.lib_rhino_db import RhinoDatabase
 from datetime import datetime
 
+from kivy.metrics import dp
+from kivy.properties import (
+    StringProperty,
+    ColorProperty,
+    NumericProperty,
+)
+from kivy.uix.screenmanager import Screen
+from kivymd.uix.card import MDCard
 
-# =====================================================
-# PENDING CONFIRMATION CARD
-# =====================================================
+from libs.lib_rhino_db import RhinoDatabase
+
 
 class PendingConfirmCard(MDCard):
 
@@ -17,28 +20,23 @@ class PendingConfirmCard(MDCard):
     confirm_id = StringProperty("")
 
 
-# =====================================================
-# CHANGE CARD
-# =====================================================
-
 class ChangeCard(MDCard):
 
     show_name = StringProperty("")
-    change_type = StringProperty("")
-    field = StringProperty("")
-    old_value = StringProperty("")
-    new_value = StringProperty("")
-    timestamp = StringProperty("")
-    badge = StringProperty("")
-    badge_color = ColorProperty((0.4, 0.4, 0.4, 1))
-    change_badge = StringProperty("")
     show_date = StringProperty("")
     show_time = StringProperty("")
 
+    change_type = StringProperty("")
+    change_summary = StringProperty("")
+    change_count = NumericProperty(1)
 
-# =====================================================
-# CHANGES SCREEN
-# =====================================================
+    timestamp = StringProperty("")
+
+    badge = StringProperty("")
+    badge_color = ColorProperty(
+        (0.4, 0.4, 0.4, 1)
+    )
+
 
 class ChangesScreen(Screen):
 
@@ -55,34 +53,72 @@ class ChangesScreen(Screen):
         if change in ("canceled", "cancelled"):
             return "CANCELED", (0.85, 0.20, 0.20, 1)
 
+        if change == "removed":
+            return "REMOVED", (0.40, 0.40, 0.40, 1)
+
         return (
             change.upper() or "?",
-            (0.40, 0.40, 0.40, 1)
+            (0.40, 0.40, 0.40, 1),
         )
 
+    def format_timestamp(self, timestamp):
 
-    # =================================================
-    # SCREEN ENTER
-    # =================================================
+        if not timestamp:
+            return ""
 
-    def on_pre_enter(self):
+        try:
+            dt = datetime.fromisoformat(timestamp)
+
+            return (
+                f"{dt:%b} {dt.day}, {dt:%Y} "
+                f"{dt:%I:%M %p}"
+            )
+
+        except (ValueError, TypeError):
+            return timestamp
+
+    def format_field_value(self, value):
+
+        if value is None or str(value).strip() == "":
+            return "—"
+
+        return str(value).strip()
+
+    def on_pre_enter(self, *args):
 
         print("ChangesScreen ENTER")
 
         db = RhinoDatabase()
 
-        # =================================================
-        # PENDING CONFIRMATIONS
-        # =================================================
+        try:
+            self.load_pending_confirmations(db)
+            self.load_schedule_changes(db)
+
+        finally:
+            db.close()
+
+    def load_pending_confirmations(self, db):
+
+        pending_list = self.ids.pending_list
+        pending_list.clear_widgets()
 
         pending = db.get_pending_confirmations()
 
         print(
             "[CONFIRM] Pending confirmations:",
-            len(pending)
+            len(pending),
         )
 
-        pending_data = []
+        # The section contains the heading/button and the list.
+        # With no pending shows, both are hidden and take no space.
+        if pending:
+            self.ids.pending_header.height = dp(48)
+            self.ids.pending_header.opacity = 1
+            self.ids.pending_header.disabled = False
+        else:
+            self.ids.pending_header.height = 0
+            self.ids.pending_header.opacity = 0
+            self.ids.pending_header.disabled = True
 
         for show in pending:
 
@@ -94,23 +130,26 @@ class ChangesScreen(Screen):
                 show["confirm_id"],
             )
 
-            pending_data.append({
-                "show_name": show["show"] or "Unknown Show",
-                "show_date": show["date"] or "",
-                "show_time": show["time"] or "",
-                "confirm_id": show["confirm_id"] or "",
-            })
+            card = PendingConfirmCard(
+                show_name=show["show"] or "Unknown Show",
+                show_date=show["date"] or "",
+                show_time=show["time"] or "",
+                confirm_id=show["confirm_id"] or "",
+            )
 
-        self.ids.pending_rv.data = pending_data
+            pending_list.add_widget(card)
 
+    def load_schedule_changes(self, db):
 
-        # =================================================
-        # SCHEDULE CHANGES
-        # =================================================
+        change_list = self.ids.change_list
+        change_list.clear_widgets()
 
         changes = db.get_changes(100)
 
-        data = []
+        print(
+            "[CHANGES] Grouped change cards:",
+            len(changes),
+        )
 
         for change in changes:
 
@@ -120,66 +159,53 @@ class ChangesScreen(Screen):
                 change_type
             )
 
-            change_badge = (
-                change["field"] or ""
-            ).upper()
+            field_lines = []
 
-            timestamp = change["timestamp"] or ""
+            for field_change in change.get("fields", []):
 
-            try:
+                field_name = (
+                    field_change.get("field") or ""
+                ).replace("_", " ").upper()
 
-                dt = datetime.fromisoformat(timestamp)
-
-                timestamp = (
-                    f"{dt:%b} "
-                    f"{dt.day}, "
-                    f"{dt:%Y} "
-                    f"{dt:%I:%M %p}"
+                old_value = self.format_field_value(
+                    field_change.get("old_value")
                 )
 
-            except (ValueError, TypeError):
+                new_value = self.format_field_value(
+                    field_change.get("new_value")
+                )
 
-                pass
+                field_lines.append(
+                    f"{field_name}: {old_value}  →  {new_value}"
+                )
 
+            if not field_lines:
 
-            data.append({
+                if change_type.lower() == "new":
+                    field_lines.append("Show added to schedule")
 
-                "timestamp": timestamp,
+                elif change_type.lower() == "removed":
+                    field_lines.append("Show removed from schedule")
 
-                "change_type": change_type,
+                else:
+                    field_lines.append("Schedule updated")
 
-                "field": change["field"] or "",
+            summary = "\n".join(field_lines)
 
-                "old_value":
-                    change["old_value"] or "",
+            timestamp = self.format_timestamp(
+                change.get("timestamp")
+            )
 
-                "new_value":
-                    change["new_value"] or "",
+            card = ChangeCard(
+                show_name=change.get("show") or "Unknown Show",
+                show_date=change.get("date") or "",
+                show_time=change.get("time") or "",
+                change_type=change_type,
+                change_summary=summary,
+                change_count=max(1, len(field_lines)),
+                timestamp=timestamp,
+                badge=badge,
+                badge_color=badge_color,
+            )
 
-                "show_name":
-                    change["show"] or "Unknown Show",
-
-                "venue":
-                    change["venue"] or "",
-
-                "show_date":
-                    change["date"] or "",
-
-                "show_time":
-                    change["time"] or "",
-
-                "badge":
-                    badge,
-
-                "badge_color":
-                    badge_color,
-
-                "change_badge":
-                    change_badge,
-
-            })
-
-
-        self.ids.changes_rv.data = data
-
-        db.close()
+            change_list.add_widget(card)

@@ -1,57 +1,33 @@
 #:import dp kivy.metrics.dp
 
 
-# =====================================================
-# PENDING CONFIRMATION CARD
-# =====================================================
-
 <PendingConfirmCard>:
-
     orientation: "horizontal"
-
     size_hint_y: None
     height: dp(90)
-
     padding: dp(16), dp(10)
     spacing: dp(12)
 
     style: "filled"
-
     radius: [18, 18, 18, 18]
-
     theme_bg_color: "Custom"
     md_bg_color: app.theme_cls.surfaceContainerColor
 
-
-    # =================================================
-    # SHOW INFORMATION
-    # =================================================
-
     MDBoxLayout:
-
         orientation: "vertical"
-
         spacing: dp(2)
 
-
         MDLabel:
-
             text: root.show_name
-
             font_style: "Title"
             role: "medium"
-
             bold: True
-
             theme_text_color: "Custom"
             text_color: app.theme_cls.onSurfaceColor
-
             shorten: True
             shorten_from: "right"
 
-
         MDLabel:
-
             text:
                 root.show_date + " • " + root.show_time \
                 if root.show_date and root.show_time \
@@ -61,450 +37,189 @@
 
             font_style: "Body"
             role: "large"
-
             theme_text_color: "Custom"
             text_color: app.theme_cls.onSurfaceVariantColor
-
             shorten: True
             shorten_from: "right"
 
-
-    # =================================================
-    # CONFIRM BUTTON
-    # =================================================
-
     MDButton:
-
         style: "filled"
-
         size_hint: None, None
         width: dp(105)
         height: dp(44)
-
         pos_hint: {"center_y": .5}
 
         on_release:
             app.root.get_screen("changes").confirm_one(root.confirm_id)
 
         MDButtonText:
-
             text: "CONFIRM"
 
 
-# =====================================================
-# CHANGE CARD
-# =====================================================
-
 <ChangeCard>:
-
     orientation: "vertical"
-
     size_hint_y: None
-    height: dp(125)
+    height: dp(100) + dp(24) * root.change_count
 
     padding: dp(16), dp(10)
     spacing: dp(4)
 
     style: "filled"
-
     radius: [18, 18, 18, 18]
-
     theme_bg_color: "Custom"
     md_bg_color: app.theme_cls.surfaceContainerColor
 
-
     MDBoxLayout:
-
         orientation: "horizontal"
-
         size_hint_y: None
-        height: dp(100)
-
+        height: dp(32)
         spacing: dp(8)
 
-
-        # =============================================
-        # LEFT SIDE
-        # =============================================
+        MDLabel:
+            text: root.show_name
+            font_style: "Title"
+            role: "medium"
+            bold: True
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.onSurfaceColor
+            shorten: True
+            shorten_from: "right"
 
         MDBoxLayout:
-
-            orientation: "vertical"
-
-            size_hint_y: None
-            height: dp(84)
-
-            pos_hint: {"center_y": .5}
-
-            spacing: dp(4)
-
+            size_hint: None, None
+            size: dp(112), dp(32)
+            radius: [10, 10, 10, 10]
+            md_bg_color: root.badge_color
 
             MDLabel:
-
-                text: root.show_name
-
-                font_style: "Title"
-                role: "medium"
-
+                text: root.badge
+                halign: "center"
+                valign: "middle"
                 bold: True
-
-                theme_text_color: "Custom"
-                text_color: app.theme_cls.onSurfaceColor
-
-                size_hint_y: None
-                height: dp(36)
-
-                shorten: True
-                shorten_from: "right"
-
-
-            MDLabel:
-
-                text:
-                    root.show_date + " • " + root.show_time \
-                    if root.show_date and root.show_time \
-                    else root.show_date \
-                    if root.show_date \
-                    else root.show_time
-
-                font_style: "Body"
-                role: "large"
-
-                theme_text_color: "Custom"
-                text_color: app.theme_cls.onSurfaceColor
-
-                size_hint_y: None
-                height: dp(30)
-
-                shorten: True
-                shorten_from: "right"
-
-
-            MDLabel:
-
-                text: root.timestamp
-
                 font_style: "Label"
-                role: "small"
-
+                role: "medium"
                 theme_text_color: "Custom"
-                text_color: app.theme_cls.onSurfaceVariantColor
+                text_color: (1, 1, 1, 1)
 
-                size_hint_y: None
-                height: dp(18)
+    MDLabel:
+        text:
+            root.show_date + " • " + root.show_time \
+            if root.show_date and root.show_time \
+            else root.show_date \
+            if root.show_date \
+            else root.show_time
 
-                shorten: True
-                shorten_from: "right"
+        size_hint_y: None
+        height: dp(24)
+        font_style: "Body"
+        role: "large"
+        theme_text_color: "Custom"
+        text_color: app.theme_cls.onSurfaceColor
+        shorten: True
+        shorten_from: "right"
 
+    MDLabel:
+        text: root.change_summary
+        size_hint_y: None
+        height: dp(22) * root.change_count
+        text_size: self.width, self.height
+        halign: "left"
+        valign: "middle"
+        font_style: "Body"
+        role: "medium"
+        theme_text_color: "Custom"
+        text_color: app.theme_cls.onSurfaceColor
 
-        # =============================================
-        # RIGHT SIDE — BADGES
-        # =============================================
+    MDLabel:
+        text: root.timestamp
+        size_hint_y: None
+        height: dp(18)
+        font_style: "Body"
+        role: "small"
+        theme_text_color: "Custom"
+        text_color: app.theme_cls.onSurfaceVariantColor
 
-        MDBoxLayout:
-
-            orientation: "vertical"
-
-            size_hint_x: None
-            width: dp(120)
-
-            size_hint_y: None
-            height: dp(100)
-
-
-            MDBoxLayout:
-
-                orientation: "vertical"
-
-                size_hint: None, None
-
-                width: dp(120)
-
-                height:
-                    dp(92) if root.change_badge else dp(28)
-
-                spacing: dp(4)
-
-                pos_hint:
-                    {"center_x": .5, "center_y": .5}
-
-
-                # =====================================
-                # CHANGE TYPE
-                # =====================================
-
-                MDCard:
-
-                    size_hint: None, None
-                    size: dp(120), dp(28)
-
-                    radius: [14, 14, 14, 14]
-
-                    theme_bg_color: "Custom"
-                    md_bg_color: root.badge_color
-
-
-                    MDLabel:
-
-                        text: root.badge
-
-                        halign: "center"
-                        valign: "center"
-
-                        text_size: self.size
-
-                        font_style: "Label"
-                        role: "small"
-
-                        bold: True
-
-                        theme_text_color: "Custom"
-                        text_color: 1, 1, 1, 1
-
-
-                # =====================================
-                # OLD -> NEW
-                # =====================================
-
-                MDCard:
-
-                    size_hint: None, None
-                    size: dp(120), dp(28)
-
-                    opacity: 1 if root.change_badge else 0
-
-                    radius: [14, 14, 14, 14]
-
-                    theme_bg_color: "Custom"
-                    md_bg_color: app.theme_cls.surfaceContainerHighestColor
-
-
-                    MDLabel:
-
-                        text:
-                            (root.old_value + "  ->  " + root.new_value) \
-                            if root.old_value or root.new_value else ""
-
-                        halign: "center"
-                        valign: "center"
-
-                        text_size: self.size
-
-                        font_style: "Label"
-                        role: "small"
-
-                        theme_text_color: "Custom"
-                        text_color: app.theme_cls.onSurfaceColor
-
-                        shorten: True
-                        shorten_from: "right"
-
-
-                # =====================================
-                # FIELD
-                # =====================================
-
-                MDCard:
-
-                    size_hint: None, None
-                    size: dp(120), dp(28)
-
-                    opacity: 1 if root.change_badge else 0
-
-                    radius: [14, 14, 14, 14]
-
-                    theme_bg_color: "Custom"
-                    md_bg_color: app.theme_cls.surfaceContainerHighestColor
-
-
-                    MDLabel:
-
-                        text: root.change_badge
-
-                        halign: "center"
-                        valign: "center"
-
-                        text_size: self.size
-
-                        font_style: "Label"
-                        role: "small"
-
-                        bold: True
-
-                        theme_text_color: "Custom"
-                        text_color: app.theme_cls.onSurfaceColor
-
-
-# =====================================================
-# CHANGES SCREEN
-# =====================================================
 
 <ChangesScreen>:
-
     BoxLayout:
-
         orientation: "vertical"
 
-
-        # =================================================
-        # SCROLLABLE CONTENT
-        # =================================================
-
+        # One scroll container for the entire page.
         ScrollView:
-
             do_scroll_x: False
-
+            do_scroll_y: True
+            bar_width: dp(4)
 
             MDBoxLayout:
-
                 orientation: "vertical"
-
                 adaptive_height: True
-
                 padding: dp(12)
                 spacing: dp(10)
 
-
-                # =========================================
+                # ------------------------------------------
                 # PENDING CONFIRMATIONS
-                # =========================================
+                # This section collapses when empty.
+                # ------------------------------------------
 
                 MDBoxLayout:
-
                     id: pending_section
-
                     orientation: "vertical"
-
                     adaptive_height: True
-
                     spacing: dp(8)
 
-
-                    # -------------------------------------
-                    # HEADER
-                    # -------------------------------------
-
                     MDBoxLayout:
-
+                        id: pending_header
+                        orientation: "horizontal"
                         size_hint_y: None
                         height: dp(48)
-
                         spacing: dp(8)
 
-
                         MDLabel:
-
                             text: "PENDING CONFIRMATIONS"
-
-                            font_style: "Title"
-                            role: "large"
-
+                            font_style: "Headline"
+                            role: "small"
                             bold: True
-
                             theme_text_color: "Custom"
                             text_color: app.theme_cls.onSurfaceColor
 
-
                         MDButton:
-
                             style: "filled"
-
                             size_hint: None, None
-                            width: dp(125)
-                            height: dp(40)
+                            width: dp(160)
+                            height: dp(48)
+                            pos_hint: {"center_y": .5}
 
                             on_release:
                                 app.root.get_screen("changes").confirm_all()
 
                             MDButtonText:
-
                                 text: "CONFIRM ALL"
 
+                    MDBoxLayout:
+                        id: pending_list
+                        orientation: "vertical"
+                        adaptive_height: True
+                        spacing: dp(8)
 
-                    # -------------------------------------
-                    # PENDING CARDS
-                    # -------------------------------------
-
-                    RecycleView:
-
-                        id: pending_rv
-
-                        size_hint_y: None
-
-                        height: self.layout_manager.minimum_height
-
-                        viewclass: "PendingConfirmCard"
-
-
-                        RecycleBoxLayout:
-
-                            default_size: None, dp(90)
-
-                            default_size_hint: 1, None
-
-                            size_hint_y: None
-
-                            height: self.minimum_height
-
-                            orientation: "vertical"
-
-                            spacing: dp(8)
-
-
-                # =========================================
-                # SCHEDULE CHANGES HEADER
-                # =========================================
+                # ------------------------------------------
+                # SCHEDULE CHANGES
+                # ------------------------------------------
 
                 MDLabel:
-
                     text: "SCHEDULE CHANGES"
-
-                    font_style: "Title"
-                    role: "large"
-
+                    size_hint_y: None
+                    height: dp(42)
+                    font_style: "Headline"
+                    role: "small"
                     bold: True
-
                     theme_text_color: "Custom"
                     text_color: app.theme_cls.onSurfaceColor
 
-                    size_hint_y: None
-                    height: dp(48)
-
-
-                # =========================================
-                # CHANGE LIST
-                # =========================================
-
-                RecycleView:
-
-                    id: changes_rv
-
-                    size_hint_y: None
-
-                    height: self.layout_manager.minimum_height
-
-                    viewclass: "ChangeCard"
-
-
-                    RecycleBoxLayout:
-
-                        default_size: None, dp(125)
-
-                        default_size_hint: 1, None
-
-                        size_hint_y: None
-
-                        height: self.minimum_height
-
-                        orientation: "vertical"
-
-                        spacing: dp(8)
-
-
-        # =================================================
-        # NAVIGATION
-        # =================================================
+                MDBoxLayout:
+                    id: change_list
+                    orientation: "vertical"
+                    adaptive_height: True
+                    spacing: dp(10)
 
         NavigationBar:
-
             selected: "changes"
