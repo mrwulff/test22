@@ -468,14 +468,12 @@ class RhinoDatabase:
 
         # --------------------------------------------------
         # SECOND PASS
-        # Same show, but Rhino generated a new ID
         #
-        # This is what catches things like:
+        # Rhino sometimes gives the same show a new ID when
+        # something about the show changes.
         #
-        # OLD: 10/25/2026 Microsoft Power Platform
-        # NEW: 10/24/2026 Microsoft Power Platform
-        #
-        # instead of NEW + REMOVED.
+        # Find those by matching the actual show identity
+        # instead of relying on the Rhino ID.
         # --------------------------------------------------
 
         unmatched_old = [
@@ -496,27 +494,101 @@ class RhinoDatabase:
 
             for new in unmatched_new:
 
-                if str(old["job"] or "").strip() != str(
+                old_job = str(
+                    old["job"] or ""
+                ).strip().lower()
+
+                new_job = str(
                     new.job or ""
-                ).strip():
-                    continue
+                ).strip().lower()
 
-                if str(old["show"] or "").strip() != str(
+                old_show = str(
+                    old["show"] or ""
+                ).strip().lower()
+
+                new_show = str(
                     new.show or ""
-                ).strip():
+                ).strip().lower()
+
+                # Job + show is our primary identity.
+                if old_job != new_job:
                     continue
 
-                if str(old["venue"] or "").strip() != str(
-                    new.venue or ""
-                ).strip():
+                if old_show != new_show:
                     continue
 
                 candidates.append(new)
 
-            # Only automatically match when there is
-            # exactly one possible show.
-            if len(candidates) != 1:
+            if not candidates:
                 continue
+
+            # --------------------------------------------------
+            # If there are several identical jobs/shows,
+            # prefer the one with the same venue.
+            # --------------------------------------------------
+
+            same_venue = []
+
+            old_venue = str(
+                old["venue"] or ""
+            ).strip().lower()
+
+            if old_venue:
+
+                for candidate in candidates:
+
+                    new_venue = str(
+                        candidate.venue or ""
+                    ).strip().lower()
+
+                    if new_venue == old_venue:
+                        same_venue.append(candidate)
+
+            if same_venue:
+                candidates = same_venue
+
+            # --------------------------------------------------
+            # If there are still multiple possibilities,
+            # choose the one closest in date/time.
+            # --------------------------------------------------
+
+            if len(candidates) > 1:
+
+                old_datetime = None
+
+                try:
+                    old_datetime = datetime.strptime(
+                        f"{old['date']} {old['time']}",
+                        "%m/%d/%Y %H:%M",
+                    )
+                except (ValueError, TypeError):
+                    pass
+
+                if old_datetime is not None:
+
+                    def distance(candidate):
+
+                        try:
+                            candidate_datetime = datetime.strptime(
+                                f"{candidate.date} {candidate.time}",
+                                "%m/%d/%Y %H:%M",
+                            )
+
+                            return abs(
+                                candidate_datetime - old_datetime
+                            ).total_seconds()
+
+                        except (ValueError, TypeError):
+
+                            return float("inf")
+
+                    candidates.sort(
+                        key=distance
+                    )
+
+            # --------------------------------------------------
+            # We now have our best candidate.
+            # --------------------------------------------------
 
             new = candidates[0]
 
@@ -529,11 +601,23 @@ class RhinoDatabase:
                 continue
 
             print(
-                "[CHANGE] Existing show appears to have "
-                "changed ID:",
+                "[CHANGE] SAME SHOW, NEW RHINO ID"
+            )
+
+            print(
+                "[CHANGE] OLD:",
                 old["id"],
-                "->",
+                old["date"],
+                old["time"],
+                old["show"],
+            )
+
+            print(
+                "[CHANGE] NEW:",
                 new.id,
+                new.date,
+                new.time,
+                new.show,
             )
 
             result["modified"].append({
@@ -542,17 +626,31 @@ class RhinoDatabase:
                 "old_id": old["id"],
             })
 
-            matched_old_ids.add(old["id"])
-            matched_new_ids.add(new.id)
+            matched_old_ids.add(
+                old["id"]
+            )
+
+            matched_new_ids.add(
+                new.id
+            )
 
             result["replaced"].append({
                 "old_id": old["id"],
                 "new_id": new.id,
             })
 
+            # VERY IMPORTANT:
+            # Don't let another old row match this same
+            # new show.
+            unmatched_new = [
+                candidate
+                for candidate in unmatched_new
+                if candidate.id != new.id
+            ]
+
         # --------------------------------------------------
         # THIRD PASS
-        # Genuinely new shows
+        # Anything still unmatched is genuinely NEW.
         # --------------------------------------------------
 
         for show_id, show in current.items():
@@ -564,10 +662,10 @@ class RhinoDatabase:
 
         # --------------------------------------------------
         # FOURTH PASS
-        # Genuinely removed shows
+        # Anything still unmatched from the old database
+        # is genuinely REMOVED.
         #
-        # A show that simply fell into the past is NOT
-        # considered removed.
+        # Shows that simply fell into the past are ignored.
         # --------------------------------------------------
 
         now = datetime.now()
@@ -595,8 +693,8 @@ class RhinoDatabase:
                     old["time"],
                 )
 
-            # Normal aging -- don't report it as removed.
             if show_datetime is not None:
+
                 if show_datetime <= now:
                     continue
 
