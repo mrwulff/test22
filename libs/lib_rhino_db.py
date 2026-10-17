@@ -999,7 +999,7 @@ class RhinoDatabase:
 
         print("DEV DATABASE RESET")
         
-        def get_changes(self, limit=100):
+    def get_changes(self, limit=100):
         """
         Return recent schedule changes grouped by show,
         timestamp, and change type.

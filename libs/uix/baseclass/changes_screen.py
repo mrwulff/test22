@@ -176,7 +176,7 @@ class ChangesScreen(Screen):
                 )
 
                 field_lines.append(
-                    f"{field_name}: {old_value}  →  {new_value}"
+                    f"{field_name}: {old_value}  ->  {new_value}"
                 )
 
             if not field_lines:
