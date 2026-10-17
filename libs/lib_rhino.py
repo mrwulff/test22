@@ -946,3 +946,93 @@ class RhinoClient:
             self.username and
             self.password
         )
+
+    def confirm_show(self, confirm_id):
+        """
+        Confirm one show on ThinkRhino.
+
+        ThinkRhino uses ASP.NET WebForms. The old app confirmed
+        a show by submitting the current form with:
+
+            __EVENTTARGET   = confirm_id
+            __EVENTARGUMENT = Confirm
+
+        confirm_id comes directly from the parsed schedule.
+        """
+
+        if not confirm_id:
+            raise ValueError("Cannot confirm show: confirm_id is empty")
+
+        if not self.logged_in:
+            raise RuntimeError(
+                "Cannot confirm show: RhinoClient is not logged in"
+            )
+
+        print(f"[RHINO] Confirming show: {confirm_id}")
+
+        try:
+            # Make sure we are working with the current schedule page.
+            response = self.browser.open(self.schedule_url)
+
+            print(
+                "[RHINO] Confirmation page loaded:",
+                response.geturl()
+            )
+
+            # ThinkRhino normally uses the ctl00 ASP.NET form.
+            try:
+                self.browser.select_form(name="ctl00")
+            except Exception:
+                self.browser.select_form(nr=0)
+
+            # ASP.NET WebForms event controls.
+            control_target = self.browser.form.find_control(
+                "__EVENTTARGET"
+            )
+
+            control_argument = self.browser.form.find_control(
+                "__EVENTARGUMENT"
+            )
+
+            control_target.readonly = False
+            control_argument.readonly = False
+
+            control_target.value = str(confirm_id)
+            control_argument.value = "Confirm"
+
+            print(
+                "[RHINO] Submitting confirmation:",
+                confirm_id
+            )
+
+            response = self.browser.submit()
+
+            html = response.get_data()
+
+            print(
+                "[RHINO] Confirmation response:",
+                len(html),
+                "bytes"
+            )
+
+            # Keep the returned page as our current cached schedule.
+            ad = App.get_running_app().user_data_dir
+
+            with open(
+                os.path.join(ad, "realdata.html"),
+                "wb"
+            ) as f:
+                f.write(html)
+
+            print("[RHINO] Confirmation submitted successfully")
+
+            return html
+
+        except Exception as e:
+
+            print(
+                "[RHINO] Confirmation failed:",
+                repr(e)
+            )
+
+            raise

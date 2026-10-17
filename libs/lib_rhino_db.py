@@ -764,7 +764,32 @@ class RhinoDatabase:
             for row in rows
         ]
 
+    def get_pending_confirmations(self):
+        """
+        Return shows that are currently waiting for confirmation.
 
+        A show is considered pending when:
+            - confirmable is 1
+            - confirm_id exists and is not empty
+        """
+
+        cursor = self.db.execute("""
+            SELECT *
+            FROM shows
+            WHERE
+                confirmable = 1
+                AND confirm_id IS NOT NULL
+                AND confirm_id != ''
+            ORDER BY date, time
+        """)
+
+        rows = cursor.fetchall()
+        columns = [description[0] for description in cursor.description]
+
+        return [
+            dict(zip(columns, row))
+            for row in rows
+        ]
     def save_unmatched_payroll(self, payroll_item, paystub_id=None):
         """
         Store an unmatched payroll item.
